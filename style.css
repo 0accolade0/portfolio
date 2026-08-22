@@ -1,0 +1,2366 @@
+/* =========================================================
+   CYBEROS — CUTE RETRO DESKTOP
+   MEDIUM / COMFORTABLE UI SCALE
+   FIXED STACKING + DRAGGABLE WIDGET SYSTEM
+========================================================= */
+
+
+/* =========================================================
+   FONTS
+========================================================= */
+
+@import url("https://fonts.googleapis.com/css2?family=Offside&display=swap");
+
+
+/* =========================================================
+   ROOT VARIABLES
+========================================================= */
+
+:root {
+    --cyber-bg: #ddc9be;
+    --cyber-pink: #d07e96;
+    --cyber-pink-dark: #b86c87;
+    --cyber-purple: #a88ab2;
+    --cyber-purple-dark: #5954c3;
+    --cyber-lime: #c5dfa9;
+    --cyber-cream: #e8dfd2;
+    --cyber-white: #f4eee8;
+    --cyber-black: #242124;
+
+    --cyber-font: "Offside", sans-serif;
+
+    /*
+       IMPORTANT:
+       These are deliberately separated into clean layers.
+    */
+
+    --z-desktop: 1;
+    --z-icons: 100;
+    --z-apps: 1000;
+    --z-widgets: 5000;
+    --z-taskbar: 9000;
+    --z-start: 10000;
+    --z-overlay: 100000;
+    --z-login: 1000000;
+}
+
+
+/* =========================================================
+   GLOBAL RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: var(--cyber-bg);
+
+    font-family: var(--cyber-font);
+    font-size: 16px;
+    color: var(--cyber-purple-dark);
+}
+
+button,
+input,
+textarea,
+select {
+    font-family: var(--cyber-font);
+}
+
+body {
+    user-select: none;
+}
+
+
+/* =========================================================
+   DESKTOP
+========================================================= */
+
+#desktop {
+    position: fixed;
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background: var(--cyber-bg);
+
+    /*
+       DO NOT use isolation here.
+       It can trap child stacking contexts.
+    */
+
+    z-index: var(--z-desktop);
+}
+
+
+/* =========================================================
+   TOP BAR
+========================================================= */
+
+.topbar {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 44px;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 20px;
+
+    background: transparent;
+    color: var(--cyber-purple-dark);
+
+    z-index: 20;
+
+    pointer-events: none;
+}
+
+.system-name,
+.system-status {
+    display: none;
+}
+
+
+/* =========================================================
+   DESKTOP AREA
+========================================================= */
+
+#desktopArea {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+
+    background: var(--cyber-bg);
+
+    /*
+       IMPORTANT:
+       No isolation.
+       No transform.
+       No contain.
+    */
+
+    z-index: var(--z-desktop);
+}
+
+
+/* =========================================================
+   DESKTOP ICON GRID
+========================================================= */
+
+.desktop-icons,
+#desktopIcons {
+    position: absolute;
+
+    left: 34px;
+    top: 78px;
+
+    width: 300px;
+
+    display: grid;
+
+    grid-template-columns: repeat(3, 88px);
+    grid-auto-rows: 112px;
+
+    column-gap: 12px;
+    row-gap: 10px;
+
+    align-items: start;
+    justify-items: center;
+
+    padding: 0;
+    margin: 0;
+
+    z-index: var(--z-icons);
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   DESKTOP ICON
+========================================================= */
+
+.desktop-icon {
+    position: relative;
+
+    width: 88px;
+    height: 102px;
+
+    min-width: 88px;
+    min-height: 102px;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: flex-start;
+
+    gap: 5px;
+
+    padding: 0;
+    margin: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--cyber-purple-dark);
+
+    cursor: pointer;
+
+    border-radius: 7px;
+
+    pointer-events: auto;
+
+    z-index: var(--z-icons);
+
+    touch-action: manipulation;
+
+    transition:
+        transform 0.12s ease,
+        background 0.12s ease;
+}
+
+.desktop-icon:hover {
+    background: rgba(168, 138, 178, 0.12);
+    transform: translateY(-2px);
+}
+
+.desktop-icon:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================================================
+   DESKTOP ICON IMAGE
+========================================================= */
+
+.desktop-icon-image {
+    width: 66px;
+    height: 66px;
+
+    min-width: 66px;
+    min-height: 66px;
+
+    max-width: 66px;
+    max-height: 66px;
+
+    object-fit: contain;
+
+    display: block;
+
+    flex-shrink: 0;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   DESKTOP PLACEHOLDER
+========================================================= */
+
+.desktop-icon-placeholder {
+    width: 66px;
+    height: 66px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 32px;
+
+    flex-shrink: 0;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   DESKTOP LABEL
+========================================================= */
+
+.desktop-icon-label {
+    width: 88px;
+    max-width: 88px;
+
+    height: 24px;
+
+    overflow: hidden;
+
+    white-space: nowrap;
+    text-overflow: ellipsis;
+
+    font-family: var(--cyber-font);
+
+    font-size: 13px;
+    line-height: 17px;
+
+    letter-spacing: 0.2px;
+
+    text-align: center;
+
+    color: var(--cyber-purple-dark);
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   APP LAYER
+========================================================= */
+
+#appLayer {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+
+    pointer-events: none;
+
+    /*
+       Apps sit above icons.
+    */
+
+    z-index: var(--z-apps);
+}
+
+#appLayer > .cyber-window {
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   WIDGET LAYER
+========================================================= */
+
+#widgetLayer {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    overflow: visible;
+
+    pointer-events: none;
+
+    /*
+       WIDGETS ARE ABOVE ALL NORMAL APP WINDOWS.
+    */
+
+    z-index: var(--z-widgets);
+}
+
+#widgetLayer > .cyber-window {
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   WINDOWS
+========================================================= */
+
+.cyber-window {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 800px;
+    height: 450px;
+
+    min-width: 400px;
+    min-height: 280px;
+
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 66px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--cyber-cream);
+
+    border: 2px solid var(--cyber-purple);
+    border-radius: 6px;
+
+    overflow: hidden;
+
+    box-shadow:
+        6px 6px 0 rgba(89, 84, 195, 0.18);
+
+    pointer-events: auto;
+
+    resize: both;
+
+    /*
+       IMPORTANT:
+       Removed contain: layout paint.
+       Removed will-change.
+       Both could create/trap stacking contexts.
+    */
+
+    z-index: var(--z-apps);
+}
+
+
+/* =========================================================
+   NORMAL APP WINDOWS
+========================================================= */
+
+#appLayer > .cyber-window {
+    z-index: var(--z-apps);
+}
+
+
+/* =========================================================
+   WINDOW HEADER
+========================================================= */
+
+.window-header {
+    flex: 0 0 40px;
+
+    width: 100%;
+    height: 40px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 7px 0 14px;
+
+    background: var(--cyber-pink);
+
+    border-bottom: 2px solid var(--cyber-purple);
+
+    cursor: grab;
+
+    user-select: none;
+
+    touch-action: none;
+
+    flex-shrink: 0;
+}
+
+.window-header:active {
+    cursor: grabbing;
+}
+
+
+/* =========================================================
+   WINDOW TITLE
+========================================================= */
+
+.window-title {
+    min-width: 0;
+
+    font-family: var(--cyber-font);
+
+    font-size: 13px;
+
+    letter-spacing: 0.3px;
+
+    color: var(--cyber-lime);
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+}
+
+
+/* =========================================================
+   WINDOW CONTROLS
+========================================================= */
+
+.window-controls {
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    flex-shrink: 0;
+}
+
+.window-controls button {
+    width: 29px;
+    height: 27px;
+
+    padding: 0;
+
+    border: 1px solid var(--cyber-purple);
+
+    border-radius: 4px;
+
+    background: var(--cyber-purple);
+
+    color: var(--cyber-cream);
+
+    font-family: var(--cyber-font);
+
+    font-size: 13px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    transition:
+        background 0.12s ease,
+        transform 0.12s ease;
+}
+
+.window-controls button:hover {
+    background: var(--cyber-purple-dark);
+    color: var(--cyber-lime);
+}
+
+.window-controls button:active {
+    transform: scale(0.94);
+}
+
+.window-controls .close:hover {
+    background: var(--cyber-pink-dark);
+    color: var(--cyber-lime);
+}
+
+
+/* =========================================================
+   WINDOW CONTENT
+========================================================= */
+
+.window-content {
+    position: relative;
+
+    flex: 1 1 auto;
+
+    width: 100%;
+    height: auto;
+
+    min-width: 0;
+    min-height: 0;
+
+    background: var(--cyber-cream);
+
+    overflow: hidden;
+
+    /*
+       Removed isolation.
+    */
+}
+
+
+/* =========================================================
+   IFRAME
+========================================================= */
+
+.window-content iframe {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 100%;
+
+    display: block;
+
+    border: none;
+
+    margin: 0;
+    padding: 0;
+
+    background: var(--cyber-cream);
+
+    overflow: hidden;
+}
+
+
+/* =========================================================
+   MAXIMIZED WINDOW
+========================================================= */
+
+.cyber-window.maximized {
+    position: fixed !important;
+
+    left: 0 !important;
+    top: 0 !important;
+    right: 0 !important;
+    bottom: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    max-width: none !important;
+    max-height: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    resize: none !important;
+
+    box-shadow: none !important;
+
+    /*
+       Still below taskbar/start menu.
+       Do NOT use 2147483647 here.
+    */
+
+    z-index: var(--z-apps) !important;
+
+    pointer-events: auto !important;
+}
+
+
+/* =========================================================
+   MAXIMIZED HEADER
+========================================================= */
+
+.cyber-window.maximized .window-header {
+    display: none;
+}
+
+
+/* =========================================================
+   MAXIMIZED CONTENT
+========================================================= */
+
+.cyber-window.maximized .window-content {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    min-width: 0;
+    min-height: 0;
+
+    flex: none;
+}
+
+
+/* =========================================================
+   START MENU
+========================================================= */
+
+.start-menu {
+    position: absolute;
+
+    left: 10px;
+    bottom: 51px;
+
+    width: 330px;
+    height: 420px;
+
+    max-width: calc(100vw - 20px);
+    max-height: calc(100vh - 65px);
+
+    display: flex;
+    flex-direction: column;
+
+    background: var(--cyber-cream);
+
+    border: 2px solid var(--cyber-purple);
+
+    border-radius: 7px;
+
+    box-shadow:
+        6px 6px 0 rgba(89, 84, 195, 0.2);
+
+    overflow: hidden;
+
+    z-index: var(--z-start);
+
+    opacity: 0;
+
+    transform: translateY(10px);
+
+    transform-origin: bottom left;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.14s ease,
+        transform 0.14s ease;
+}
+
+.start-menu.open {
+    opacity: 1;
+
+    transform: translateY(0);
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   START HEADER
+========================================================= */
+
+.start-menu-header {
+    padding: 18px;
+
+    background: var(--cyber-pink);
+
+    color: var(--cyber-lime);
+
+    flex-shrink: 0;
+}
+
+.start-menu-title {
+    font-family: var(--cyber-font);
+
+    font-size: 19px;
+
+    letter-spacing: 0.5px;
+}
+
+.start-menu-subtitle {
+    margin-top: 7px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+
+    opacity: 0.8;
+}
+
+
+/* =========================================================
+   START APPS
+========================================================= */
+
+.start-menu-apps {
+    flex: 1;
+
+    min-height: 0;
+
+    padding: 12px;
+
+    display: grid;
+
+    grid-template-columns: repeat(2, 1fr);
+
+    gap: 7px;
+
+    overflow-y: auto;
+
+    pointer-events: auto;
+}
+
+
+/* =========================================================
+   START APP
+========================================================= */
+
+.start-menu-app {
+    min-height: 90px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    border: 1px solid transparent;
+
+    border-radius: 7px;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    color: var(--cyber-purple-dark);
+
+    pointer-events: auto;
+
+    transition:
+        background 0.12s ease,
+        border-color 0.12s ease,
+        transform 0.12s ease;
+}
+
+.start-menu-app:hover {
+    background: rgba(168, 138, 178, 0.18);
+
+    border-color: var(--cyber-purple);
+}
+
+.start-menu-app:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================================
+   START APP ICON
+========================================================= */
+
+.start-menu-app-icon {
+    width: 50px;
+    height: 50px;
+
+    min-width: 50px;
+    min-height: 50px;
+
+    max-width: 50px;
+    max-height: 50px;
+
+    object-fit: contain;
+
+    display: block;
+
+    pointer-events: none;
+}
+
+.start-menu-placeholder {
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    font-size: 27px;
+
+    pointer-events: none;
+}
+
+.start-menu-app-name {
+    max-width: 135px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+
+    line-height: 15px;
+
+    text-align: center;
+
+    color: var(--cyber-purple-dark);
+}
+
+
+/* =========================================================
+   START FOOTER
+========================================================= */
+
+.start-menu-footer {
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: stretch;
+
+    padding: 9px 11px 11px;
+
+    gap: 6px;
+
+    border-top: 2px solid var(--cyber-purple);
+
+    font-family: var(--cyber-font);
+
+    font-size: 10px;
+
+    color: var(--cyber-purple);
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   TASKBAR
+========================================================= */
+
+.taskbar {
+    position: absolute;
+
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    width: 100%;
+    height: 46px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 9px;
+
+    padding: 5px 10px;
+
+    background: var(--cyber-pink);
+
+    border: none;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    z-index: var(--z-taskbar);
+
+    flex-shrink: 0;
+}
+
+
+/* =========================================================
+   START BUTTON
+========================================================= */
+
+.start-button {
+    height: 36px;
+
+    min-width: 92px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 7px;
+
+    padding: 0 12px;
+
+    border: 2px solid var(--cyber-lime);
+
+    border-radius: 9px;
+
+    background: transparent;
+
+    color: var(--cyber-lime);
+
+    cursor: pointer;
+
+    font-family: var(--cyber-font);
+
+    font-size: 20px;
+
+    letter-spacing: 0.5px;
+
+    flex-shrink: 0;
+
+    transition:
+        background 0.12s ease,
+        transform 0.12s ease;
+}
+
+.start-button:hover {
+    background: rgba(197, 223, 169, 0.15);
+}
+
+.start-button:active {
+    transform: scale(0.96);
+}
+
+
+/* =========================================================
+   START ICON REMOVED
+========================================================= */
+
+.start-icon {
+    display: none !important;
+}
+
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+.taskbar-search {
+    width: 320px;
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 0 12px;
+
+    background: var(--cyber-purple);
+
+    border: 2px solid var(--cyber-lime);
+
+    border-radius: 9px;
+
+    flex-shrink: 0;
+}
+
+.search-icon {
+    font-size: 14px;
+
+    color: var(--cyber-lime);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    flex-shrink: 0;
+}
+
+.taskbar-search input {
+    width: 100%;
+    height: 100%;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: var(--cyber-lime);
+
+    font-family: var(--cyber-font);
+
+    font-size: 13px;
+}
+
+.taskbar-search input::placeholder {
+    color: rgba(197, 223, 169, 0.75);
+}
+
+
+/* =========================================================
+   TASKBAR APPS
+========================================================= */
+
+.taskbar-apps {
+    height: 36px;
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 5px;
+
+    overflow: hidden;
+
+    min-width: 0;
+
+    flex: 0 1 auto;
+}
+
+.taskbar-app {
+    height: 36px;
+
+    min-width: 50px;
+    max-width: 155px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 6px;
+
+    padding: 0 10px;
+
+    border: none;
+
+    border-radius: 7px;
+
+    background: var(--cyber-purple);
+
+    color: var(--cyber-lime);
+
+    cursor: pointer;
+
+    font-family: var(--cyber-font);
+
+    font-size: 12px;
+
+    flex-shrink: 0;
+
+    transition:
+        background 0.12s ease;
+}
+
+.taskbar-app:hover,
+.taskbar-app.active {
+    background: var(--cyber-purple-dark);
+}
+
+.taskbar-app-icon {
+    width: 22px;
+    height: 22px;
+
+    object-fit: contain;
+
+    flex-shrink: 0;
+
+    pointer-events: none;
+}
+
+.taskbar-app-name {
+    overflow: hidden;
+
+    white-space: nowrap;
+
+    text-overflow: ellipsis;
+
+    font-size: 12px;
+}
+
+
+/* =========================================================
+   SPACER
+========================================================= */
+
+.taskbar-spacer {
+    flex: 1;
+
+    min-width: 5px;
+}
+
+
+/* =========================================================
+   BATTERY
+========================================================= */
+
+.battery-area {
+    display: flex;
+
+    align-items: center;
+
+    gap: 7px;
+
+    flex-shrink: 0;
+}
+
+.battery-bar {
+    width: 40px;
+    height: 17px;
+
+    padding: 2px;
+
+    border: 1px solid var(--cyber-lime);
+
+    border-radius: 3px;
+}
+
+.battery-fill {
+    width: 100%;
+    height: 100%;
+
+    border-radius: 1px;
+
+    background: var(--cyber-lime);
+}
+
+#batteryText {
+    min-width: 40px;
+
+    color: var(--cyber-lime);
+
+    font-family: var(--cyber-font);
+
+    font-size: 15px;
+}
+
+.charge-button {
+    height: 32px;
+
+    border: none;
+
+    border-radius: 6px;
+
+    padding: 0 10px;
+
+    background: var(--cyber-purple);
+
+    color: var(--cyber-lime);
+
+    cursor: pointer;
+
+    font-family: var(--cyber-font);
+
+    font-size: 18px;
+}
+
+.charge-button:hover {
+    background: var(--cyber-purple-dark);
+}
+
+
+/* =========================================================
+   CLOCK
+========================================================= */
+
+.clock {
+    min-width: 120px;
+
+    text-align: right;
+
+    color: #ffffff;
+
+    font-family: var(--cyber-font);
+
+    font-weight: 300;
+
+    line-height: 1.1;
+
+    flex-shrink: 0;
+}
+
+#clockTime {
+    font-size: 13px;
+
+    font-weight: 300;
+
+    color: #ffffff;
+}
+
+#clockDate {
+    margin-top: 3px;
+
+    font-size: 11px;
+
+    font-weight: 300;
+
+    color: #ffffff;
+
+    opacity: 1;
+}
+
+
+/* =========================================================
+   AUTH
+========================================================= */
+
+.auth-area {
+    position: static !important;
+
+    display: none !important;
+}
+
+
+/* =========================================================
+   AUTH INSIDE START MENU
+========================================================= */
+
+.start-menu #authUser {
+    display: block;
+
+    padding: 7px 11px 5px;
+
+    text-align: center;
+
+    color: var(--cyber-purple-dark);
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+}
+
+.start-menu .auth-role {
+    padding: 5px 7px;
+
+    border-radius: 5px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 9px;
+
+    font-weight: 400;
+}
+
+.start-menu .auth-role.admin,
+.start-menu .auth-role.member {
+    background: var(--cyber-lime);
+
+    color: var(--cyber-purple-dark);
+}
+
+
+/* =========================================================
+   LOGOUT BUTTON
+========================================================= */
+
+.start-menu #logoutButton {
+    display: flex;
+
+    width: calc(100% - 22px);
+    height: 35px;
+
+    margin: 0 11px 11px;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 2px solid var(--cyber-purple);
+
+    border-radius: 7px;
+
+    background: var(--cyber-purple);
+
+    color: var(--cyber-lime);
+
+    padding: 0;
+
+    cursor: pointer;
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+
+    letter-spacing: 0.5px;
+
+    transition:
+        background 0.12s ease,
+        transform 0.12s ease;
+}
+
+.start-menu #logoutButton:hover {
+    background: var(--cyber-purple-dark);
+
+    color: var(--cyber-lime);
+}
+
+.start-menu #logoutButton:active {
+    transform: scale(0.97);
+}
+
+
+/* =========================================================
+   SHUTDOWN OVERLAY
+========================================================= */
+
+.shutdown-overlay {
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(89, 84, 195, 0.25);
+
+    z-index: var(--z-overlay);
+}
+
+.shutdown-popup {
+    width: 350px;
+
+    max-width: calc(100vw - 40px);
+
+    padding: 27px;
+
+    text-align: center;
+
+    background: var(--cyber-cream);
+
+    color: var(--cyber-purple-dark);
+
+    border: 2px solid var(--cyber-purple);
+
+    border-radius: 7px;
+
+    box-shadow:
+        6px 6px 0 rgba(89, 84, 195, 0.2);
+}
+
+.shutdown-popup h2 {
+    margin: 0 0 11px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 19px;
+}
+
+.shutdown-popup p {
+    margin: 0 0 21px;
+
+    color: var(--cyber-purple);
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+}
+
+.shutdown-popup button {
+    border: 2px solid var(--cyber-purple);
+
+    border-radius: 7px;
+
+    padding: 9px 16px;
+
+    background: var(--cyber-purple);
+
+    color: var(--cyber-lime);
+
+    cursor: pointer;
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+}
+
+
+/* =========================================================
+   SCROLLBAR
+========================================================= */
+
+.start-menu-apps::-webkit-scrollbar {
+    width: 6px;
+}
+
+.start-menu-apps::-webkit-scrollbar-thumb {
+    background: var(--cyber-purple);
+
+    border-radius: 5px;
+}
+
+.start-menu-apps::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+
+/* =========================================================
+   CYBEROS LOGIN
+========================================================= */
+
+
+.login-overlay {
+    position: fixed;
+    inset: 0;
+
+    z-index: var(--z-login);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    padding: 20px;
+
+    background:
+        rgba(36, 33, 36, 0.28);
+
+    backdrop-filter:
+        blur(3px);
+}
+
+
+
+/* =========================================================
+   LOGIN WINDOW
+========================================================= */
+
+.login-window {
+    width: min(460px, 100%);
+
+    background: var(--cyber-cream);
+
+    color: var(--cyber-black);
+
+    border: 3px solid var(--cyber-black);
+
+    border-radius: 7px;
+
+    box-shadow:
+        8px 8px 0 var(--cyber-black);
+
+    overflow: hidden;
+
+    animation:
+        loginAppear 0.25s ease-out;
+}
+
+@keyframes loginAppear {
+
+    from {
+        opacity: 0;
+
+        transform:
+            translateY(12px)
+            scale(0.97);
+    }
+
+    to {
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   LOGIN HEADER
+========================================================= */
+
+.login-header {
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 16px 18px;
+
+    background: var(--cyber-pink);
+
+    color: var(--cyber-lime);
+
+    border-bottom: 3px solid var(--cyber-black);
+}
+
+.login-header-left {
+    display: flex;
+
+    align-items: center;
+
+    gap: 12px;
+}
+
+.login-icon {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: var(--cyber-lime);
+
+    color: var(--cyber-purple-dark);
+
+    border: 2px solid var(--cyber-black);
+
+    border-radius: 6px;
+
+    font-size: 22px;
+}
+
+.login-title {
+    font-family: var(--cyber-font);
+
+    font-size: 23px;
+
+    font-weight: bold;
+
+    letter-spacing: 2px;
+
+    color: var(--cyber-lime);
+}
+
+.login-subtitle {
+    margin-top: 4px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 10px;
+
+    letter-spacing: 1.5px;
+
+    opacity: 0.85;
+
+    color: var(--cyber-lime);
+}
+
+.login-status {
+    display: flex;
+
+    align-items: center;
+
+    gap: 6px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    color: var(--cyber-lime);
+}
+
+.status-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: var(--cyber-lime);
+
+    box-shadow:
+        0 0 7px rgba(197, 223, 169, 0.9);
+}
+
+
+/* =========================================================
+   LOGIN CONTENT
+========================================================= */
+
+.login-content {
+    padding: 30px 32px 25px;
+
+    background: var(--cyber-cream);
+}
+
+.login-welcome {
+    font-family: var(--cyber-font);
+
+    font-size: 22px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    color: var(--cyber-purple-dark);
+}
+
+.login-description {
+    margin-top: 8px;
+    margin-bottom: 26px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+
+    line-height: 1.7;
+
+    color: var(--cyber-purple);
+
+    opacity: 0.85;
+}
+
+
+/* =========================================================
+   LOGIN FORM
+========================================================= */
+
+.login-form {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 19px;
+}
+
+.input-group {
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 7px;
+}
+
+.input-group label {
+    font-family: var(--cyber-font);
+
+    font-size: 11px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    color: var(--cyber-purple-dark);
+}
+
+.input-wrapper {
+    display: flex;
+
+    align-items: center;
+
+    background: var(--cyber-white);
+
+    border: 2px solid var(--cyber-purple);
+
+    border-radius: 5px;
+
+    overflow: hidden;
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        border-color 0.12s ease;
+}
+
+.input-wrapper:focus-within {
+    border-color: var(--cyber-pink);
+
+    transform:
+        translate(-2px, -2px);
+
+    box-shadow:
+        4px 4px 0 rgba(208, 126, 150, 0.25);
+}
+
+.input-icon {
+    width: 44px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    color: var(--cyber-purple-dark);
+
+    font-family: var(--cyber-font);
+
+    font-size: 15px;
+
+    font-weight: bold;
+
+    border-right: 2px solid var(--cyber-purple);
+
+    align-self: stretch;
+}
+
+.input-wrapper input {
+    width: 100%;
+
+    min-width: 0;
+
+    height: 46px;
+
+    border: none;
+
+    outline: none;
+
+    background: transparent;
+
+    padding: 0 13px;
+
+    color: var(--cyber-purple-dark);
+
+    font-family: var(--cyber-font);
+
+    font-size: 12px;
+}
+
+.input-wrapper input::placeholder {
+    color: #aa9da3;
+}
+
+
+/* =========================================================
+   LOGIN BUTTON
+========================================================= */
+
+.login-button,
+#loginSubmitButton {
+    width: 100%;
+
+    height: 48px;
+
+    margin-top: 3px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+
+    border: 2px solid var(--cyber-black);
+
+    border-radius: 5px;
+
+    background: var(--cyber-purple);
+
+    color: var(--cyber-lime);
+
+    font-family: var(--cyber-font);
+
+    font-size: 12px;
+
+    font-weight: bold;
+
+    letter-spacing: 1.5px;
+
+    cursor: pointer;
+
+    box-shadow:
+        4px 4px 0 var(--cyber-black);
+
+    transition:
+        transform 0.12s ease,
+        box-shadow 0.12s ease,
+        background 0.12s ease;
+}
+
+.login-button:hover,
+#loginSubmitButton:hover {
+    background: var(--cyber-purple-dark);
+
+    transform:
+        translate(-2px, -2px);
+
+    box-shadow:
+        6px 6px 0 var(--cyber-black);
+}
+
+.login-button:active,
+#loginSubmitButton:active {
+    transform:
+        translate(2px, 2px);
+
+    box-shadow:
+        1px 1px 0 var(--cyber-black);
+}
+
+.login-button-icon {
+    font-size: 10px;
+}
+
+
+/* =========================================================
+   LOGIN MESSAGE
+========================================================= */
+
+.login-message,
+#loginMessage {
+    min-height: 18px;
+
+    margin-top: -3px;
+
+    text-align: center;
+
+    font-family: var(--cyber-font);
+
+    font-size: 10px;
+
+    line-height: 1.5;
+
+    color: var(--cyber-purple);
+}
+
+.login-message.error {
+    color: var(--cyber-pink-dark);
+}
+
+
+/* =========================================================
+   LOGIN SECURITY INFO
+========================================================= */
+
+.security-info {
+    margin-top: 26px;
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+}
+
+.security-line {
+    height: 1px;
+
+    background: var(--cyber-purple);
+
+    opacity: 0.2;
+}
+
+.security-content {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 10px;
+}
+
+.security-icon {
+    font-size: 15px;
+}
+
+.security-title {
+    font-family: var(--cyber-font);
+
+    font-size: 9px;
+
+    font-weight: bold;
+
+    letter-spacing: 1px;
+
+    color: var(--cyber-purple-dark);
+}
+
+.security-text {
+    margin-top: 3px;
+
+    font-family: var(--cyber-font);
+
+    font-size: 9px;
+
+    color: var(--cyber-purple);
+
+    opacity: 0.7;
+}
+
+
+/* =========================================================
+   LOGIN FOOTER
+========================================================= */
+
+.login-footer {
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 11px;
+
+    background: #ded5c9;
+
+    border-top: 2px solid var(--cyber-purple);
+
+    font-family: var(--cyber-font);
+
+    font-size: 9px;
+
+    letter-spacing: 0.8px;
+
+    color: var(--cyber-purple);
+}
+
+
+/* =========================================================
+   OLD LOGIN COMPATIBILITY
+========================================================= */
+
+.cyber-login {
+    background: var(--cyber-bg);
+}
+
+.cyber-login-box {
+    background: var(--cyber-cream);
+
+    border: 2px solid var(--cyber-purple);
+
+    box-shadow:
+        6px 6px 0 rgba(89, 84, 195, 0.2);
+}
+
+.cyber-login-title,
+.cyber-login-subtitle {
+    font-family: var(--cyber-font);
+}
+
+.cyber-login-title {
+    color: var(--cyber-purple-dark);
+}
+
+.cyber-login-subtitle {
+    color: var(--cyber-purple);
+}
+
+#loginForm input {
+    font-family: var(--cyber-font);
+
+    border-color: var(--cyber-purple);
+
+    background: var(--cyber-white);
+
+    color: var(--cyber-purple-dark);
+}
+
+#loginButton {
+    font-family: var(--cyber-font);
+
+    background: var(--cyber-pink);
+
+    color: var(--cyber-lime);
+}
+
+
+/* =========================================================
+   =========================================================
+   WIDGET SYSTEM
+   HEADERLESS + DRAGGABLE + ALWAYS ABOVE ICONS
+   =========================================================
+   ========================================================= */
+
+
+/* =========================================================
+   WIDGET WINDOW
+========================================================= */
+
+#widgetLayer > .cyber-window {
+    position: absolute !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    overflow: visible !important;
+
+    resize: none !important;
+
+    /*
+       THIS IS THE IMPORTANT PART.
+
+       Widget itself is above app windows.
+    */
+
+    z-index: var(--z-widgets) !important;
+
+    pointer-events: auto !important;
+}
+
+
+/* =========================================================
+   ACTIVE / DRAGGING WIDGET
+========================================================= */
+
+#widgetLayer > .cyber-window.widget-active,
+#widgetLayer > .cyber-window.widget-dragging {
+    z-index: 99999 !important;
+}
+
+
+/* =========================================================
+   REMOVE WIDGET HEADER
+========================================================= */
+
+#widgetLayer > .cyber-window .window-header {
+    display: none !important;
+}
+
+
+/* =========================================================
+   WIDGET CONTENT
+========================================================= */
+
+#widgetLayer > .cyber-window .window-content {
+    position: relative !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    min-width: 0 !important;
+    min-height: 0 !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    border-radius: 0 !important;
+
+    overflow: visible !important;
+
+    flex: none !important;
+
+    /*
+       VERY IMPORTANT:
+       No isolation here.
+    */
+}
+
+
+/* =========================================================
+   WIDGET IFRAME
+========================================================= */
+
+#widgetLayer > .cyber-window .window-content iframe {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 100% !important;
+    height: 100% !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    display: block !important;
+}
+
+
+/* =========================================================
+   INVISIBLE DRAG HANDLE
+========================================================= */
+
+#widgetLayer > .cyber-window::before {
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 28px;
+
+    background: transparent;
+
+    cursor: grab;
+
+    z-index: 999999;
+
+    pointer-events: auto;
+
+    touch-action: none;
+}
+
+
+/* =========================================================
+   DRAGGING CURSOR
+========================================================= */
+
+#widgetLayer > .cyber-window.widget-dragging::before {
+    cursor: grabbing;
+}
+
+
+/* =========================================================
+   WIDGET MAXIMIZED
+========================================================= */
+
+#widgetLayer > .cyber-window.maximized {
+    position: fixed !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    box-shadow: none !important;
+
+    z-index: 99999 !important;
+
+    pointer-events: auto !important;
+}
+
+#widgetLayer > .cyber-window.maximized .window-header {
+    display: none !important;
+}
+
+
+/* =========================================================
+   WIDGET MAXIMIZED CONTENT
+========================================================= */
+
+#widgetLayer > .cyber-window.maximized .window-content {
+    position: absolute !important;
+
+    left: 0 !important;
+    top: 0 !important;
+
+    width: 100vw !important;
+    height: 100vh !important;
+
+    background: transparent !important;
+
+    overflow: visible !important;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 800px) {
+
+    .taskbar-search {
+        width: 210px;
+    }
+
+    .battery-area {
+        display: none;
+    }
+
+    .taskbar-app-name {
+        display: none;
+    }
+
+    .taskbar-app {
+        min-width: 42px;
+    }
+
+    .desktop-icons,
+    #desktopIcons {
+        left: 15px;
+        top: 70px;
+
+        width: 285px;
+
+        grid-template-columns:
+            repeat(3, 88px);
+    }
+
+    .desktop-icon-label {
+        font-size: 12px;
+    }
+
+    #clockTime {
+        font-size: 12px;
+    }
+
+    #clockDate {
+        font-size: 10px;
+    }
+
+    .cyber-window {
+        min-width: 320px;
+        min-height: 240px;
+
+        max-width: calc(100vw - 10px);
+        max-height: calc(100vh - 54px);
+    }
+}
+
+
+/* =========================================================
+   SMALL SCREENS
+========================================================= */
+
+@media (max-width: 520px) {
+
+    .desktop-icons,
+    #desktopIcons {
+        left: 8px;
+
+        width: 190px;
+
+        grid-template-columns:
+            repeat(2, 88px);
+    }
+
+    .start-button {
+        min-width: 54px;
+
+        padding: 0 9px;
+    }
+
+    .start-button-text {
+        font-size: 11px;
+    }
+
+    .clock {
+        min-width: 78px;
+    }
+
+    .taskbar {
+        gap: 5px;
+
+        padding-left: 6px;
+        padding-right: 6px;
+    }
+
+    .taskbar-search {
+        width: 120px;
+    }
+
+    .cyber-window {
+        left: 5px !important;
+        top: 5px !important;
+
+        width: calc(100vw - 10px);
+        height: calc(100vh - 54px);
+
+        min-width: 0;
+        min-height: 0;
+
+        max-width: calc(100vw - 10px);
+        max-height: calc(100vh - 54px);
+    }
+}
+
+
+/* =========================================================
+   LOGIN MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+
+    .login-overlay {
+        padding: 15px;
+    }
+
+    .login-window {
+        width: calc(100vw - 30px);
+
+        box-shadow:
+            5px 5px 0 var(--cyber-black);
+    }
+
+    .login-content {
+        padding:
+            24px 20px 20px;
+    }
+
+    .login-title {
+        font-size: 19px;
+    }
+
+    .login-status {
+        display: none;
+    }
+
+    .login-welcome {
+        font-size: 18px;
+    }
+
+    .login-description {
+        font-size: 10px;
+    }
+}

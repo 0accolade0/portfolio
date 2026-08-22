@@ -1,0 +1,6428 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title> theshartechclub's cooking studio 🍪</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Offside&display=swap"
+    rel="stylesheet"
+>
+
+<audio
+    id="backgroundMusic"
+    src="assets/music.mp3"
+    loop>
+</audio>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+*{
+    box-sizing:border-box;
+}
+
+html,
+body{
+    margin:0;
+    width:100%;
+    min-height:100%;
+}
+
+body{
+
+    overflow:hidden;
+
+    font-family:"Offside",sans-serif;
+
+    color:#7d263d;
+
+    background:#e98ac4;
+
+    font-size:12px;
+}
+
+
+/* =========================================================
+   MAIN HEADER
+========================================================= */
+
+.clubHeader{
+
+    position:relative;
+
+    z-index:500;
+
+    width:100%;
+
+    padding:9px 20px;
+
+    text-align:center;
+
+    color:#e52560;
+
+    font-family:"Offside",sans-serif;
+
+    font-size:17px;
+
+    letter-spacing:1.3px;
+
+    background:#ffeccf;
+
+    border:0;
+
+    border-radius:0;
+
+    box-shadow:
+        0 5px 15px rgba(112,42,58,.10);
+}
+
+.clubHeader span{
+
+    display:inline-block;
+
+    animation:
+        titleFloat 4s ease-in-out infinite;
+}
+
+@keyframes titleFloat{
+
+    0%,
+    100%{
+        transform:translateY(0);
+    }
+
+    50%{
+        transform:translateY(-4px);
+    }
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app{
+
+    position:relative;
+
+    z-index:2;
+
+    width:min(1500px,96vw);
+
+    height:min(
+        790px,
+        calc(100vh - 125px)
+    );
+
+    min-height:620px;
+
+    display:grid;
+
+    grid-template-columns:
+        340px
+        minmax(430px,1fr)
+        380px;
+
+    gap:18px;
+
+    margin:20px auto 0;
+}
+
+
+/* =========================================================
+   PANELS
+========================================================= */
+
+.panel{
+
+    position:relative;
+
+    min-height:0;
+
+    background:#f16499;
+
+    border:
+        1px solid rgba(255,255,255,.75);
+
+    border-radius:25px;
+
+    box-shadow:
+        0 18px 50px rgba(130,35,58,.16),
+        inset 0 1px 0 rgba(255,255,255,.8);
+
+    overflow:hidden;
+}
+
+.leftPanel,
+.rightPanel{
+
+    padding:
+        22px 21px;
+
+    overflow-y:auto;
+
+    overflow-x:hidden;
+
+    scrollbar-width:thin;
+
+    scrollbar-color:
+        #e8a1ad
+        transparent;
+}
+
+.leftPanel::-webkit-scrollbar,
+.rightPanel::-webkit-scrollbar{
+    width:6px;
+}
+
+.leftPanel::-webkit-scrollbar-track,
+.rightPanel::-webkit-scrollbar-track{
+    background:transparent;
+}
+
+.leftPanel::-webkit-scrollbar-thumb,
+.rightPanel::-webkit-scrollbar-thumb{
+
+    background:#e8a1ad;
+
+    border-radius:20px;
+}
+
+.leftPanel::-webkit-scrollbar-thumb:hover,
+.rightPanel::-webkit-scrollbar-thumb:hover{
+    background:#df7188;
+}
+
+/* =========================================================
+   SHAPE PNG ICONS
+========================================================= */
+
+.shapeIcon {
+    width: 52px;
+    height: 52px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    margin: 0 auto;
+}
+
+.shapeIcon img {
+    width: 38px;
+    height: 38px;
+
+    max-width: 38px;
+    max-height: 38px;
+
+    object-fit: contain;
+
+    display: block;
+
+    pointer-events: none;
+    user-select: none;
+}
+
+
+/* =========================================================
+   SECTION TITLES
+========================================================= */
+
+.sectionTitle{
+
+    margin:
+        0 0 15px;
+
+    text-align:center;
+
+    color:#f0e9eb;
+
+    font-size:14px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.7px;
+}
+
+
+/* =========================================================
+   DIVIDER
+========================================================= */
+
+.divider{
+
+    height:1px;
+
+    margin:
+        15px 0 16px;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(190,87,111,.25),
+            transparent
+        );
+}
+
+
+/* =========================================================
+   SHAPES
+========================================================= */
+
+.shapeGrid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:8px;
+}
+
+.shapeButton{
+
+    min-height:95px;
+
+    border:
+        1px solid #efd6c7;
+
+    border-radius:13px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff8e9,
+            #fff4e7
+        );
+
+    cursor:pointer;
+
+    color:#63242c;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    transition:
+        transform .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease,
+        background .18s ease;
+}
+
+.shapeButton:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(190,69,95,.12);
+}
+
+.shapeButton.active{
+
+    border:
+        2px solid #ef3b70;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff8e9,
+            #fff0e6
+        );
+
+    box-shadow:
+        0 7px 20px rgba(238,46,102,.10);
+}
+
+.shapeIcon{
+
+    width:50px;
+
+    height:50px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:36px;
+
+    filter:
+        drop-shadow(
+            0 4px 3px rgba(117,53,19,.18)
+        );
+}
+
+.shapeName{
+
+    font-size:10px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.3px;
+}
+
+
+/* =========================================================
+   COLORS
+========================================================= */
+
+.colors{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:12px;
+
+    padding:
+        0 8px;
+}
+
+.color{
+
+    width:38px;
+
+    height:38px;
+
+    padding:0;
+
+    border-radius:50%;
+
+    border:
+        3px solid rgba(255,255,255,.8);
+
+    cursor:pointer;
+
+    box-shadow:
+        0 3px 8px rgba(80,40,35,.14);
+
+    transition:
+        transform .15s ease,
+        box-shadow .15s ease;
+}
+
+.color:hover{
+    transform:scale(1.08);
+}
+
+.color.active{
+
+    outline:
+        2px solid #ef3170;
+
+    outline-offset:3px;
+}
+
+
+/* =========================================================
+   THICKNESS
+========================================================= */
+
+.sizes{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr 1fr;
+
+    gap:8px;
+}
+
+.size{
+
+    padding:
+        10px 5px;
+
+    border:
+        1px solid #ebd1c4;
+
+    border-radius:10px;
+
+    background:#fff8ed;
+
+    color:#702d34;
+
+    font-family:inherit;
+
+    font-size:10px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    cursor:pointer;
+
+    transition:.18s ease;
+}
+
+.size.active{
+
+    color:white;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ef2e6d,
+            #df3c70
+        );
+
+    border-color:#ef2e6d;
+
+    box-shadow:
+        0 5px 13px rgba(222,37,94,.18);
+}
+
+
+/* =========================================================
+   ACTION BUTTONS
+========================================================= */
+
+.actionButton{
+
+    width:100%;
+
+    padding:
+        12px 14px;
+
+    border-radius:11px;
+
+    font-family:inherit;
+
+    font-size:10px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.4px;
+
+    cursor:pointer;
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.actionButton:hover{
+    transform:translateY(-2px);
+}
+
+.actionButton:active{
+    transform:scale(.98);
+}
+
+.clearButton{
+
+    margin-top:15px;
+
+    color:white;
+
+    border:0;
+
+    background:
+        linear-gradient(
+            135deg,
+            #e92868,
+            #df3970
+        );
+
+    box-shadow:
+        0 8px 17px rgba(215,38,93,.18);
+}
+
+.newCookie{
+
+    margin-top:8px;
+
+    background:#fff2df;
+
+    color:#e62760;
+
+    border:
+        1px solid #ed9bae;
+}
+
+
+/* =========================================================
+   CENTRE STAGE
+========================================================= */
+
+.stage{
+
+    position:relative;
+
+    min-width:0;
+
+    min-height:0;
+
+    border-radius:28px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    overflow:hidden;
+
+    background:
+        radial-gradient(
+            ellipse at 50% 42%,
+            rgba(255,249,241,.98) 0%,
+            rgba(255,231,220,.82) 52%,
+            rgba(246,142,165,.48) 100%
+        );
+
+    border:
+        1px solid rgba(255,255,255,.7);
+
+    box-shadow:
+        0 25px 70px rgba(130,35,58,.18),
+        inset 0 1px 0 rgba(255,255,255,.75);
+}
+
+
+/* =========================================================
+   CENTRE HEADER
+========================================================= */
+
+.decorateHeader{
+
+    position:absolute;
+
+    top:18px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    z-index:40;
+
+    width:100%;
+
+    padding:0;
+
+    background:transparent;
+
+    border:none;
+
+    box-shadow:none;
+
+    border-radius:0;
+
+    color:#db364e;
+
+    font-family:"Offside",sans-serif;
+
+    font-size:16px;
+
+    text-align:center;
+
+    text-transform:uppercase;
+
+    letter-spacing:.7px;
+
+    animation:
+        decorateTextFloat 3s ease-in-out infinite;
+}
+
+@keyframes decorateTextFloat{
+
+    0%,
+    100%{
+        transform:
+            translateX(-50%)
+            translateY(0);
+    }
+
+    50%{
+        transform:
+            translateX(-50%)
+            translateY(-5px);
+    }
+}
+
+
+/* =========================================================
+   CROWN
+========================================================= */
+
+.crown{
+
+    position:absolute;
+
+    top:-25px;
+
+    left:50%;
+
+    transform:
+        translateX(-50%);
+
+    color:#e52761;
+
+    font-size:27px;
+
+    text-shadow:
+        0 3px 0 #fff0d2;
+}
+
+
+/* =========================================================
+   COOKIE
+========================================================= */
+
+.cookie{
+
+    position:relative;
+
+    width:min(570px,78%);
+
+    aspect-ratio:1;
+
+    margin-top:-50px;
+
+    z-index:5;
+
+    transition:
+        transform .8s cubic-bezier(.2,.8,.2,1),
+        opacity .8s ease;
+}
+
+.cookie canvas{
+
+    position:absolute;
+
+    inset:0;
+
+    width:100%;
+
+    height:100%;
+}
+
+#drawCanvas{
+
+    touch-action:none;
+
+    cursor:crosshair;
+
+    z-index:10;
+}
+
+
+/* =========================================================
+   COOKIE HINT
+========================================================= */
+
+.cookieHint{
+
+    position:absolute;
+
+    bottom:20px;
+
+    left:50%;
+
+    transform:translateX(-50%);
+
+    width:90%;
+
+    max-width:720px;
+
+    padding:12px 20px;
+
+    border-radius:12px;
+
+    background:#fff5db;
+
+    color:#ef315e;
+
+    text-align:center;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    line-height:1.5;
+
+    box-shadow:
+        0 7px 20px rgba(130,50,45,.11);
+
+    z-index:20;
+}
+
+
+/* =========================================================
+   PACK BUTTON
+========================================================= */
+
+.packMainButton{
+
+    width:100%;
+
+    padding:
+        16px 14px;
+
+    border-radius:18px;
+
+    border:
+        1px solid #ef718b;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ef2c6a,
+            #df3c70
+        );
+
+    color:white;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.5px;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 9px 20px rgba(215,38,93,.20);
+
+    transition:
+        transform .18s ease,
+        box-shadow .18s ease;
+}
+
+.packMainButton:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 12px 25px rgba(215,38,93,.25);
+}
+
+.packMainButton:active{
+    transform:scale(.98);
+}
+
+.packMainButton.packed{
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff0d5,
+            #ffe7c0
+        );
+
+    color:#e5255f;
+
+    border-color:#ef9bad;
+
+    box-shadow:
+        0 7px 16px rgba(205,51,83,.10);
+}
+
+
+/* =========================================================
+   PACKAGING SECTION
+========================================================= */
+
+.packagingSection{
+
+    display:block;
+
+    margin-top:17px;
+
+    animation:none;
+}
+
+.packagingSection.show{
+    display:block;
+}
+
+
+/* =========================================================
+   PACKAGING GRID
+========================================================= */
+
+.packagingGrid{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:9px;
+}
+
+.packagingButton{
+
+    min-height:130px;
+
+    padding:9px;
+
+    border-radius:13px;
+
+    border:
+        1px solid #efd6c7;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff9ef,
+            #fff5ec
+        );
+
+    cursor:pointer;
+
+    color:#5e272d;
+
+    display:flex;
+
+    flex-direction:column;
+
+    align-items:center;
+
+    justify-content:center;
+
+    gap:6px;
+
+    transition:.18s ease;
+}
+
+.packagingButton:hover{
+
+    transform:
+        translateY(-2px);
+
+    box-shadow:
+        0 8px 20px rgba(190,69,95,.11);
+}
+
+.packagingButton.active{
+
+    border:
+        2px solid #ef3b70;
+
+    box-shadow:
+        0 7px 20px rgba(238,46,102,.12);
+}
+
+
+/* =========================================================
+   PACKAGING ICONS
+========================================================= */
+
+.packagingIcon{
+
+    position:relative;
+
+    width:105px;
+
+    height:90px;
+
+    display:flex;
+
+    align-items:center;
+
+    justify-content:center;
+
+    font-size:0;
+
+    background-size:contain;
+
+    background-repeat:no-repeat;
+
+    background-position:center;
+}
+
+.packagingButton[data-package="kraft"]
+.packagingIcon{
+
+    background-image:
+        url("assets/Packaging1.png");
+}
+
+.packagingButton[data-package="pouch"]
+.packagingIcon{
+
+    background-image:
+        url("assets/Packaging2.png");
+}
+
+.packagingButton[data-package="envelope"]
+.packagingIcon{
+
+    background-image:
+       url("assets/Packaging3.png");
+}
+
+.packagingButton[data-package="gift"]
+.packagingIcon{
+
+    background-image:
+        url("assets/Packaging4.png");
+}
+
+.packagingName{
+
+    font-size:10px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+}
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+.cardToggle{
+
+    width:100%;
+
+    padding:11px;
+
+    border-radius:25px;
+
+    border:
+        1px solid #ef7190;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff5d9,
+            #ffecc9
+        );
+
+    color:#e72b62;
+
+    font-family:inherit;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    cursor:pointer;
+
+    text-transform:uppercase;
+
+    transition:.18s ease;
+}
+
+.cardToggle:hover{
+    transform:translateY(-2px);
+}
+
+.cardEditor{
+
+    display:none;
+
+    margin-top:10px;
+}
+
+.cardEditor.open{
+    display:block;
+}
+
+.messageInput{
+
+    width:100%;
+
+    min-height:130px;
+
+    resize:none;
+
+    padding:13px;
+
+    border-radius:11px;
+
+    border:
+        1px solid #efb1bd;
+
+    background:#fffdfb;
+
+    color:#74424c;
+
+    outline:none;
+
+    font-family:inherit;
+
+    font-size:10px;
+
+    line-height:1.5;
+}
+
+.messageInput:focus{
+
+    border-color:#ed3d71;
+
+    box-shadow:
+        0 0 0 3px rgba(238,55,105,.08);
+}
+
+.counter{
+
+    margin-top:-21px;
+
+    margin-right:9px;
+
+    text-align:right;
+
+    position:relative;
+
+    pointer-events:none;
+
+    color:#71464d;
+
+    font-size:8px;
+}
+
+
+/* =========================================================
+   SEND
+========================================================= */
+
+.sendButton{
+
+    margin-top:13px;
+
+    width:100%;
+
+    padding:13px;
+
+    border-radius:25px;
+
+    border:
+        1px solid #ef718b;
+
+    background:
+        linear-gradient(
+            135deg,
+            #fff3d5,
+            #ffeac5
+        );
+
+    color:#e5255f;
+
+    font-family:inherit;
+
+    font-size:13px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    cursor:pointer;
+
+    box-shadow:
+        0 5px 12px rgba(205,51,83,.10);
+}
+
+.sendButton:hover{
+    transform:translateY(-2px);
+}
+
+
+/* =========================================================
+   PACKAGE — HAND-DRAWN PNG
+   ---------------------------------------------------------
+   NO LABEL.
+   NO CSS-DRAWN BODY.
+   JUST THE PACKAGE IMAGE.
+========================================================= */
+
+.paperBag{
+
+    position:absolute;
+
+    left:50%;
+
+    top:50%;
+
+    width:285px;
+
+    height:355px;
+
+    transform:
+        translate(-50%,145%)
+        rotate(2deg);
+
+    z-index:30;
+
+    opacity:0;
+
+    pointer-events:none;
+
+    background-color:transparent;
+
+    background-size:contain;
+
+    background-repeat:no-repeat;
+
+    background-position:center;
+
+    border:0;
+
+    box-shadow:none;
+
+    transition:
+        transform .9s cubic-bezier(.2,.8,.2,1),
+        opacity .5s ease;
+}
+
+
+/* =========================================================
+   REMOVE OLD PACKAGE HTML PARTS
+========================================================= */
+
+.paperBag .bagBody,
+.paperBag .bagTop,
+.paperBag .bagFold,
+.paperBag .bagLabel{
+
+    display:none !important;
+}
+
+
+/* =========================================================
+   KRAFT BAG
+========================================================= */
+
+.paperBag.packageKraft{
+
+    width:285px;
+
+    height:355px;
+
+    background-image:
+        url("assets/Packaging1.png");
+}
+
+
+/* =========================================================
+   PINK POUCH
+========================================================= */
+
+.paperBag.packagePouch{
+
+    width:300px;
+
+    height:330px;
+
+    background-image:
+         url("assets/Packaging2.png");
+}
+
+
+/* =========================================================
+   CREAM ENVELOPE
+========================================================= */
+
+.paperBag.packageEnvelope{
+
+    width:350px;
+
+    height:280px;
+
+    background-image:
+         url("assets/Packaging3.png");
+}
+
+
+/* =========================================================
+   PINK GIFT BOX
+========================================================= */
+
+.paperBag.packageGift{
+
+    width:320px;
+
+    height:330px;
+
+    background-image:
+         url("assets/Packaging4.png");
+}
+
+
+/* =========================================================
+   OLD LABELS — COMPLETELY DISABLED
+========================================================= */
+
+.bagLabel,
+.bagEmoji,
+.bagLabel strong,
+.bagLabel small,
+.previewBagLabel{
+
+    display:none !important;
+
+    visibility:hidden !important;
+
+    pointer-events:none !important;
+}
+
+
+/* =========================================================
+   DRAWING ACTIONS
+========================================================= */
+
+#drawCanvas{
+
+    touch-action:none;
+
+    -webkit-user-select:none;
+
+    user-select:none;
+
+    -webkit-touch-callout:none;
+
+    cursor:crosshair;
+
+    position:absolute;
+
+    inset:0;
+
+    z-index:3;
+}
+
+.drawingActions{
+
+    display:grid;
+
+    grid-template-columns:
+        1fr 1fr;
+
+    gap:8px;
+
+    margin-top:10px;
+}
+
+.drawAction{
+
+    padding:11px 8px;
+
+    border:
+        1px solid #ebd1c4;
+
+    border-radius:11px;
+
+    background:
+        linear-gradient(
+            145deg,
+            #fff8ed,
+            #fff1e5
+        );
+
+    color:#702d34;
+
+    font-family:inherit;
+
+    font-size:10px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.3px;
+
+    cursor:pointer;
+
+    transition:
+        transform .18s ease,
+        background .18s ease,
+        border-color .18s ease,
+        box-shadow .18s ease;
+}
+
+.drawAction:hover{
+
+    transform:translateY(-2px);
+
+    box-shadow:
+        0 6px 14px rgba(190,69,95,.12);
+}
+
+.drawAction.active{
+
+    color:white;
+
+    border-color:#ef2e6d;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ef2e6d,
+            #df3c70
+        );
+
+    box-shadow:
+        0 5px 13px rgba(222,37,94,.18);
+}
+
+
+/* =========================================================
+   CARD ON PACKAGE
+   ---------------------------------------------------------
+   ONLY THE MESSAGE.
+========================================================= */
+
+.bagMessageCard{
+
+    position:absolute;
+
+    left:50%;
+
+    top:108px;
+
+    width:205px;
+
+    min-height:120px;
+
+    padding:17px 15px;
+
+    background:#fff9ed;
+
+    color:#694a3c;
+
+    border-radius:7px;
+
+    box-shadow:
+        0 12px 28px rgba(70,40,20,.20);
+
+    transform:
+        translateX(-50%)
+        rotate(-3deg);
+
+    opacity:0;
+
+    z-index:100;
+
+    transition:
+        transform .6s cubic-bezier(.2,.8,.2,1),
+        opacity .4s ease;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    font-size:10px;
+
+    line-height:1.45;
+}
+
+.bagMessageCard::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-10px;
+
+    left:50%;
+
+    transform:
+        translateX(-50%)
+        rotate(-2deg);
+
+    width:58px;
+
+    height:18px;
+
+    background:
+        rgba(244,210,166,.82);
+
+    border-radius:3px;
+
+    z-index:2;
+}
+
+.bagMessageCard::after{
+
+    content:"♡";
+
+    position:absolute;
+
+    right:10px;
+
+    bottom:7px;
+
+    color:#d99aa7;
+
+    font-size:16px;
+}
+
+
+/* =========================================================
+   SEND MODAL
+========================================================= */
+
+.sendModal{
+
+    position:fixed;
+
+    inset:0;
+
+    z-index:1000;
+
+    display:none;
+
+    align-items:center;
+
+    justify-content:center;
+
+    padding:20px;
+
+    background:
+        rgba(80,24,39,.32);
+
+    backdrop-filter:blur(8px);
+}
+
+.sendModal.show{
+    display:flex;
+}
+
+.sendModalBox{
+
+    width:min(560px,94vw);
+
+    max-height:90vh;
+
+    overflow:auto;
+
+    padding:22px;
+
+    border-radius:24px;
+
+    background:#fffaf7;
+
+    border:
+        1px solid rgba(255,255,255,.8);
+
+    box-shadow:
+        0 30px 90px rgba(55,20,30,.3);
+}
+
+.modalHead{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    gap:12px;
+
+    margin-bottom:15px;
+}
+
+.modalTitle{
+
+    color:#e52b63;
+
+    font-size:18px;
+
+    font-weight:700;
+}
+
+.modalSub{
+
+    margin-top:4px;
+
+    color:#a77a82;
+
+    font-size:9px;
+}
+
+.modalClose{
+
+    width:30px;
+
+    height:30px;
+
+    border:0;
+
+    border-radius:50%;
+
+    background:#f8e2e3;
+
+    color:#8b4655;
+
+    font-size:18px;
+
+    cursor:pointer;
+}
+
+.emailLabel{
+
+    display:block;
+
+    margin:12px 0 7px;
+
+    color:#a34a5b;
+
+    font-size:9px;
+
+    font-weight:700;
+
+    text-transform:uppercase;
+
+    letter-spacing:.8px;
+}
+
+.emailInput{
+
+    width:100%;
+
+    padding:11px 12px;
+
+    border:
+        1px solid #eab5bf;
+
+    border-radius:12px;
+
+    outline:none;
+
+    color:#60483e;
+
+    background:white;
+
+    font:inherit;
+
+    font-size:11px;
+}
+
+.emailError{
+
+    display:none;
+
+    margin-top:6px;
+
+    color:#b45e68;
+
+    font-size:9px;
+}
+
+.emailError.show{
+    display:block;
+}
+
+
+/* =========================================================
+   PACKED PREVIEW
+   ---------------------------------------------------------
+   CLEAN PREVIEW — NO WHITE BACKGROUND
+========================================================= */
+
+.packedPreview{
+
+    position:relative;
+
+    width:100%;
+
+    min-height:390px;
+
+    margin-top:15px;
+
+    overflow:hidden;
+
+    /* NO WHITE / CREAM BACKGROUND */
+    background:transparent;
+
+    border:0;
+
+    border-radius:18px;
+}
+
+
+/* =========================================================
+   PREVIEW FLOOR
+   ---------------------------------------------------------
+   REMOVE THE OLD SHADOW/FLOOR
+========================================================= */
+
+.previewFloor{
+
+    display:none !important;
+}
+
+/* =========================================================
+   PREVIEW PACKAGE — TRANSPARENT PNG
+========================================================= */
+
+.previewBag{
+
+    position:absolute;
+
+    left:50%;
+
+    bottom:25px;
+
+    width:210px;
+
+    height:220px;
+
+    transform:
+        translateX(-50%)
+        rotate(2deg);
+
+    background-color:transparent;
+
+    background-size:contain;
+
+    background-repeat:no-repeat;
+
+    background-position:center;
+
+    border:0;
+
+    border-radius:0;
+
+    box-shadow:none;
+
+    z-index:3;
+
+    transition:
+        width .35s ease,
+        height .35s ease,
+        bottom .35s ease,
+        background-image .2s ease;
+}
+
+
+/* REMOVE ANY OLD CSS-DRAWN PACKAGE PARTS */
+
+.previewBag::before,
+.previewBag::after{
+
+    content:none !important;
+
+    display:none !important;
+}
+
+
+/* =========================================================
+   KRAFT
+========================================================= */
+
+.previewBag:not(.packagePouch):not(.packageEnvelope):not(.packageGift){
+
+    background-image:
+         url("assets/Packaging1.png");
+}
+
+
+/* =========================================================
+   POUCH
+========================================================= */
+
+.previewBag.packagePouch{
+
+    width:190px;
+
+    height:205px;
+
+    bottom:20px;
+
+    background-image:
+         url("assets/Packaging2.png");
+}
+
+
+/* =========================================================
+   ENVELOPE
+========================================================= */
+
+.previewBag.packageEnvelope{
+
+    width:240px;
+
+    height:150px;
+
+    bottom:45px;
+
+    background-image:
+        url("assets/Packaging3.png");
+}
+
+
+/* =========================================================
+   GIFT
+========================================================= */
+
+.previewBag.packageGift{
+
+    width:190px;
+
+    height:180px;
+
+    bottom:25px;
+
+    background-image:
+        url("assets/Packaging4.png");
+}
+
+/* =========================================================
+   PREVIEW COOKIE
+   ---------------------------------------------------------
+   COOKIE STAYS SEPARATE FROM PACKAGE.
+========================================================= */
+
+.previewCookieImage{
+
+    position:absolute;
+
+    left:50%;
+
+    top:8px;
+
+    width:100px;
+
+    height:100px;
+
+    transform:
+        translateX(-50%);
+
+    object-fit:contain;
+
+    z-index:8;
+
+    filter:
+        drop-shadow(
+            0 8px 8px rgba(80,40,20,.20)
+        );
+}
+
+
+/* =========================================================
+   PREVIEW CARD
+   ---------------------------------------------------------
+   ONLY THE CARD MESSAGE.
+========================================================= */
+
+.previewCard{
+
+    position:absolute;
+
+    left:50%;
+
+    top:142px;
+
+    width:145px;
+
+    min-height:85px;
+
+    padding:11px;
+
+    transform:
+        translateX(-50%)
+        rotate(-3deg);
+
+    border-radius:5px;
+
+    background:#fff9ed;
+
+    color:#694a3c;
+
+    box-shadow:
+        0 9px 20px rgba(70,40,20,.20);
+
+    font-size:8px;
+
+    line-height:1.4;
+
+    white-space:pre-wrap;
+
+    word-break:break-word;
+
+    z-index:20;
+}
+
+.previewCard::before{
+
+    content:"";
+
+    position:absolute;
+
+    top:-7px;
+
+    left:50%;
+
+    width:42px;
+
+    height:13px;
+
+    transform:
+        translateX(-50%)
+        rotate(-2deg);
+
+    border-radius:3px;
+
+    background:
+        rgba(244,210,166,.82);
+
+    z-index:2;
+}
+
+.previewCard::after{
+
+    content:"♡";
+
+    position:absolute;
+
+    right:7px;
+
+    bottom:4px;
+
+    font-size:12px;
+
+    color:#d99aa7;
+}
+
+
+/* =========================================================
+   PACKAGE-SPECIFIC CARD POSITIONS
+========================================================= */
+
+/* KRAFT */
+
+.packedPreview
+.previewBag:not(.packagePouch):not(.packageEnvelope):not(.packageGift)
+~ .previewCard{
+
+    top:142px;
+}
+
+
+/* POUCH */
+
+.packedPreview
+.previewBag.packagePouch
+~ .previewCard{
+
+    top:132px;
+}
+
+
+/* ENVELOPE */
+
+.packedPreview
+.previewBag.packageEnvelope
+~ .previewCard{
+
+    top:178px;
+
+    width:125px;
+
+    min-height:70px;
+
+    padding:8px;
+
+    font-size:7px;
+}
+
+
+/* GIFT */
+
+.packedPreview
+.previewBag.packageGift
+~ .previewCard{
+
+    top:158px;
+}
+
+
+/* =========================================================
+   MODAL SEND
+========================================================= */
+
+.modalSend{
+
+    width:100%;
+
+    margin-top:14px;
+
+    padding:13px;
+
+    border:0;
+
+    border-radius:25px;
+
+    background:
+        linear-gradient(
+            135deg,
+            #ef2c6a,
+            #df3c70
+        );
+
+    color:white;
+
+    font-family:inherit;
+
+    font-size:11px;
+
+    font-weight:700;
+
+    cursor:pointer;
+}
+
+.modalNote{
+
+    margin-top:8px;
+
+    text-align:center;
+
+    color:#ad9890;
+
+    font-size:8px;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:1100px){
+
+    body{
+        overflow:auto;
+    }
+
+    .clubHeader{
+
+        width:100%;
+
+        margin:0;
+
+        padding:16px 20px;
+
+        font-size:15px;
+    }
+
+    .app{
+
+        width:96vw;
+
+        height:auto;
+
+        min-height:100vh;
+
+        padding:15px;
+
+        margin:
+            15px auto 20px;
+
+        grid-template-columns:
+            300px 1fr;
+
+        grid-template-rows:
+            auto auto;
+    }
+
+    .rightPanel{
+
+        grid-column:
+            1 / -1;
+    }
+}
+
+
+@media(max-width:760px){
+
+    .clubHeader{
+
+        min-width:260px;
+
+        padding:
+            11px 20px;
+
+        font-size:12px;
+    }
+
+    .app{
+
+        display:flex;
+
+        flex-direction:column;
+
+        width:100%;
+
+        padding:10px;
+
+        margin-top:12px;
+    }
+
+    .leftPanel,
+    .rightPanel{
+
+        width:100%;
+
+        max-height:none;
+
+        overflow:visible;
+    }
+
+    .stage{
+
+        min-height:600px;
+
+        order:-1;
+    }
+
+    .decorateHeader{
+
+        width:280px;
+
+        font-size:13px;
+    }
+
+    .shapeGrid{
+
+        grid-template-columns:
+            repeat(3,1fr);
+    }
+
+    .packagingGrid{
+
+        grid-template-columns:
+            1fr 1fr;
+    }
+
+
+    /* -----------------------------------------
+       MOBILE PREVIEW
+    ----------------------------------------- */
+
+    .packedPreview{
+
+        min-height:370px;
+    }
+
+    .previewCookieImage{
+
+        width:82px;
+
+        height:82px;
+
+        top:10px;
+    }
+
+    .previewBag{
+
+        bottom:20px;
+
+        transform:
+            translateX(-50%)
+            scale(.88)
+            rotate(2deg);
+
+        transform-origin:
+            center bottom;
+    }
+
+    .previewCard{
+
+        top:140px;
+
+        width:135px;
+
+        min-height:78px;
+
+        padding:9px;
+
+        font-size:7px;
+    }
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     BACKGROUND
+========================================================= -->
+
+<div class="backgroundText"></div>
+
+
+<!-- =========================================================
+     MAIN TITLE
+========================================================= -->
+
+<div class="clubHeader">
+    <span> 🍪 theshartechclub's cookie studio 🍪</span>
+</div>
+
+
+<!-- =========================================================
+     APP
+========================================================= -->
+
+<div class="app">
+
+
+<!-- =========================================================
+     LEFT PANEL
+========================================================= -->
+<aside class="panel leftPanel">
+
+
+    <div class="sectionTitle">
+        1. Choose Shape
+    </div>
+
+
+    <div class="shapeGrid">
+
+
+        <button
+            class="shapeButton active"
+            data-shape="circle">
+
+            <div class="shapeIcon">
+                <img
+                    src="assets/circle.png"
+                    alt="Circle">
+            </div>
+
+            <div class="shapeName">
+                Circle
+            </div>
+
+        </button>
+
+
+        <button
+            class="shapeButton"
+            data-shape="star">
+
+            <div class="shapeIcon">
+                <img
+                    src="assets/star.png"
+                    alt="Star">
+            </div>
+
+            <div class="shapeName">
+                Star
+            </div>
+
+        </button>
+
+
+        <button
+            class="shapeButton"
+            data-shape="heart">
+
+            <div class="shapeIcon">
+                <img
+                    src="assets/heart.png"
+                    alt="Heart">
+            </div>
+
+            <div class="shapeName">
+                Heart
+            </div>
+
+        </button>
+
+
+        <button
+            class="shapeButton"
+            data-shape="flower">
+
+            <div class="shapeIcon">
+                <img
+                    src="assets/flower.png"
+                    alt="Flower">
+            </div>
+
+            <div class="shapeName">
+                Flower
+            </div>
+
+        </button>
+
+
+        <button
+            class="shapeButton"
+            data-shape="hexagon">
+
+            <div class="shapeIcon">
+                <img
+                    src="assets/hexagon.png"
+                    alt="Hexagon">
+            </div>
+
+            <div class="shapeName">
+                Hexagon
+            </div>
+
+        </button>
+
+
+        <button
+            class="shapeButton"
+            data-shape="square">
+
+            <div class="shapeIcon">
+                <img
+                    src="assets/square.png"
+                    alt="Square">
+            </div>
+
+            <div class="shapeName">
+                Square
+            </div>
+
+        </button>
+
+
+    </div>
+
+
+    <div class="divider"></div>
+
+
+    <div class="sectionTitle">
+        <div class="sectionTitle">
+    2. Icing Color
+</div>
+
+
+<div class="colors">
+
+
+    <button
+        class="color active"
+        data-color="#fffaf5"
+        style="background:#fffaf5">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#f0aebe"
+        style="background:#f0aebe">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#c6a3df"
+        style="background:#c6a3df">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#9fc6e5"
+        style="background:#9fc6e5">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#91cf9c"
+        style="background:#91cf9c">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#f5cb5d"
+        style="background:#f5cb5d">
+    </button>
+
+
+    <!-- CUTE PASTELS -->
+
+
+    <button
+        class="color"
+        data-color="#f7b6a8"
+        style="background:#f7b6a8">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#e8b7d4"
+        style="background:#e8b7d4">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#b9b2e8"
+        style="background:#b9b2e8">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#b8d9e8"
+        style="background:#b8d9e8">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#b8dfc3"
+        style="background:#b8dfc3">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#f3a6a6"
+        style="background:#f3a6a6">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#d89a72"
+        style="background:#d89a72">
+    </button>
+
+
+    <button
+        class="color"
+        data-color="#b98268"
+        style="background:#b98268">
+    </button>
+
+
+</div>
+
+    <div class="divider"></div>
+
+
+    <div class="sectionTitle">
+        3. Icing Thickness
+    </div>
+
+
+    <div class="drawingActions">
+
+        <button
+            type="button"
+            class="drawAction"
+            id="undoButton">
+
+            ↩ Undo
+
+        </button>
+
+
+        <button
+            type="button"
+            class="drawAction"
+            id="eraseButton">
+
+            🧹 Erase
+
+        </button>
+
+    </div>
+
+
+    <div class="sizes">
+
+
+        <button
+            class="size"
+            data-size="14">
+
+            Thin
+
+        </button>
+
+
+        <button
+            class="size active"
+            data-size="23">
+
+            Medium
+
+        </button>
+
+
+        <button
+            class="size"
+            data-size="35">
+
+            Thick
+
+        </button>
+
+
+    </div>
+
+
+    <button
+        class="actionButton clearButton"
+        id="clear">
+
+        Clear All
+
+    </button>
+
+
+    <button
+        class="actionButton newCookie"
+        id="newCookie">
+
+        New Cookie
+
+    </button>
+
+
+</aside>
+
+
+<!-- =========================================================
+     CENTRE STAGE
+========================================================= -->
+
+<main class="stage">
+
+
+    <div class="decorateHeader">
+
+        <div class="crown">
+            
+        </div>
+
+        Decorate Your Cookie
+
+    </div>
+
+
+    <div
+        class="cookie"
+        id="cookie">
+
+        <canvas
+            id="cookieCanvas">
+        </canvas>
+
+        <canvas
+            id="icingCanvas">
+        </canvas>
+
+        <canvas
+            id="drawCanvas">
+        </canvas>
+
+    </div>
+
+
+    <div class="cookieHint">
+
+        Pipe raised icing directly onto your cookie.<br>
+
+        Every new stroke is a new layer!
+
+    </div>
+
+
+</main>
+
+
+<!-- =========================================================
+     RIGHT PANEL
+========================================================= -->
+
+<aside class="panel rightPanel">
+
+    <div class="sectionTitle">
+        4. Pack Your Cookie
+    </div>
+
+
+    <button
+        class="packMainButton"
+        id="pack">
+
+        📦 &nbsp; Pack Cookie
+
+    </button>
+
+
+    <!-- =====================================================
+         PACKAGING SECTION
+    ====================================================== -->
+
+    <div
+        class="packagingSection"
+        id="packagingSection">
+
+        <div class="sectionTitle">
+            Choose Your Packaging
+        </div>
+
+
+        <div class="packagingGrid">
+
+            <button
+                class="packagingButton active"
+                data-package="kraft">
+
+                <div class="packagingIcon"></div>
+
+                <div class="packagingName">
+                    Hand made
+                </div>
+
+            </button>
+
+
+            <button
+                class="packagingButton"
+                data-package="pouch">
+
+                <div class="packagingIcon"></div>
+
+                <div class="packagingName">
+                    Sprinkles
+                </div>
+
+            </button>
+
+
+            <button
+                class="packagingButton"
+                data-package="envelope">
+
+                <div class="packagingIcon"></div>
+
+                <div class="packagingName">
+                    MADE WITH LOVE
+                </div>
+
+            </button>
+
+
+            <button
+                class="packagingButton"
+                data-package="gift">
+
+                <div class="packagingIcon"></div>
+
+                <div class="packagingName">
+                    CARTON
+                </div>
+
+            </button>
+
+        </div>
+        <!-- END packagingGrid -->
+
+
+        <div class="divider"></div>
+
+
+        <div class="sectionTitle">
+            5. Add a Little Card
+        </div>
+
+
+        <button
+            class="cardToggle"
+            id="messageButton">
+
+            💌 &nbsp; Add Card
+
+        </button>
+
+
+        <div
+            class="cardEditor"
+            id="cardEditor">
+
+            <textarea
+                class="messageInput"
+                id="messageInput"
+                maxlength="300"
+                placeholder="Write something sweet...
+It will appear on your card ♡"></textarea>
+
+            <div
+                class="counter"
+                id="counter">
+
+                0/300
+
+            </div>
+
+        </div>
+
+
+        <button
+            class="sendButton"
+            id="sendButton">
+
+            ✈ &nbsp; Send Cookie
+
+        </button>
+
+    </div>
+    <!-- END packagingSection -->
+
+</aside>
+
+
+<!-- =========================================================
+     SEND MODAL
+========================================================= -->
+
+<div
+    class="sendModal"
+    id="sendModal"
+    aria-hidden="true">
+
+
+    <div class="sendModalBox">
+
+
+        <div class="modalHead">
+
+
+            <div>
+
+                <div class="modalTitle">
+                    🍪 Send your little cookie
+                </div>
+
+                <div class="modalSub">
+                    Your complete packed cookie is shown below.
+                </div>
+
+            </div>
+
+
+            <button
+                class="modalClose"
+                id="modalClose">
+
+                ×
+
+            </button>
+
+
+        </div>
+
+
+        <label
+            class="emailLabel"
+            for="recipientEmail">
+
+            Send to
+
+        </label>
+
+
+        <input
+            class="emailInput"
+            id="recipientEmail"
+            type="email"
+            autocomplete="email"
+            placeholder="friend@email.com">
+
+
+        <div
+            class="emailError"
+            id="emailError">
+
+            Please enter a valid email address ♡
+
+        </div>
+
+
+        <div class="packedPreview">
+
+
+            <div class="previewFloor"></div>
+
+
+            <div
+                class="previewBag packageKraft"
+                id="previewBag">
+
+
+                <div class="previewBagLabel">
+
+                    <b>
+                        🍪 COOKIE LAB
+                    </b>
+
+                    <small>
+                        baked with love ♡
+                    </small>
+
+                </div>
+
+
+            </div>
+
+
+            <img
+                id="previewCookieImage"
+                class="previewCookieImage"
+                alt="Your decorated cookie">
+
+
+            <div
+                class="previewCard"
+                id="previewCard">
+
+                A little cookie for you ♡
+
+            </div>
+
+
+        </div>
+
+
+        <button
+            class="modalSend"
+            id="modalSend">
+
+            ✈ &nbsp; Send Cookie
+
+        </button>
+
+
+        <div class="modalNote">
+
+            Your cookie, packaging and card are combined into one image before sending.
+
+        </div>
+
+
+    </div>
+
+</div>
+
+<script>
+
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const S = 800;
+
+const cookieCanvas =
+    document.getElementById("cookieCanvas");
+
+const icingCanvas =
+    document.getElementById("icingCanvas");
+
+const drawCanvas =
+    document.getElementById("drawCanvas");
+
+const cookie =
+    cookieCanvas.getContext("2d");
+
+const icing =
+    icingCanvas.getContext("2d");
+
+
+[
+    cookieCanvas,
+    icingCanvas,
+    drawCanvas
+].forEach(canvas => {
+
+    canvas.width = S;
+    canvas.height = S;
+
+});
+
+
+/* =========================================================
+   APPLE PENCIL / TOUCH CANVAS SETUP
+========================================================= */
+
+/*
+ * Safari/iPad needs touch-action:none on the interactive
+ * drawing canvas so Pencil movement is not interpreted as
+ * page scrolling or browser gestures.
+ */
+
+drawCanvas.style.touchAction = "none";
+drawCanvas.style.webkitUserSelect = "none";
+drawCanvas.style.userSelect = "none";
+drawCanvas.style.webkitTouchCallout = "none";
+
+
+/*
+ * Prevent Safari's context menu on long Pencil presses.
+ */
+
+drawCanvas.addEventListener(
+    "contextmenu",
+    e => e.preventDefault()
+);
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let selectedShape = "circle";
+let selectedColor = "#fffaf5";
+let selectedSize = 23;
+
+const layers = [];
+
+let activeLayer = null;
+let drawing = false;
+let eraseMode = false;
+
+let packed = false;
+let bagElement = null;
+
+let selectedPackaging = "kraft";
+
+
+const undoButton =
+    document.getElementById("undoButton");
+
+const eraseButton =
+    document.getElementById("eraseButton");
+
+
+/* =========================================================
+   DRAWING PERFORMANCE STATE
+========================================================= */
+/* =========================================================
+   DRAWING PERFORMANCE STATE
+========================================================= */
+
+/*
+ * FAST DRAW MODE
+ *
+ * While the Apple Pencil is moving we render only:
+ *
+ *      • main icing
+ *      • simple highlight
+ *
+ * The expensive shadows are skipped.
+ *
+ * When the Pencil stops, we do one beautiful full render.
+ */
+
+let renderQueued = false;
+let drawingFastMode = false;
+
+
+/* =========================================================
+   SCHEDULE RENDER
+========================================================= */
+
+function scheduleIcingRender(){
+
+    if(renderQueued){
+        return;
+    }
+
+    renderQueued = true;
+
+    requestAnimationFrame(() => {
+
+        renderQueued = false;
+
+        renderIcing(
+            drawingFastMode
+        );
+
+    });
+
+}
+
+
+/* =========================================================
+   IMMEDIATE RENDER
+========================================================= */
+
+function renderIcingNow(){
+
+    renderQueued = false;
+
+    renderIcing(false);
+
+}
+
+
+/* =========================================================
+   FAST RENDER
+========================================================= */
+
+function renderIcingFast(){
+
+    renderQueued = false;
+
+    renderIcing(true);
+
+}
+
+/* =========================================================
+   GEOMETRY
+========================================================= */
+
+const cx = 400;
+const cy = 395;
+const R = 295;
+const SIDE_DEPTH = 45;
+
+
+/* =========================================================
+   SHAPE POINTS
+========================================================= */
+
+function getShapePoints(
+    shape,
+    radius = R,
+    yOffset = 0
+){
+
+    const points = [];
+
+
+    /* =====================================================
+       CIRCLE
+    ===================================================== */
+
+    if(shape === "circle"){
+
+        const count = 100;
+
+        for(let i = 0; i < count; i++){
+
+            const angle =
+                (Math.PI * 2 * i) / count;
+
+            points.push({
+
+                x:
+                    cx +
+                    Math.cos(angle) *
+                    radius,
+
+                y:
+                    cy +
+                    Math.sin(angle) *
+                    radius +
+                    yOffset
+
+            });
+
+        }
+
+        return points;
+    }
+
+
+    /* =====================================================
+       STAR
+    ===================================================== */
+
+    if(shape === "star"){
+
+        const outerRadius =
+            radius * 0.82;
+
+        const innerRadius =
+            radius * 0.40;
+
+        for(let i = 0; i < 10; i++){
+
+            const angle =
+                -Math.PI / 2 +
+                i * Math.PI / 5;
+
+            const currentRadius =
+                i % 2 === 0
+                    ? outerRadius
+                    : innerRadius;
+
+            points.push({
+
+                x:
+                    cx +
+                    Math.cos(angle) *
+                    currentRadius,
+
+                y:
+                    cy +
+                    Math.sin(angle) *
+                    currentRadius +
+                    yOffset
+
+            });
+
+        }
+
+        return points;
+    }
+
+
+    /* =====================================================
+       HEART
+    ===================================================== */
+
+    if(shape === "heart"){
+
+        const count = 100;
+
+        for(let i = 0; i < count; i++){
+
+            const t =
+                (Math.PI * 2 * i) /
+                count;
+
+            const x =
+                16 *
+                Math.pow(
+                    Math.sin(t),
+                    3
+                );
+
+            const y =
+                13 * Math.cos(t)
+                -
+                5 * Math.cos(2 * t)
+                -
+                2 * Math.cos(3 * t)
+                -
+                Math.cos(4 * t);
+
+            points.push({
+
+                x:
+                    cx +
+                    x * radius / 18,
+
+                y:
+                    cy -
+                    y * radius / 18 +
+                    yOffset
+
+            });
+
+        }
+
+        return points;
+    }
+
+
+    /* =====================================================
+       FLOWER
+    ===================================================== */
+
+    if(shape === "flower"){
+
+        const petals = 8;
+        const count = 96;
+
+        for(let i = 0; i < count; i++){
+
+            const angle =
+                (Math.PI * 2 * i) /
+                count;
+
+            const wave =
+                Math.cos(
+                    petals * angle
+                );
+
+            const r =
+                radius *
+                (
+                    .72 +
+                    .20 *
+                    Math.max(
+                        0,
+                        wave
+                    )
+                );
+
+            points.push({
+
+                x:
+                    cx +
+                    Math.cos(angle) *
+                    r,
+
+                y:
+                    cy +
+                    Math.sin(angle) *
+                    r +
+                    yOffset
+
+            });
+
+        }
+
+        return points;
+    }
+
+
+    /* =====================================================
+       HEXAGON
+    ===================================================== */
+
+    if(shape === "hexagon"){
+
+        const hexRadius =
+            radius * 0.82;
+
+        const startAngle =
+            Math.PI / 6;
+
+        for(let i = 0; i < 6; i++){
+
+            const angle =
+                startAngle +
+                i * Math.PI / 3;
+
+            points.push({
+
+                x:
+                    cx +
+                    Math.cos(angle) *
+                    hexRadius,
+
+                y:
+                    cy +
+                    Math.sin(angle) *
+                    hexRadius +
+                    yOffset
+
+            });
+
+        }
+
+        return points;
+    }
+
+
+    /* =====================================================
+       SQUARE
+    ===================================================== */
+
+    if(shape === "square"){
+
+        const half =
+            radius * 0.70;
+
+        return [
+
+            {
+                x:
+                    cx - half,
+
+                y:
+                    cy - half +
+                    yOffset
+            },
+
+            {
+                x:
+                    cx + half,
+
+                y:
+                    cy - half +
+                    yOffset
+            },
+
+            {
+                x:
+                    cx + half,
+
+                y:
+                    cy + half +
+                    yOffset
+            },
+
+            {
+                x:
+                    cx - half,
+
+                y:
+                    cy + half +
+                    yOffset
+            }
+
+        ];
+
+    }
+
+
+    return [];
+
+}
+
+
+/* =========================================================
+   PATH
+========================================================= */
+
+function pathFromPoints(
+    ctx,
+    points
+){
+
+    ctx.beginPath();
+
+
+    const isPolygon =
+        selectedShape === "star" ||
+        selectedShape === "square" ||
+        selectedShape === "hexagon";
+
+
+    if(isPolygon){
+
+        ctx.moveTo(
+            points[0].x,
+            points[0].y
+        );
+
+        for(
+            let i = 1;
+            i < points.length;
+            i++
+        ){
+
+            ctx.lineTo(
+                points[i].x,
+                points[i].y
+            );
+
+        }
+
+        ctx.closePath();
+
+        return;
+    }
+
+
+    for(
+        let i = 0;
+        i < points.length;
+        i++
+    ){
+
+        const p =
+            points[i];
+
+        const n =
+            points[
+                (i + 1) %
+                points.length
+            ];
+
+        const midpoint = {
+
+            x:
+                (p.x + n.x) / 2,
+
+            y:
+                (p.y + n.y) / 2
+
+        };
+
+
+        if(i === 0){
+
+            ctx.moveTo(
+                midpoint.x,
+                midpoint.y
+            );
+
+        }
+
+
+        ctx.quadraticCurveTo(
+
+            p.x,
+            p.y,
+
+            midpoint.x,
+            midpoint.y
+
+        );
+
+    }
+
+
+    ctx.closePath();
+
+}
+
+
+/* =========================================================
+   COOKIE
+========================================================= */
+
+function drawCookie(){
+
+    cookie.clearRect(
+        0,
+        0,
+        S,
+        S
+    );
+
+
+    /* =====================================================
+       SHADOW
+    ===================================================== */
+
+    cookie.save();
+
+    cookie.translate(
+        8,
+        30
+    );
+
+    cookie.filter =
+        "blur(18px)";
+
+    cookie.globalAlpha =
+        .35;
+
+    cookie.fillStyle =
+        "#5e3b25";
+
+    pathFromPoints(
+        cookie,
+        getShapePoints(
+            selectedShape,
+            R,
+            SIDE_DEPTH
+        )
+    );
+
+    cookie.fill();
+
+    cookie.restore();
+
+
+    /* =====================================================
+       COOKIE DEPTH
+    ===================================================== */
+
+    for(
+        let d = SIDE_DEPTH;
+        d >= 0;
+        d--
+    ){
+
+        const t =
+            d / SIDE_DEPTH;
+
+        pathFromPoints(
+            cookie,
+            getShapePoints(
+                selectedShape,
+                R,
+                d
+            )
+        );
+
+        const r =
+            Math.round(
+                153 +
+                (1 - t) * 15
+            );
+
+        const g =
+            Math.round(
+                77 +
+                (1 - t) * 16
+            );
+
+        const b =
+            Math.round(
+                29 +
+                (1 - t) * 7
+            );
+
+        cookie.fillStyle =
+            `rgb(${r},${g},${b})`;
+
+        cookie.fill();
+
+    }
+
+
+    /* =====================================================
+       EDGE
+    ===================================================== */
+
+    pathFromPoints(
+        cookie,
+        getShapePoints(
+            selectedShape,
+            R - 3,
+            SIDE_DEPTH - 2
+        )
+    );
+
+    cookie.strokeStyle =
+        "rgba(102,48,20,.30)";
+
+    cookie.lineWidth = 4;
+
+    cookie.stroke();
+
+
+    /* =====================================================
+       TOP
+    ===================================================== */
+
+    const top =
+        getShapePoints(
+            selectedShape,
+            R,
+            0
+        );
+
+    pathFromPoints(
+        cookie,
+        top
+    );
+
+
+    /* =====================================================
+       DOUGH GRADIENT
+    ===================================================== */
+
+    const dough =
+        cookie.createLinearGradient(
+            120,
+            80,
+            650,
+            690
+        );
+
+    dough.addColorStop(
+        0,
+        "#f9dfaa"
+    );
+
+    dough.addColorStop(
+        .30,
+        "#f5d08d"
+    );
+
+    dough.addColorStop(
+        .65,
+        "#e9b76b"
+    );
+
+    dough.addColorStop(
+        1,
+        "#d9954b"
+    );
+
+    cookie.fillStyle =
+        dough;
+
+    cookie.fill();
+
+
+    /* =====================================================
+       LIGHT
+    ===================================================== */
+
+    cookie.save();
+
+    pathFromPoints(
+        cookie,
+        top
+    );
+
+    cookie.clip();
+
+    const light =
+        cookie.createRadialGradient(
+            235,
+            120,
+            0,
+            360,
+            300,
+            440
+        );
+
+    light.addColorStop(
+        0,
+        "rgba(255,255,245,.46)"
+    );
+
+    light.addColorStop(
+        .55,
+        "rgba(255,247,220,.14)"
+    );
+
+    light.addColorStop(
+        1,
+        "rgba(255,247,220,0)"
+    );
+
+    cookie.fillStyle =
+        light;
+
+    cookie.fillRect(
+        0,
+        0,
+        S,
+        S
+    );
+
+    cookie.restore();
+
+
+    /* =====================================================
+       OUTLINE
+    ===================================================== */
+
+    pathFromPoints(
+        cookie,
+        getShapePoints(
+            selectedShape,
+            R - 3,
+            0
+        )
+    );
+
+    cookie.strokeStyle =
+        "rgba(255,241,205,.55)";
+
+    cookie.lineWidth = 6;
+
+    cookie.stroke();
+
+
+    /* =====================================================
+       TEXTURE
+    ===================================================== */
+
+    cookie.save();
+
+    pathFromPoints(
+        cookie,
+        getShapePoints(
+            selectedShape,
+            R - 5,
+            0
+        )
+    );
+
+    cookie.clip();
+
+
+    for(let i = 0; i < 1000; i++){
+
+        const x =
+            90 +
+            Math.random() * 620;
+
+        const y =
+            70 +
+            Math.random() * 650;
+
+        const rr =
+            .3 +
+            Math.random() * 1.5;
+
+        cookie.fillStyle =
+            `rgba(
+                100,
+                53,
+                20,
+                ${.02 + Math.random() * .055}
+            )`;
+
+        cookie.beginPath();
+
+        cookie.arc(
+            x,
+            y,
+            rr,
+            0,
+            Math.PI * 2
+        );
+
+        cookie.fill();
+
+    }
+
+    cookie.restore();
+
+}
+
+
+/* =========================================================
+   COLOR HELPERS
+========================================================= */
+
+function rgb(hex){
+
+    hex =
+        hex.replace(
+            "#",
+            ""
+        );
+
+    return {
+
+        r:
+            parseInt(
+                hex.substring(0,2),
+                16
+            ),
+
+        g:
+            parseInt(
+                hex.substring(2,4),
+                16
+            ),
+
+        b:
+            parseInt(
+                hex.substring(4,6),
+                16
+            )
+
+    };
+
+}
+
+
+function colorShift(
+    hex,
+    amount
+){
+
+    const c =
+        rgb(hex);
+
+    return `rgb(
+        ${Math.max(
+            0,
+            Math.min(
+                255,
+                c.r + amount
+            )
+        )},
+        ${Math.max(
+            0,
+            Math.min(
+                255,
+                c.g + amount
+            )
+        )},
+        ${Math.max(
+            0,
+            Math.min(
+                255,
+                c.b + amount
+            )
+        )}
+    )`;
+
+}
+
+
+/* =========================================================
+   STROKE
+========================================================= */
+
+function strokePath(
+    ctx,
+    points,
+    width,
+    color
+){
+
+    if(!points.length){
+        return;
+    }
+
+
+    if(points.length === 1){
+
+        ctx.fillStyle =
+            color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            points[0].x,
+            points[0].y,
+            width / 2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        return;
+
+    }
+
+
+    ctx.beginPath();
+
+    ctx.moveTo(
+        points[0].x,
+        points[0].y
+    );
+
+
+    for(
+        let i = 1;
+        i < points.length - 1;
+        i++
+    ){
+
+        const a =
+            points[i];
+
+        const b =
+            points[i + 1];
+
+        const mx =
+            (a.x + b.x) / 2;
+
+        const my =
+            (a.y + b.y) / 2;
+
+        ctx.quadraticCurveTo(
+            a.x,
+            a.y,
+            mx,
+            my
+        );
+
+    }
+
+
+    const last =
+        points[
+            points.length - 1
+        ];
+
+    ctx.lineTo(
+        last.x,
+        last.y
+    );
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth =
+        width;
+
+    ctx.lineCap =
+        "round";
+
+    ctx.lineJoin =
+        "round";
+
+    ctx.stroke();
+
+}
+
+
+/* =========================================================
+   OFFSET
+========================================================= */
+
+function offset(
+    points,
+    x,
+    y
+){
+
+    return points.map(
+        p => ({
+
+            x:
+                p.x + x,
+
+            y:
+                p.y + y
+
+        })
+    );
+
+}
+
+
+/* =========================================================
+   ICING RENDER
+========================================================= */
+
+function renderIcing(fast = false){
+
+    icing.clearRect(
+        0,
+        0,
+        S,
+        S
+    );
+
+
+    /* =====================================================
+       DRAW ALL ICING
+    ===================================================== */
+
+    for(
+        let i = 0;
+        i < layers.length;
+        i++
+    ){
+
+        const layer =
+            layers[i];
+
+        const pts =
+            layer.points;
+
+        if(!pts.length){
+            continue;
+        }
+
+
+        const w =
+            layer.width;
+
+        const c =
+            layer.color;
+
+
+        /* =================================================
+           FAST MODE
+           
+           Used while Pencil is moving.
+           Very cheap.
+        ================================================= */
+
+        if(fast){
+
+            /* MAIN ICING */
+
+            strokePath(
+                icing,
+                pts,
+                w,
+                c
+            );
+
+
+            /* SIMPLE HIGHLIGHT */
+
+            icing.save();
+
+            icing.globalAlpha =
+                .55;
+
+            strokePath(
+                icing,
+                pts,
+                w * .72,
+                colorShift(
+                    c,
+                    8
+                )
+            );
+
+            icing.restore();
+
+            continue;
+
+        }
+
+
+        /* =================================================
+           BEAUTIFUL MODE
+           
+           Used after Pencil stops.
+        ================================================= */
+
+
+        /* SHADOW */
+
+        icing.save();
+
+        icing.globalAlpha =
+            .28;
+
+        icing.filter =
+            "blur(6px)";
+
+        strokePath(
+            icing,
+            pts,
+            w + 4,
+            "#4b3027",
+            3,
+            6
+        );
+
+        icing.restore();
+
+
+        /* SECONDARY SHADOW */
+
+        icing.save();
+
+        icing.globalAlpha =
+            .40;
+
+        icing.filter =
+            "blur(2px)";
+
+        strokePath(
+            icing,
+            pts,
+            w + 2.5,
+            "#3d2721",
+            1.5,
+            3
+        );
+
+        icing.restore();
+
+
+        /* DARK UNDERSIDE */
+
+        strokePath(
+            icing,
+            pts,
+            w + 1.8,
+            colorShift(
+                c,
+                -25
+            ),
+            0,
+            2
+        );
+
+
+        /* MAIN ICING */
+
+        strokePath(
+            icing,
+            pts,
+            w,
+            c
+        );
+
+
+        /* HIGHLIGHT */
+
+        icing.save();
+
+        icing.globalAlpha =
+            .9;
+
+        strokePath(
+            icing,
+            pts,
+            w * .76,
+            colorShift(
+                c,
+                8
+            ),
+            0,
+            -1
+        );
+
+        icing.restore();
+
+    }
+
+}
+
+/* =========================================================
+   POINTER
+========================================================= */
+
+function getPointer(e){
+
+    const rect =
+        drawCanvas.getBoundingClientRect();
+
+    return {
+
+        x:
+            (e.clientX - rect.left) *
+            S /
+            rect.width,
+
+        y:
+            (e.clientY - rect.top) *
+            S /
+            rect.height
+
+    };
+
+}
+
+
+/* =========================================================
+   UNDO
+========================================================= */
+
+function undoLast(){
+
+    if(packed){
+        return;
+    }
+
+    if(!layers.length){
+        return;
+    }
+
+    layers.pop();
+
+    renderIcingNow();
+
+}
+
+undoButton.addEventListener(
+    "click",
+    undoLast
+);
+
+
+/* =========================================================
+   ERASER
+========================================================= */
+
+eraseButton.addEventListener(
+    "click",
+    () => {
+
+        if(packed){
+            return;
+        }
+
+        eraseMode =
+            !eraseMode;
+
+        eraseButton.classList.toggle(
+            "active",
+            eraseMode
+        );
+
+        eraseButton.innerHTML =
+            eraseMode
+                ? "✕ Stop Erasing"
+                : "🧹 Erase";
+
+    }
+);
+
+
+/* =========================================================
+   STROKE
+========================================================= */
+
+function strokePath(
+    ctx,
+    points,
+    width,
+    color,
+    offsetX = 0,
+    offsetY = 0
+){
+
+    if(!points.length){
+        return;
+    }
+
+
+    ctx.beginPath();
+
+
+    /* =====================================================
+       SINGLE POINT
+    ===================================================== */
+
+    if(points.length === 1){
+
+        ctx.fillStyle =
+            color;
+
+        ctx.beginPath();
+
+        ctx.arc(
+            points[0].x + offsetX,
+            points[0].y + offsetY,
+            width / 2,
+            0,
+            Math.PI * 2
+        );
+
+        ctx.fill();
+
+        return;
+
+    }
+
+
+    /* =====================================================
+       PATH
+    ===================================================== */
+
+    ctx.moveTo(
+        points[0].x + offsetX,
+        points[0].y + offsetY
+    );
+
+
+    for(
+        let i = 1;
+        i < points.length - 1;
+        i++
+    ){
+
+        const a =
+            points[i];
+
+        const b =
+            points[i + 1];
+
+
+        const mx =
+            (a.x + b.x) / 2;
+
+        const my =
+            (a.y + b.y) / 2;
+
+
+        ctx.quadraticCurveTo(
+
+            a.x + offsetX,
+            a.y + offsetY,
+
+            mx + offsetX,
+            my + offsetY
+
+        );
+
+    }
+
+
+    const last =
+        points[
+            points.length - 1
+        ];
+
+
+    ctx.lineTo(
+        last.x + offsetX,
+        last.y + offsetY
+    );
+
+
+    ctx.strokeStyle =
+        color;
+
+    ctx.lineWidth =
+        width;
+
+    ctx.lineCap =
+        "round";
+
+    ctx.lineJoin =
+        "round";
+
+    ctx.stroke();
+
+}
+
+
+/* =========================================================
+   ADD DRAWING POINT
+========================================================= */
+
+function addDrawingPoint(event){
+
+    if(!activeLayer){
+        return;
+    }
+
+
+    const p =
+        getPointer(event);
+
+
+    const points =
+        activeLayer.points;
+
+
+    const last =
+        points[
+            points.length - 1
+        ];
+
+
+    if(!last){
+
+        points.push(p);
+
+        return;
+
+    }
+
+
+    const dx =
+        p.x - last.x;
+
+    const dy =
+        p.y - last.y;
+
+
+    const distanceSquared =
+        dx * dx +
+        dy * dy;
+
+
+    /*
+     * Don't store microscopic Pencil movements.
+     *
+     * 2px is enough for a very smooth stroke while
+     * dramatically reducing the number of points.
+     */
+
+    const threshold =
+        event.pointerType === "pen"
+            ? 2
+            : 3;
+
+
+    if(
+        distanceSquared >=
+        threshold * threshold
+    ){
+
+        points.push(p);
+
+
+    }
+
+}
+
+/* =========================================================
+   DRAWING START
+   APPLE PENCIL COMPATIBLE
+========================================================= */
+
+drawCanvas.addEventListener(
+    "pointerdown",
+    e => {
+
+        /*
+         * Only react to primary pointer.
+         */
+
+        if(!e.isPrimary){
+            return;
+        }
+
+
+        if(packed){
+            return;
+        }
+
+
+        /*
+         * Prevent iPad Safari scrolling/zooming.
+         */
+
+        e.preventDefault();
+
+
+        const pointer =
+            getPointer(e);
+
+
+        /* =================================================
+           ERASER
+        ================================================= */
+
+        if(eraseMode){
+
+            const hitIndex =
+                findLayerAtPoint(
+                    pointer.x,
+                    pointer.y
+                );
+
+            if(hitIndex !== -1){
+
+                layers.splice(
+                    hitIndex,
+                    1
+                );
+
+                renderIcingNow();
+
+            }
+
+            return;
+
+        }
+
+
+        /* =================================================
+           DRAW
+        ================================================= */
+
+        drawing = true;
+        drawingFastMode = true;
+
+
+        /*
+         * Capture the Pencil.
+         *
+         * This is important on iPad because the Pencil can
+         * move outside the exact canvas bounds while drawing.
+         */
+
+        try{
+
+            drawCanvas.setPointerCapture(
+                e.pointerId
+            );
+
+        }
+
+        catch(error){
+
+            /*
+             * Some older Safari versions may throw here.
+             * Drawing can continue without capture.
+             */
+
+        }
+
+
+        activeLayer = {
+
+            color:
+                selectedColor,
+
+            width:
+                selectedSize,
+
+            points: [
+                pointer
+            ]
+
+        };
+
+
+        layers.push(
+            activeLayer
+        );
+
+
+        /*
+         * Render the initial Pencil dot immediately.
+         */
+
+        renderIcingNow();
+
+    },
+    {
+        passive: false
+    }
+);
+
+
+/* =========================================================
+   DRAWING MOVE
+   APPLE PENCIL OPTIMIZED
+========================================================= */
+
+/* =========================================================
+   DRAWING MOVE
+========================================================= */
+
+drawCanvas.addEventListener(
+    "pointermove",
+    e => {
+
+        if(!drawing){
+            return;
+        }
+
+
+        if(!e.isPrimary){
+            return;
+        }
+
+
+        e.preventDefault();
+
+
+        let events;
+
+
+        if(
+            typeof e.getCoalescedEvents ===
+            "function"
+        ){
+
+            events =
+                e.getCoalescedEvents();
+
+        }
+
+
+        if(
+            !events ||
+            !events.length
+        ){
+
+            events = [e];
+
+        }
+
+
+        /*
+         * Add ALL Pencil points first.
+         */
+
+        for(
+            let i = 0;
+            i < events.length;
+            i++
+        ){
+
+            addDrawingPoint(
+                events[i]
+            );
+
+        }
+
+
+        /*
+         * Then request ONLY ONE frame.
+         */
+
+        scheduleIcingRender();
+
+    },
+    {
+        passive: false
+    }
+);
+
+/* =========================================================
+   STOP DRAWING
+========================================================= */
+
+/* =========================================================
+   STOP DRAWING
+========================================================= */
+
+function stopDrawing(e){
+
+    if(
+        e &&
+        e.isPrimary === false
+    ){
+        return;
+    }
+
+
+    drawing = false;
+
+
+    /*
+     * Switch back to beautiful rendering.
+     */
+
+    drawingFastMode = false;
+
+
+    activeLayer = null;
+
+
+    /*
+     * Release pointer capture.
+     */
+
+    if(
+        e &&
+        typeof drawCanvas.hasPointerCapture ===
+            "function" &&
+        drawCanvas.hasPointerCapture(
+            e.pointerId
+        )
+    ){
+
+        try{
+
+            drawCanvas.releasePointerCapture(
+                e.pointerId
+            );
+
+        }
+
+        catch(error){
+
+            /* Safari can occasionally throw here */
+
+        }
+
+    }
+
+
+    /*
+     * ONE final beautiful render.
+     */
+
+    renderIcingNow();
+
+}
+
+drawCanvas.addEventListener(
+    "pointerup",
+    stopDrawing
+);
+
+
+drawCanvas.addEventListener(
+    "pointercancel",
+    stopDrawing
+);
+
+
+drawCanvas.addEventListener(
+    "lostpointercapture",
+    () => {
+
+        if(drawing){
+
+            drawing = false;
+
+            drawingFastMode = false;
+
+            activeLayer = null;
+
+            renderIcingNow();
+
+        }
+
+    }
+);
+
+/* =========================================================
+   SHAPES
+========================================================= */
+
+document
+.querySelectorAll(".shapeButton")
+.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                if(packed){
+                    return;
+                }
+
+                document
+                .querySelectorAll(
+                    ".shapeButton"
+                )
+                .forEach(
+                    b =>
+                        b.classList.remove(
+                            "active"
+                        )
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                selectedShape =
+                    button.dataset.shape;
+
+                layers.length = 0;
+
+                drawCookie();
+
+                renderIcingNow();
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   COLORS
+========================================================= */
+
+document
+.querySelectorAll(".color")
+.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                if(packed){
+                    return;
+                }
+
+                document
+                .querySelectorAll(
+                    ".color"
+                )
+                .forEach(
+                    b =>
+                        b.classList.remove(
+                            "active"
+                        )
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                selectedColor =
+                    button.dataset.color;
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   THICKNESS
+========================================================= */
+
+document
+.querySelectorAll(".size")
+.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                if(packed){
+                    return;
+                }
+
+                document
+                .querySelectorAll(
+                    ".size"
+                )
+                .forEach(
+                    b =>
+                        b.classList.remove(
+                            "active"
+                        )
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                selectedSize =
+                    Number(
+                        button.dataset.size
+                    );
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   CLEAR
+========================================================= */
+
+document
+.getElementById("clear")
+.addEventListener(
+    "click",
+    () => {
+
+        if(packed){
+            return;
+        }
+
+        layers.length = 0;
+
+        renderIcingNow();
+
+    }
+);
+
+
+/* =========================================================
+   PACKAGING
+========================================================= */
+
+const packButton =
+    document.getElementById("pack");
+
+const packagingSection =
+    document.getElementById(
+        "packagingSection"
+    );
+
+const packagingButtons =
+    document.querySelectorAll(
+        ".packagingButton"
+    );
+
+const cookieElement =
+    document.getElementById("cookie");
+
+const stage =
+    document.querySelector(".stage");
+
+const previewBag =
+    document.getElementById("previewBag");
+
+
+/* =========================================================
+   PACKAGE CLASS
+========================================================= */
+
+function packageClass(){
+
+    return (
+        "package" +
+        selectedPackaging.charAt(0).toUpperCase() +
+        selectedPackaging.slice(1)
+    );
+
+}
+
+
+/* =========================================================
+   PACK BUTTON
+========================================================= */
+
+function updatePackButton(){
+
+    if(packed){
+
+        packButton.classList.add(
+            "packed"
+        );
+
+        packButton.innerHTML =
+            "↩ &nbsp; Unpack & Edit";
+
+    }
+
+    else{
+
+        packButton.classList.remove(
+            "packed"
+        );
+
+        packButton.innerHTML =
+            "📦 &nbsp; Pack Cookie";
+
+    }
+
+}
+
+
+/* =========================================================
+   UPDATE PACKAGING VISUAL
+========================================================= */
+
+function updatePackagingVisual(){
+
+    const cls =
+        packageClass();
+
+
+    if(bagElement){
+
+        bagElement.classList.remove(
+            "packageKraft",
+            "packagePouch",
+            "packageEnvelope",
+            "packageGift"
+        );
+
+        bagElement.classList.add(
+            cls
+        );
+
+    }
+
+
+    if(previewBag){
+
+        previewBag.classList.remove(
+            "packageKraft",
+            "packagePouch",
+            "packageEnvelope",
+            "packageGift"
+        );
+
+        previewBag.classList.add(
+            cls
+        );
+
+    }
+
+}
+
+
+/* =========================================================
+   PACKAGING OPTIONS
+========================================================= */
+
+packagingButtons.forEach(
+    button => {
+
+        button.addEventListener(
+            "click",
+            () => {
+
+                packagingButtons.forEach(
+                    b =>
+                        b.classList.remove(
+                            "active"
+                        )
+                );
+
+                button.classList.add(
+                    "active"
+                );
+
+                selectedPackaging =
+                    button.dataset.package;
+
+                if(packed){
+
+                    updatePackagingVisual();
+
+                }
+
+            }
+        );
+
+    }
+);
+
+
+/* =========================================================
+   PACK COOKIE
+========================================================= */
+
+function packCookie(){
+
+    if(packed){
+
+        unpackCookie();
+
+        return;
+
+    }
+
+
+    packed = true;
+
+
+    /* CREATE BAG */
+
+    bagElement =
+        document.createElement("div");
+
+    bagElement.className =
+        "paperBag " +
+        packageClass();
+
+    bagElement.innerHTML = `
+
+        <div class="bagTop">
+            <div class="bagFold"></div>
+        </div>
+
+        <div class="bagBody">
+
+            <div class="bagLabel">
+
+                <span class="bagEmoji">
+                    🍪
+                </span>
+
+                <strong>
+                    COOKIE LAB
+                </strong>
+
+                <small>
+                    baked with love ♡
+                </small>
+
+            </div>
+
+        </div>
+
+    `;
+
+    stage.appendChild(
+        bagElement
+    );
+
+
+    /* HIDE COOKIE */
+
+    cookieElement.style.transform =
+        "scale(.38) translateY(150px)";
+
+    cookieElement.style.opacity =
+        "0";
+
+
+    requestAnimationFrame(
+        () => {
+
+            bagElement.style.opacity =
+                "1";
+
+            bagElement.style.transform =
+                "translate(-50%,-50%) rotate(2deg)";
+
+        }
+    );
+
+
+    packagingSection.classList.add(
+        "show"
+    );
+
+    updatePackButton();
+
+    updatePackagingVisual();
+
+}
+
+
+/* =========================================================
+   UNPACK COOKIE
+========================================================= */
+
+function unpackCookie(){
+
+    packed = false;
+
+
+    if(bagElement){
+
+        const oldBag =
+            bagElement;
+
+        oldBag.style.opacity =
+            "0";
+
+        oldBag.style.transform =
+            "translate(-50%,145%) rotate(2deg)";
+
+
+        setTimeout(
+            () => {
+
+                if(
+                    oldBag &&
+                    oldBag.parentNode
+                ){
+
+                    oldBag.remove();
+
+                }
+
+                if(
+                    bagElement === oldBag
+                ){
+
+                    bagElement = null;
+
+                }
+
+            },
+            650
+        );
+
+    }
+
+
+    cookieElement.style.transform =
+        "scale(1)";
+
+    cookieElement.style.opacity =
+        "1";
+
+
+    packagingSection.classList.add(
+        "show"
+    );
+
+    updatePackButton();
+
+}
+
+
+/* =========================================================
+   PACK BUTTON
+========================================================= */
+
+packButton.addEventListener(
+    "click",
+    packCookie
+);
+
+
+/* =========================================================
+   CARD
+========================================================= */
+
+const messageButton =
+    document.getElementById(
+        "messageButton"
+    );
+
+const cardEditor =
+    document.getElementById(
+        "cardEditor"
+    );
+
+const messageInput =
+    document.getElementById(
+        "messageInput"
+    );
+
+const counter =
+    document.getElementById(
+        "counter"
+    );
+
+const previewCard =
+    document.getElementById(
+        "previewCard"
+    );
+
+
+/* =========================================================
+   RESET CARD
+========================================================= */
+
+function messageAreaReset(){
+
+    cardEditor.classList.remove(
+        "open"
+    );
+
+    messageButton.innerHTML =
+        "💌  Add Card";
+
+    messageInput.value = "";
+
+    updateCounter();
+
+    if(previewCard){
+
+        previewCard.textContent =
+            "A little cookie for you ♡";
+
+    }
+
+}
+
+
+/* =========================================================
+   BAG CARD
+========================================================= */
+
+function getBagCard(){
+
+    if(!bagElement){
+        return null;
+    }
+
+    return bagElement.querySelector(
+        ".bagMessageCard"
+    );
+
+}
+
+
+function createBagCard(){
+
+    if(!bagElement){
+        return null;
+    }
+
+
+    let card =
+        getBagCard();
+
+
+    if(card){
+        return card;
+    }
+
+
+    card =
+        document.createElement(
+            "div"
+        );
+
+    card.className =
+        "bagMessageCard";
+
+    card.textContent =
+        messageInput.value.trim() ||
+        "A little cookie for you ♡";
+
+    bagElement.appendChild(
+        card
+    );
+
+
+    requestAnimationFrame(
+        () => {
+
+            card.style.opacity =
+                "1";
+
+            card.style.transform =
+                "translateX(-50%) rotate(-3deg) translateY(-20px)";
+
+        }
+    );
+
+
+    return card;
+
+}
+
+
+/* =========================================================
+   CARD TEXT
+========================================================= */
+
+function updateCounter(){
+
+    if(counter){
+
+        counter.textContent =
+            `${messageInput.value.length}/300`;
+
+    }
+
+}
+
+
+function updateCardText(){
+
+    const text =
+        messageInput.value.trim() ||
+        "A little cookie for you ♡";
+
+
+    const bagCard =
+        getBagCard();
+
+
+    if(bagCard){
+
+        bagCard.textContent =
+            text;
+
+    }
+
+
+    if(previewCard){
+
+        previewCard.textContent =
+            text;
+
+    }
+
+
+    updateCounter();
+
+}
+
+
+/* =========================================================
+   ADD CARD
+========================================================= */
+
+messageButton.addEventListener(
+    "click",
+    () => {
+
+        if(!packed){
+
+            alert(
+                "Pack your cookie first ♡"
+            );
+
+            return;
+
+        }
+
+
+        const open =
+            cardEditor.classList.contains(
+                "open"
+            );
+
+
+        if(open){
+
+            cardEditor.classList.remove(
+                "open"
+            );
+
+            messageButton.innerHTML =
+                "💌  Add Card";
+
+            return;
+
+        }
+
+
+        cardEditor.classList.add(
+            "open"
+        );
+
+        messageButton.innerHTML =
+            "♥  Card Added";
+
+        createBagCard();
+
+        updateCardText();
+
+        messageInput.focus();
+
+    }
+);
+
+
+/* =========================================================
+   MESSAGE INPUT
+========================================================= */
+
+messageInput.addEventListener(
+    "input",
+    () => {
+
+        updateCardText();
+
+        if(
+            packed &&
+            cardEditor.classList.contains(
+                "open"
+            )
+        ){
+
+            createBagCard();
+
+            updateCardText();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   COOKIE IMAGE
+   COOKIE ONLY
+========================================================= */
+
+function createCookieImage(){
+
+    const output =
+        document.createElement(
+            "canvas"
+        );
+
+    output.width = S;
+    output.height = S;
+
+    const ctx =
+        output.getContext(
+            "2d"
+        );
+
+
+    ctx.drawImage(
+        cookieCanvas,
+        0,
+        0
+    );
+
+
+    ctx.drawImage(
+        icingCanvas,
+        0,
+        0
+    );
+
+
+    return output.toDataURL(
+        "image/png"
+    );
+
+}
+
+
+/* =========================================================
+   FINAL PACKED IMAGE
+   PACKAGE + CARD
+   COOKIE IS NOT INCLUDED
+========================================================= */
+
+/* =========================================================
+   FINAL PACKED IMAGE
+   PACKAGE PNG + CARD
+   COOKIE IS NOT INCLUDED
+========================================================= */
+
+async function createPackedImage(){
+
+    const canvas =
+        document.createElement("canvas");
+
+    const ctx =
+        canvas.getContext("2d");
+
+    canvas.width = 1200;
+    canvas.height = 900;
+
+
+    /* =====================================================
+       BACKGROUND
+    ===================================================== */
+
+    const bg =
+        ctx.createRadialGradient(
+            600,
+            300,
+            50,
+            600,
+            500,
+            700
+        );
+
+    bg.addColorStop(
+        0,
+        "#ffffff"
+    );
+
+    bg.addColorStop(
+        1,
+        "#f8ddd9"
+    );
+
+    ctx.fillStyle = bg;
+
+    ctx.fillRect(
+        0,
+        0,
+        canvas.width,
+        canvas.height
+    );
+
+
+    /* =====================================================
+       FLOOR SHADOW
+    ===================================================== */
+
+    ctx.save();
+
+    ctx.fillStyle =
+        "rgba(75,45,25,.14)";
+
+    ctx.filter =
+        "blur(20px)";
+
+    ctx.beginPath();
+
+    ctx.ellipse(
+        600,
+        760,
+        230,
+        45,
+        0,
+        0,
+        Math.PI * 2
+    );
+
+    ctx.fill();
+
+    ctx.restore();
+
+
+    /* =====================================================
+       PACKAGE ASSET
+       USE THE EXACT SAME PNG AS THE LIVE PREVIEW
+    ===================================================== */
+
+    const packageAssets = {
+
+        kraft:
+            "assets/Packaging1.png",
+
+        pouch:
+            "assets/Packaging2.png",
+
+        envelope:
+            "assets/Packaging3.png",
+
+        gift:
+            "assets/Packaging4.png",
+
+    };
+
+
+    const packageSrc =
+        packageAssets[selectedPackaging] ||
+        packageAssets.kraft;
+
+
+    /* =====================================================
+       LOAD PACKAGE PNG
+    ===================================================== */
+
+    const packageImage =
+        await new Promise(
+            (resolve, reject) => {
+
+                const img =
+                    new Image();
+
+                img.onload =
+                    () => resolve(img);
+
+                img.onerror =
+                    () => reject(
+                        new Error(
+                            "Could not load packaging image: " +
+                            packageSrc
+                        )
+                    );
+
+                /*
+                 * Prevent browser caching from ever causing
+                 * an old package image to be reused.
+                 */
+
+                img.src =
+                    packageSrc +
+                    "?v=" +
+                    Date.now();
+
+            }
+        );
+
+
+    /* =====================================================
+       PACKAGE SIZE
+       MATCH THE FEEL OF THE LIVE PREVIEW
+    ===================================================== */
+
+    let packageWidth;
+    let packageHeight;
+
+
+    if(
+        selectedPackaging ===
+        "envelope"
+    ){
+
+        packageWidth = 520;
+        packageHeight = 325;
+
+    }
+
+    else if(
+        selectedPackaging ===
+        "pouch"
+    ){
+
+        packageWidth = 430;
+        packageHeight = 465;
+
+    }
+
+    else if(
+        selectedPackaging ===
+        "gift"
+    ){
+
+        packageWidth = 430;
+        packageHeight = 410;
+
+    }
+
+    else{
+
+        packageWidth = 430;
+        packageHeight = 450;
+
+    }
+
+
+    /* =====================================================
+       PACKAGE POSITION
+    ===================================================== */
+
+    const packageX =
+        600 -
+        packageWidth / 2;
+
+    let packageY;
+
+
+    if(
+        selectedPackaging ===
+        "envelope"
+    ){
+
+        packageY = 380;
+
+    }
+
+    else{
+
+        packageY = 345;
+
+    }
+
+
+    /* =====================================================
+       DRAW PACKAGE PNG
+    ===================================================== */
+
+    ctx.save();
+
+    ctx.translate(
+        600,
+        packageY
+    );
+
+    ctx.rotate(
+        2 * Math.PI / 180
+    );
+
+
+    /*
+     * Keep the transparent PNG transparent.
+     * No old CSS/canvas package drawing.
+     */
+
+    ctx.drawImage(
+        packageImage,
+        -packageWidth / 2,
+        0,
+        packageWidth,
+        packageHeight
+    );
+
+    ctx.restore();
+
+
+    /* =====================================================
+       CARD
+       ONLY INCLUDED IF CARD IS ADDED
+    ===================================================== */
+
+    if(
+        cardEditor.classList.contains(
+            "open"
+        )
+    ){
+
+        const text =
+            messageInput.value.trim() ||
+            "A little cookie for you ♡";
+
+
+        ctx.save();
+
+        /*
+         * Card sits in front of the package,
+         * similar to the live preview.
+         */
+
+        let cardY = 335;
+
+
+        if(
+            selectedPackaging ===
+            "pouch"
+        ){
+
+            cardY = 325;
+
+        }
+
+        else if(
+            selectedPackaging ===
+            "envelope"
+        ){
+
+            cardY = 405;
+
+        }
+
+        else if(
+            selectedPackaging ===
+            "gift"
+        ){
+
+            cardY = 350;
+
+        }
+
+
+        ctx.translate(
+            600,
+            cardY
+        );
+
+        ctx.rotate(
+            -0.04
+        );
+
+
+        /* =================================================
+           CARD SHADOW
+        ================================================= */
+
+        ctx.fillStyle =
+            "#fff9ed";
+
+        ctx.shadowColor =
+            "rgba(70,40,20,.20)";
+
+        ctx.shadowBlur =
+            18;
+
+        ctx.beginPath();
+
+        ctx.roundRect(
+            -145,
+            -65,
+            290,
+            130,
+            10
+        );
+
+        ctx.fill();
+
+        ctx.shadowBlur =
+            0;
+
+
+        /* =================================================
+           CARD TEXT
+        ================================================= */
+
+        ctx.fillStyle =
+            "#694a3c";
+
+        ctx.font =
+            "16px Offside";
+
+        ctx.textAlign =
+            "center";
+
+
+        const words =
+            text.split(" ");
+
+        let line = "";
+
+        let y = -25;
+
+        const maxWidth =
+            245;
+
+
+        for(
+            const word of words
+        ){
+
+            const test =
+                line +
+                word +
+                " ";
+
+
+            if(
+                ctx.measureText(
+                    test
+                ).width >
+                maxWidth
+            ){
+
+                ctx.fillText(
+                    line,
+                    0,
+                    y
+                );
+
+                line =
+                    word + " ";
+
+                y += 23;
+
+            }
+
+            else{
+
+                line =
+                    test;
+
+            }
+
+        }
+
+
+        if(line){
+
+            ctx.fillText(
+                line,
+                0,
+                y
+            );
+
+        }
+
+
+        /* =================================================
+           CARD TAPE
+        ================================================= */
+
+        ctx.save();
+
+        ctx.fillStyle =
+            "rgba(244,210,166,.82)";
+
+        ctx.translate(
+            0,
+            -65
+        );
+
+        ctx.rotate(
+            -0.02
+        );
+
+        ctx.fillRect(
+            -42,
+            -6,
+            84,
+            13
+        );
+
+        ctx.restore();
+
+
+        /* =================================================
+           CARD HEART
+        ================================================= */
+
+        ctx.fillStyle =
+            "#d99aa7";
+
+        ctx.font =
+            "18px Arial";
+
+        ctx.textAlign =
+            "right";
+
+        ctx.fillText(
+            "♡",
+            132,
+            55
+        );
+
+
+        ctx.restore();
+
+    }
+
+
+    /* =====================================================
+       FOOTER
+    ===================================================== */
+
+    ctx.textAlign =
+        "center";
+
+    ctx.fillStyle =
+        "#e52560";
+
+    ctx.font =
+        "16px Offside";
+
+    ctx.fillText(
+        "made especially for you ♡",
+        600,
+        850
+    );
+
+
+    /* =====================================================
+       RETURN PACKAGE IMAGE
+    ===================================================== */
+
+    return canvas.toDataURL(
+        "image/png"
+    );
+
+}
+
+/* =========================================================
+   SEND MODAL
+========================================================= */
+
+const sendButton =
+    document.getElementById(
+        "sendButton"
+    );
+
+const sendModal =
+    document.getElementById(
+        "sendModal"
+    );
+
+const modalClose =
+    document.getElementById(
+        "modalClose"
+    );
+
+const recipientEmail =
+    document.getElementById(
+        "recipientEmail"
+    );
+
+const emailError =
+    document.getElementById(
+        "emailError"
+    );
+
+const modalSend =
+    document.getElementById(
+        "modalSend"
+    );
+
+const previewCookieImage =
+    document.getElementById(
+        "previewCookieImage"
+    );
+
+
+/* =========================================================
+   OPEN SEND MODAL
+========================================================= */
+
+async function openSendModal(){
+
+    if(!packed){
+
+        alert(
+            "Pack your cookie first ♡"
+        );
+
+        return;
+
+    }
+
+
+    if(
+        cardEditor.classList.contains(
+            "open"
+        )
+    ){
+
+        createBagCard();
+
+        updateCardText();
+
+    }
+
+
+    /*
+     * PREVIEW COOKIE = COOKIE ONLY
+     */
+
+    previewCookieImage.src =
+        createCookieImage();
+
+
+    updatePackagingVisual();
+
+
+    emailError.classList.remove(
+        "show"
+    );
+
+
+    sendModal.classList.add(
+        "show"
+    );
+
+    sendModal.setAttribute(
+        "aria-hidden",
+        "false"
+    );
+
+
+    setTimeout(
+        () => {
+
+            recipientEmail.focus();
+
+        },
+        120
+    );
+
+}
+
+
+sendButton.addEventListener(
+    "click",
+    openSendModal
+);
+
+
+/* =========================================================
+   CLOSE SEND MODAL
+========================================================= */
+
+function closeSendModal(){
+
+    sendModal.classList.remove(
+        "show"
+    );
+
+    sendModal.setAttribute(
+        "aria-hidden",
+        "true"
+    );
+
+    emailError.classList.remove(
+        "show"
+    );
+
+}
+
+
+modalClose.addEventListener(
+    "click",
+    closeSendModal
+);
+
+
+sendModal.addEventListener(
+    "click",
+    e => {
+
+        if(
+            e.target ===
+            sendModal
+        ){
+
+            closeSendModal();
+
+        }
+
+    }
+);
+
+
+document.addEventListener(
+    "keydown",
+    e => {
+
+        if(
+            e.key === "Escape" &&
+            sendModal.classList.contains(
+                "show"
+            )
+        ){
+
+            closeSendModal();
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   SEND COOKIE
+========================================================= */
+
+modalSend.addEventListener(
+    "click",
+    async () => {
+
+        const email =
+            recipientEmail.value.trim();
+
+        const message =
+            messageInput.value.trim() ||
+            "A little cookie for you ♡";
+
+
+        /* EMAIL */
+
+        if(
+            !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(
+                email
+            )
+        ){
+
+            emailError.textContent =
+                "Please enter a valid email address ♡";
+
+            emailError.classList.add(
+                "show"
+            );
+
+            recipientEmail.focus();
+
+            return;
+
+        }
+
+
+        modalSend.disabled =
+            true;
+
+        modalSend.textContent =
+            "🍪 Creating your cookie...";
+
+        emailError.classList.remove(
+            "show"
+        );
+
+
+        try{
+
+            /* =================================================
+               COOKIE IMAGE
+               COOKIE ONLY
+            ================================================= */
+
+            const cookieImage =
+                createCookieImage();
+
+
+            /* =================================================
+               PACKAGE IMAGE
+               PACKAGE + CARD ONLY
+            ================================================= */
+
+            const packetImage =
+                await createPackedImage();
+
+
+            modalSend.textContent =
+                "🍪 Sending...";
+
+
+            /* =================================================
+               SERVER
+            ================================================= */
+
+            const response =
+                await fetch(
+                    "/api/send-cookie",
+                    {
+
+                        method:
+                            "POST",
+
+                        headers: {
+
+                            "Content-Type":
+                                "application/json"
+
+                        },
+
+                        body:
+                            JSON.stringify({
+
+                                to:
+                                    email,
+
+                                message:
+                                    message,
+
+                                cookieImage:
+                                    cookieImage,
+
+                                packetImage:
+                                    packetImage
+
+                            })
+
+                    }
+                );
+
+
+            const raw =
+                await response.text();
+
+
+            let data = {};
+
+
+            try{
+
+                data =
+                    raw
+                        ? JSON.parse(raw)
+                        : {};
+
+            }
+
+catch{
+
+    throw new Error(
+        `Vercel API returned an invalid response (HTTP ${response.status}). Response: ${raw.slice(0, 300)}`
+    );
+
+}
+
+
+            if(!response.ok){
+
+                throw new Error(
+                    data.error ||
+                    "The cookie could not be sent."
+                );
+
+            }
+
+
+            /* SUCCESS */
+
+            modalSend.textContent =
+                "✓ Cookie Sent!";
+
+
+            setTimeout(
+                () => {
+
+                    closeSendModal();
+
+                    modalSend.disabled =
+                        false;
+
+                    modalSend.textContent =
+                        "✈  Send Cookie";
+
+                    recipientEmail.value =
+                        "";
+
+                },
+                1400
+            );
+
+        }
+
+
+        catch(error){
+
+            console.error(error);
+
+            emailError.textContent =
+                error.message ||
+                "Something went wrong while sending ♡";
+
+            emailError.classList.add(
+                "show"
+            );
+
+            modalSend.disabled =
+                false;
+
+            modalSend.textContent =
+                "✈  Send Cookie";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   NEW COOKIE
+========================================================= */
+
+document
+.getElementById("newCookie")
+.addEventListener(
+    "click",
+    () => {
+
+        /* CLEAR ICING */
+
+        layers.length = 0;
+
+        renderIcingNow();
+
+
+        /* RESET PACKED */
+
+        packed = false;
+
+
+        /* REMOVE BAG */
+
+        if(bagElement){
+
+            bagElement.remove();
+
+            bagElement = null;
+
+        }
+
+
+        /* SHOW COOKIE */
+
+        cookieElement.style.transform =
+            "scale(1)";
+
+        cookieElement.style.opacity =
+            "1";
+
+
+        /* PACK BUTTON */
+
+        updatePackButton();
+
+
+        /* CARD */
+
+        messageAreaReset();
+
+
+        /* PACKAGING */
+
+        selectedPackaging =
+            "kraft";
+
+
+        packagingButtons.forEach(
+            (button, index) => {
+
+                button.classList.toggle(
+                    "active",
+                    index === 0
+                );
+
+            }
+        );
+
+
+        updatePackagingVisual();
+
+    }
+);
+
+
+/* =========================================================
+   INITIALIZE
+========================================================= */
+
+drawCookie();
+
+renderIcingNow();
+
+updateCounter();
+
+updatePackagingVisual();
+
+updatePackButton();
+
+
+const backgroundMusic =
+    document.getElementById("backgroundMusic");
+
+backgroundMusic.volume = 0.25;
+
+document.addEventListener("click", () => {
+
+    backgroundMusic.play().catch(() => {});
+
+}, { once: true });
+
+</script>
+
+
+</body>
+</html>

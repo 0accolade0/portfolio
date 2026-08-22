@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0">
+	<title>theshartechclub's shredder</title>
+
+	<style>
+		@font-face {
+			font-family: "CuteFont";
+			src: url("font.ttf") format("truetype");
+			font-weight: normal;
+			font-style: normal;
+		}
+
+		html, body, #canvas {
+			margin: 0;
+			padding: 0;
+			border: 0;
+		}
+
+		body {
+			color: white;
+			background-color: black;
+			overflow: hidden;
+			touch-action: none;
+		}
+
+		#canvas {
+			display: block;
+		}
+
+		#canvas:focus {
+			outline: none;
+		}
+
+		/* =========================
+		   LOADING SCREEN
+		   ========================= */
+
+		#status,
+		#status-splash,
+		#status-progress,
+		#status-notice {
+			position: absolute;
+			left: 0;
+			right: 0;
+		}
+
+		#status,
+		#status-splash {
+			top: 0;
+			bottom: 0;
+		}
+
+		#status {
+			background-color: #ff6a9e;
+			display: flex;
+			flex-direction: column;
+			justify-content: center;
+			align-items: center;
+			visibility: hidden;
+			z-index: 9999;
+		}
+
+		/* Hide default Godot splash */
+		#status-splash {
+			display: none !important;
+		}
+
+		/* =========================
+		   LOADING MESSAGE
+		   ========================= */
+
+		#loading-message {
+			display: flex;
+			flex-direction: column;
+			align-items: center;
+			justify-content: center;
+			text-align: center;
+			color: white;
+			font-family: "CuteFont", sans-serif;
+			user-select: none;
+		}
+
+		#loading-heart {
+			font-family: "CuteFont", sans-serif;
+			font-size: 58px;
+			line-height: 1;
+			margin-bottom: 18px;
+			animation: heartBeat 1.4s ease-in-out infinite;
+		}
+
+		#loading-presents {
+			font-family: "CuteFont", sans-serif;
+			font-size: 24px;
+			line-height: 1.2;
+			margin-bottom: 12px;
+		}
+
+		#loading-love {
+			font-family: "CuteFont", sans-serif;
+			font-size: 19px;
+			line-height: 1.2;
+			letter-spacing: 1px;
+		}
+
+		/* =========================
+		   LOADING BAR
+		   ========================= */
+
+		#status-progress {
+			position: absolute;
+			left: 50%;
+			bottom: 12%;
+			transform: translateX(-50%);
+
+			width: min(260px, 55%);
+			height: 8px;
+
+			appearance: none;
+			-webkit-appearance: none;
+
+			border: none;
+			border-radius: 999px;
+
+			background: rgba(255, 255, 255, 0.35);
+			overflow: hidden;
+		}
+
+		#status-progress::-webkit-progress-bar {
+			background: rgba(255, 255, 255, 0.35);
+			border-radius: 999px;
+		}
+
+		#status-progress::-webkit-progress-value {
+			background: white;
+			border-radius: 999px;
+		}
+
+		#status-progress::-moz-progress-bar {
+			background: white;
+			border-radius: 999px;
+		}
+
+		/* =========================
+		   ERROR MESSAGE
+		   ========================= */
+
+		#status-notice {
+			display: none;
+
+			background-color: rgba(255, 255, 255, 0.25);
+			border-radius: 14px;
+			border: 1px solid rgba(255, 255, 255, 0.5);
+
+			color: white;
+			font-family: "CuteFont", sans-serif;
+
+			line-height: 1.3;
+			margin: 0 2rem;
+			padding: 1rem;
+
+			text-align: center;
+			z-index: 1;
+		}
+
+		/* =========================
+		   HEART ANIMATION
+		   ========================= */
+
+		@keyframes heartBeat {
+			0%, 100% {
+				transform: scale(1);
+			}
+
+			50% {
+				transform: scale(1.12);
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+	<canvas id="canvas">
+		Your browser does not support the canvas tag.
+	</canvas>
+
+	<noscript>
+		Your browser does not support JavaScript.
+	</noscript>
+
+	<!-- =========================
+	     LOADING SCREEN
+	     ========================= -->
+
+	<div id="status">
+
+		<div id="loading-message">
+
+			<div id="loading-heart">♡</div>
+
+			<div id="loading-presents">
+				theshartechclub presents
+			</div>
+
+			<div id="loading-love">
+				♡ made with love ♡
+			</div>
+
+		</div>
+
+		<progress id="status-progress"></progress>
+
+		<div id="status-notice"></div>
+
+	</div>
+
+	<script src="theshartechclub's shredder.js"></script>
+
+	<script>
+		const GODOT_CONFIG = {
+			"args": [],
+			"canvasResizePolicy": 2,
+			"emscriptenPoolSize": 8,
+			"ensureCrossOriginIsolationHeaders": true,
+			"executable": "theshartechclub's shredder",
+			"experimentalVK": false,
+			"fileSizes": {
+				"theshartechclub's shredder.pck": 6102920,
+				"theshartechclub's shredder.wasm": 37695054
+			},
+			"focusCanvas": true,
+			"gdextensionLibs": [],
+			"godotPoolSize": 4
+		};
+
+		const GODOT_THREADS_ENABLED = false;
+		const engine = new Engine(GODOT_CONFIG);
+
+		(function () {
+
+			const statusOverlay =
+				document.getElementById('status');
+
+			const statusProgress =
+				document.getElementById('status-progress');
+
+			const statusNotice =
+				document.getElementById('status-notice');
+
+			let initializing = true;
+			let statusMode = '';
+
+			function setStatusMode(mode) {
+
+				if (statusMode === mode || !initializing) {
+					return;
+				}
+
+				if (mode === 'hidden') {
+					statusOverlay.remove();
+					initializing = false;
+					return;
+				}
+
+				statusOverlay.style.visibility = 'visible';
+
+				statusProgress.style.display =
+					mode === 'progress' ? 'block' : 'none';
+
+				statusNotice.style.display =
+					mode === 'notice' ? 'block' : 'none';
+
+				statusMode = mode;
+			}
+
+			function setStatusNotice(text) {
+
+				while (statusNotice.lastChild) {
+					statusNotice.removeChild(
+						statusNotice.lastChild
+					);
+				}
+
+				const lines = text.split('\n');
+
+				lines.forEach((line) => {
+
+					statusNotice.appendChild(
+						document.createTextNode(line)
+					);
+
+					statusNotice.appendChild(
+						document.createElement('br')
+					);
+
+				});
+			}
+
+			function displayFailureNotice(err) {
+
+				console.error(err);
+
+				if (err instanceof Error) {
+
+					setStatusNotice(err.message);
+
+				} else if (typeof err === 'string') {
+
+					setStatusNotice(err);
+
+				} else {
+
+					setStatusNotice(
+						'An unknown error occurred.'
+					);
+
+				}
+
+				setStatusMode('notice');
+				initializing = false;
+			}
+
+			const missing =
+				Engine.getMissingFeatures({
+					threads: GODOT_THREADS_ENABLED,
+				});
+
+			if (missing.length !== 0) {
+
+				if (
+					GODOT_CONFIG['serviceWorker'] &&
+					GODOT_CONFIG['ensureCrossOriginIsolationHeaders'] &&
+					'serviceWorker' in navigator
+				) {
+
+					let serviceWorkerRegistrationPromise;
+
+					try {
+
+						serviceWorkerRegistrationPromise =
+							navigator.serviceWorker.getRegistration();
+
+					} catch (err) {
+
+						serviceWorkerRegistrationPromise =
+							Promise.reject(
+								new Error(
+									'Service worker registration failed.'
+								)
+							);
+
+					}
+
+					Promise.race([
+
+						serviceWorkerRegistrationPromise
+							.then((registration) => {
+
+								if (registration != null) {
+
+									return Promise.reject(
+										new Error(
+											'Service worker already exists.'
+										)
+									);
+
+								}
+
+								return registration;
+
+							})
+							.then(() =>
+								engine.installServiceWorker()
+							),
+
+						new Promise((resolve) => {
+
+							setTimeout(
+								() => resolve(),
+								2000
+							);
+
+						}),
+
+					])
+					.then(() => {
+
+						window.location.reload();
+
+					})
+					.catch((err) => {
+
+						console.error(
+							'Error while registering service worker:',
+							err
+						);
+
+					});
+
+				} else {
+
+					const missingMsg =
+						'Error\nThe following features required to run Godot projects on the Web are missing:\n';
+
+					displayFailureNotice(
+						missingMsg + missing.join('\n')
+					);
+
+				}
+
+			} else {
+
+				setStatusMode('progress');
+
+				engine.startGame({
+
+					'onProgress': function (
+						current,
+						total
+					) {
+
+						if (
+							current > 0 &&
+							total > 0
+						) {
+
+							statusProgress.value =
+								current;
+
+							statusProgress.max =
+								total;
+
+						} else {
+
+							statusProgress.removeAttribute('value');
+							statusProgress.removeAttribute('max');
+
+						}
+
+					},
+
+				})
+				.then(() => {
+
+					setStatusMode('hidden');
+
+				}, displayFailureNotice);
+
+			}
+
+		}());
+	</script>
+
+</body>
+</html>

@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>CyberOS</title>
+
+    <link
+        rel="stylesheet"
+        href="style.css"
+    >
+
+</head>
+
+
+<body>
+
+
+<!-- =========================================================
+     CYBEROS DESKTOP
+========================================================= -->
+
+<div id="desktop">
+
+
+    <!-- =====================================================
+         TOP BAR
+    ===================================================== -->
+
+    <div class="topbar">
+
+        <div class="system-name">
+            CYBEROS
+        </div>
+
+
+        <div class="system-status">
+
+            <span id="topStatus">
+                SYSTEM READY
+            </span>
+
+        </div>
+
+
+        <!-- =================================================
+             AUTH AREA
+        ================================================= -->
+
+        <div class="auth-area">
+
+            <button
+                id="loginButton"
+                class="login-button"
+                type="button"
+            >
+                🔐 LOGIN
+            </button>
+
+
+            <div
+                id="loggedInArea"
+                class="logged-in-area"
+                style="display: none;"
+            >
+
+                <div class="auth-user-info">
+
+                    <span
+                        id="authUser"
+                        class="auth-user"
+                    ></span>
+
+
+                    <span
+                        id="authRole"
+                        class="auth-role"
+                    ></span>
+
+                </div>
+
+
+                <button
+                    id="logoutButton"
+                    class="logout-button"
+                    type="button"
+                >
+                    LOGOUT
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- =====================================================
+         DESKTOP AREA
+    ===================================================== -->
+
+    <div id="desktopArea">
+
+
+        <!-- =================================================
+             DESKTOP ICONS
+        ================================================= -->
+
+        <div
+            id="desktopIcons"
+            class="desktop-icons"
+        ></div>
+
+
+
+        <!-- =================================================
+             APP LAYER
+        ================================================= -->
+
+        <div id="appLayer"></div>
+
+
+
+        <!-- =================================================
+             WIDGET LAYER
+        ================================================= -->
+
+        <div id="widgetLayer"></div>
+
+
+
+        <!-- =================================================
+             START MENU
+        ================================================= -->
+
+        <div
+            id="startMenu"
+            class="start-menu"
+        >
+
+            <div class="start-menu-header">
+
+                <div class="start-menu-title">
+                    CYBEROS
+                </div>
+
+                <div class="start-menu-subtitle">
+                    Applications
+                </div>
+
+            </div>
+
+
+            <div
+                id="startMenuApps"
+                class="start-menu-apps"
+            ></div>
+
+
+            <div class="start-menu-footer">
+
+                <span>
+                 
+                </span>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LARGE START / TASKBAR
+        ================================================= -->
+
+        <div
+            id="taskbar"
+            class="taskbar"
+        >
+
+
+            <!-- =================================================
+                 START BUTTON
+            ================================================= -->
+
+            <button
+                id="startButton"
+                class="start-button"
+                type="button"
+                aria-label="Open Start Menu"
+            >
+
+                <span
+                    class="start-icon"
+                    aria-hidden="true"
+                >
+                    ◈
+                </span>
+
+                <span class="start-button-text">
+                    START
+                </span>
+
+            </button>
+
+
+
+            <!-- =================================================
+                 SEARCH
+            ================================================= -->
+
+            <div class="taskbar-search">
+
+                <span
+                    class="search-icon"
+                    aria-hidden="true"
+                >
+                    🔎
+                </span>
+
+                <input
+                    id="taskbarSearch"
+                    type="text"
+                    placeholder="Search applications..."
+                    autocomplete="off"
+                    aria-label="Search applications"
+                >
+
+            </div>
+
+
+
+            <!-- =================================================
+                 OPEN APPLICATIONS
+            ================================================= -->
+
+            <div
+                id="taskbarApps"
+                class="taskbar-apps"
+            ></div>
+
+
+
+            <!-- =================================================
+                 SPACER
+            ================================================= -->
+
+            <div class="taskbar-spacer"></div>
+
+
+
+            <!-- =================================================
+                 BATTERY
+            ================================================= -->
+
+            <div class="battery-area">
+
+                <div
+                    id="batteryBar"
+                    class="battery-bar"
+                    aria-label="Battery level"
+                >
+
+                    <div
+                        id="batteryFill"
+                        class="battery-fill"
+                    ></div>
+
+                </div>
+
+
+                <span id="batteryText">
+                    100%
+                </span>
+
+
+                <button
+                    id="chargeButton"
+                    class="charge-button"
+                    type="button"
+                >
+                    🔌 Plug In
+                </button>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 CLOCK
+            ================================================= -->
+
+            <div
+                id="clock"
+                class="clock"
+            >
+
+                <div id="clockTime">
+                    12:00:00 AM
+                </div>
+
+                <div id="clockDate">
+                    21/08/2026
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     CYBEROS LOGIN OVERLAY
+========================================================= -->
+
+<div
+    id="loginOverlay"
+    class="login-overlay"
+    style="display: none;"
+>
+
+
+    <div class="login-window">
+
+
+        <!-- =================================================
+             LOGIN HEADER
+        ================================================= -->
+
+        <div class="login-header">
+
+            <div class="login-header-left">
+
+                <div class="login-title">
+                    theshartechclub
+                </div>
+
+                <div class="login-subtitle">
+                    SECURE LOGIN
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LOGIN CONTENT
+        ================================================= -->
+
+        <div class="login-content">
+
+
+            <div class="login-welcome">
+                WELCOME BACK
+            </div>
+
+
+            <div class="login-description">
+                Please authenticate to access sharOS.
+            </div>
+
+
+
+            <!-- =================================================
+                 LOGIN FORM
+            ================================================= -->
+
+            <form
+                id="loginForm"
+                class="login-form"
+            >
+
+
+                <!-- EMAIL -->
+
+                <div class="input-group">
+
+                    <label for="loginEmail">
+                        EMAIL
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+                        <span
+                            class="input-icon"
+                            aria-hidden="true"
+                        >
+                            @
+                        </span>
+
+
+                        <input
+                            type="email"
+                            id="loginEmail"
+                            autocomplete="email"
+                            placeholder="enter your email"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- PASSWORD -->
+
+                <div class="input-group">
+
+                    <label for="loginPassword">
+                        PASSWORD
+                    </label>
+
+
+                    <div class="input-wrapper">
+
+                        <span
+                            class="input-icon"
+                            aria-hidden="true"
+                        >
+                            #
+                        </span>
+
+
+                        <input
+                            type="password"
+                            id="loginPassword"
+                            autocomplete="current-password"
+                            placeholder="enter your password"
+                            required
+                        >
+
+                    </div>
+
+                </div>
+
+
+
+                <!-- LOGIN BUTTON -->
+
+                <button
+                    type="submit"
+                    id="loginSubmitButton"
+                    class="login-button"
+                >
+
+                    <span
+                        class="login-button-icon"
+                        aria-hidden="true"
+                    >
+                        ▶
+                    </span>
+
+                    <span>
+                        LOGIN
+                    </span>
+
+                </button>
+
+
+
+                <!-- LOGIN MESSAGE -->
+
+                <div
+                    id="loginMessage"
+                    class="login-message"
+                ></div>
+
+            </form>
+
+
+
+            <!-- =================================================
+                 SECURITY INFORMATION
+            ================================================= -->
+
+            <div class="security-info">
+
+                <div class="security-line"></div>
+
+
+                <div class="security-content">
+
+                    <span
+                        class="security-icon"
+                        aria-hidden="true"
+                    >
+                        🔒
+                    </span>
+
+
+                    <div>
+
+                        <div class="security-title">
+                            SECURE CONNECTION
+                        </div>
+
+                        <div class="security-text">
+                            Your session is protected.
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="security-line"></div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- =================================================
+             LOGIN FOOTER
+        ================================================= -->
+
+        <div class="login-footer">
+
+            <span>
+                CYBEROS v1.0
+            </span>
+
+            <span>
+                •
+            </span>
+
+            <span>
+                AUTHENTICATION SYSTEM
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script
+    type="module"
+    src="firebase.js"
+></script>
+
+
+<script
+    src="main.js"
+></script>
+
+
+</body>
+
+</html>

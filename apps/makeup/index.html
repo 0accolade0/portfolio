@@ -1,0 +1,1642 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title> theshartechclub's vanity </title>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/holistic/holistic.js" crossorigin="anonymous"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Parisienne&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Offside&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Stardos+Stencil:wght@400;700&display=swap" rel="stylesheet">
+
+
+
+  <style>
+    :root {
+      --room-bg: #150a12;
+      --glow-pink: #ff69b4;
+      --neon-pink: #ff1493;
+      --item-size: 52px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      height: 100vh;
+      overflow: hidden;
+      background-color: var(--room-bg);
+      color: #eaeaea;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .room-wall {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      background: linear-gradient(135deg, #e98ac4 0%, #e98ac4 100%);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .frame-upload-bar {
+      position: absolute;
+      top: 15px;
+      left: 15px;
+      z-index: 60;
+      background: rgba(20, 10, 18, 0.85);
+      border: 1px solid var(--neon-pink);
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 11px;
+    }
+
+    .frame-upload-bar label {
+      background: var(--neon-pink);
+      color: white;
+      padding: 4px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+
+    .frame-upload-bar input[type="file"] { display: none; }
+
+    .inspector-panel {
+      position: absolute;
+      top: 15px;
+      right: 15px;
+      background: rgba(20, 10, 18, 0.92);
+      border: 2px solid #ff1493;
+      border-radius: 12px;
+      padding: 12px 16px;
+      z-index: 50;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.6);
+      backdrop-filter: blur(5px);
+      width: 270px;
+    }
+    .inspector-panel h4 {
+      margin: 0 0 4px 0;
+      font-size: 11px;
+      color: #ff99cc;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      text-align: center;
+    }
+    .coord-display {
+      font-family: monospace;
+      font-size: 11px;
+      color: #00ffcc;
+      background: rgba(0,0,0,0.6);
+      padding: 6px;
+      border-radius: 6px;
+      text-align: center;
+      margin-bottom: 8px;
+      border: 1px dashed rgba(255,255,255,0.2);
+    }
+    .slider-group { margin-bottom: 6px; }
+    .slider-group label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 10px;
+      color: #fff;
+      margin-bottom: 2px;
+    }
+    .slider-group input[type="range"] {
+      width: 100%;
+      accent-color: #ff1493;
+      cursor: pointer;
+    }
+    .copy-btn {
+      width: 100%;
+      background: #ff1493;
+      color: white;
+      border: none;
+      padding: 6px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      margin-top: 4px;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: #ff69b4; }
+
+    .vanity-setup {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      gap: 15px;
+      z-index: 2;
+    }
+
+    .custom-mirror-container {
+      position: relative;
+      width: 720px;
+      height: 440px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .mirror-frame-img {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      z-index: 10;
+      pointer-events: none;
+      transform: scale(1);
+      filter: drop-shadow(0 0 5px rgba(200, 230, 111, 0.8)) 
+              drop-shadow(0 0 5px rgba(245, 160, 211, 0.8));
+    }
+
+    .video-viewport {
+      position: absolute;
+      width: 78%;
+      height: 68%;
+      overflow: hidden;
+      border-radius: 12px;
+      z-index: 1;
+      
+      /* High-gloss dark mirror effect */
+      background: 
+        /* Sharp diagonal reflection streak */
+        linear-gradient(135deg, rgba(255, 255, 255, 0) 35%, rgba(255, 255, 255, 0.25) 45%, rgba(255, 255, 255, 0) 55%),
+        /* Soft ambient window light reflection */
+        radial-gradient(circle at 30% 20%, rgba(140, 150, 170, 0.25) 0%, rgba(20, 25, 35, 0.8) 60%),
+        /* Deep tinted mirror base */
+        #9aa4b9;
+
+      /* Glass edge highlights and depth */
+      box-shadow: 
+        inset 0 0 0 1px rgba(255, 255, 255, 0.2), /* Outer glass border rim */
+        inset 0 2px 4px rgba(255, 255, 255, 0.15), /* Top edge light catch */
+        0 10px 30px rgba(0, 0, 0, 0.6);          /* Drop shadow */
+    }
+
+    video { display: none; }
+    canvas {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      transform: scaleX(-1);
+      object-fit: cover;
+    }
+
+    .vanity-workspace {
+      position: relative;
+      width: 900px;
+      height: 200px;
+      display: flex;
+      justify-content: center;
+      z-index: 20;
+    }
+
+    .vanity-table-surface {
+      position: absolute;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: url('assets/table.png') center/cover no-repeat;
+      border-radius: 8px;
+      transform: perspective(900px) rotateX(25deg);
+      transform-origin: top center;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    .makeup-item {
+      position: absolute;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      cursor: grab;
+      user-select: none;
+      touch-action: none;
+      z-index: 10;
+    }
+
+    .makeup-item:active { cursor: grabbing; }
+
+    .item-img {
+      width: var(--item-size);
+      height: var(--item-size);
+      object-fit: contain;
+      filter: drop-shadow(0 15px 10px rgba(0, 0, 0, 0.4));
+      pointer-events: none;
+      transition: filter 0.2s ease;
+    }
+
+    .wall-poster,
+    .wall-poster .item-img {
+        box-shadow: none !important;
+        filter: none !important;
+    }
+
+    .makeup-item:hover .item-img {
+      filter: drop-shadow(0 15px 12px rgba(255, 20, 147, 0.5));
+    }
+
+    .makeup-item.active .item-img {
+      filter: drop-shadow(0 0 12px var(--neon-pink)) drop-shadow(0 12px 10px rgba(0, 0, 0, 0.5));
+    }
+
+    .item-emoji-fallback {
+      font-size: 36px;
+      line-height: 1;
+      filter: drop-shadow(0 4px 6px rgba(0,0,0,0.3));
+      pointer-events: none;
+    }
+
+    .color-popup {
+      position: absolute;
+      bottom: calc(var(--item-size) + 8px);
+      background: #ffffff;
+      padding: 6px;
+      border-radius: 12px;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.25);
+      border: 2px solid #ffb6c1;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 30;
+      animation: popIn 0.2s ease forwards;
+    }
+
+    .makeup-item.active .color-popup { display: flex; }
+
+    @keyframes popIn {
+      0% { opacity: 0; transform: scale(0.8) translateY(10px); }
+      100% { opacity: 1; transform: scale(1) translateY(0); }
+    }
+
+    input[type="color"] {
+      border: none;
+      border-radius: 50%;
+      width: 26px;
+      height: 26px;
+      cursor: pointer;
+      background: none;
+      padding: 0;
+    }
+
+    input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+    input[type="color"]::-webkit-color-swatch { border: none; border-radius: 50%; }
+
+    .table-actions {
+      position: absolute;
+      bottom: 8px;
+      right: 20px;
+      display: flex;
+      gap: 10px;
+      z-index: 20;
+    }
+
+    button.control-btn {
+      padding: 6px 14px;
+      border: none;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: bold;
+      cursor: pointer;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+      transition: all 0.2s;
+    }
+
+
+#neonSign1{
+    position:absolute;
+
+    right:-300px;
+    top:-380px;
+
+    font-family:"Offside", sans-serif;
+    font-size:36px;
+    font-weight:700;
+    letter-spacing:3px;
+
+    color:#f4fff4;
+    text-transform:uppercase;
+
+    text-shadow:
+        2px 2px 3px rgba(20,35,20,0.75),
+        -1px -1px 2px rgba(255,255,255,0.5),
+        0 0 3px #ffffff,
+        0 0 6px #d8ffd8,
+        0 0 12px #9cff9c,
+        0 0 24px #39ff88,
+        0 0 40px #00ff66,
+        0 0 65px #00e65c,
+        0 0 90px #00c853;
+
+    animation:flicker 5s infinite ease-in-out;
+}
+
+@keyframes flicker{
+    0%, 18%, 35%, 52%, 70%, 88%, 100%{
+        opacity:1;
+        filter:brightness(1);
+    }
+
+    19%, 36%, 89%{
+        opacity:0.9;
+        filter:brightness(0.95);
+    }
+
+    53%, 71%{
+        opacity:0.96;
+        filter:brightness(1.05);
+    }
+}
+
+
+
+#neonSign2{
+    position:absolute;
+
+    right:-300px;
+    top:-350px;
+
+    font-family: "Offside", sans-serif;
+    font-size:56px;
+    font-weight:400;
+    letter-spacing:3px;
+
+    color:#fff8fc;
+    text-transform:uppercase;
+
+    text-shadow:
+        0 0 3px #ffffff,
+        0 0 6px #ffe3f6,
+        0 0 12px #ffc2e8,
+        0 0 24px #ff8bd5,
+        0 0 40px #ff5cbc,
+        0 0 70px #ff2ea8,
+        0 0 100px #ff1493;
+
+    animation:neonFlicker 4s infinite ease-in-out;
+}
+
+
+
+/* ---------------- FLICKER ANIMATIONS ---------------- */
+
+/* Text & tube flicker keyframes */
+@keyframes neonFlicker2 {
+    0%, 100% {
+        color: #fff8fc;
+        opacity: 1;
+        filter: drop-shadow(0 0 3px rgba(255, 20, 147, 0.8)) drop-shadow(0 0 8px rgba(255, 0, 127, 0.6));
+    }
+    18% { 
+        opacity: 0.95; 
+    }
+    19% {
+        color: #775566;
+        text-shadow: 0 0 1px #ffffff, 2px 2px 3px rgba(0,0,0,0.8);
+        opacity: 0.25;
+        filter: drop-shadow(0 0 1px rgba(255, 20, 147, 0.2));
+    }
+    20% {
+        color: #fff8fc;
+        text-shadow:
+            0 0 2px #ffffff,
+            0 0 5px #ffe3f6,
+            0 0 10px #ff5cbc,
+            0 0 18px #ff2ea8,
+            0 0 28px #ff1493,
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+        opacity: 1;
+        filter: drop-shadow(0 0 4px rgba(255, 20, 147, 1)) drop-shadow(0 0 10px rgba(255, 0, 127, 0.8));
+    }
+    21% {
+        color: #996688;
+        text-shadow: 0 0 2px #ffffff, 2px 2px 3px rgba(0,0,0,0.8);
+        opacity: 0.4;
+        filter: drop-shadow(0 0 1px rgba(255, 20, 147, 0.3));
+    }
+    22%, 68% {
+        color: #fff8fc;
+        text-shadow:
+            0 0 2px #ffffff,
+            0 0 4px #ffe3f6,
+            0 0 8px #ff5cbc,
+            0 0 15px #ff2ea8,
+            0 0 25px #ff1493,
+            2px 2px 4px rgba(0, 0, 0, 0.8);
+        opacity: 1;
+        filter: drop-shadow(0 0 3px rgba(255, 20, 147, 0.8)) drop-shadow(0 0 8px rgba(255, 0, 127, 0.6));
+    }
+    69% {
+        color: #775566;
+        text-shadow: 0 0 1px #ffffff, 2px 2px 3px rgba(0,0,0,0.8);
+        opacity: 0.3;
+        filter: drop-shadow(0 0 1px rgba(255, 20, 147, 0.2));
+    }
+    70%, 85% {
+        color: #fff8fc;
+        opacity: 1;
+    }
+    86% {
+        color: #996688;
+        text-shadow: 0 0 2px #ffffff, 2px 2px 3px rgba(0,0,0,0.8);
+        opacity: 0.5;
+    }
+    87% {
+        color: #fff8fc;
+        opacity: 1;
+    }
+}
+
+/* Background halo flicker keyframes */
+@keyframes haloFlicker2 {
+    0%, 100% {
+        opacity: 1;
+        filter: blur(5px) brightness(1);
+    }
+    18% { 
+        opacity: 0.95; 
+    }
+    19% {
+        opacity: 0.15;
+        filter: blur(2px) brightness(0.3);
+    }
+    20% {
+        opacity: 1;
+        filter: blur(6px) brightness(1.2);
+    }
+    21% {
+        opacity: 0.3;
+        filter: blur(3px) brightness(0.5);
+    }
+    22%, 68% {
+        opacity: 1;
+        filter: blur(5px) brightness(1);
+    }
+    69% {
+        opacity: 0.2;
+        filter: blur(2px) brightness(0.3);
+    }
+    70%, 85% {
+        opacity: 1;
+        filter: blur(5px) brightness(1);
+    }
+    86% {
+        opacity: 0.4;
+        filter: blur(3px) brightness(0.6);
+    }
+    87% {
+        opacity: 1;
+        filter: blur(5px) brightness(1);
+    }
+}
+
+
+
+#prettyQuote {
+    position: absolute;
+    left: -120px;
+    bottom: 300px;
+
+    /* Authentic marker / wall scribble font stack */
+    font-family: "Permanent Marker", "Rock Salt", "Caveat", cursive;
+    font-size: 38px;
+    font-weight: 700;
+
+    /* Rich ruby red gradient */
+    background: linear-gradient(
+        110deg,
+        #b7092b 0%,
+        #e60033 25%,
+        #ff2a55 50%,
+        #80001c 75%,
+        #e60033 100%
+    );
+    background-size: 200% auto;
+
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    /* Blends paint directly into wall surface */
+    mix-blend-mode: multiply;
+
+    /* Multilayered shadow for realistic paint thickness */
+    text-shadow:
+        1px 1px 0px rgba(0, 0, 0, 0.8),
+        2px 3px 2px rgba(60, 0, 15, 0.4),
+        0px 0px 10px rgba(230, 0, 51, 0.3);
+
+    transform: rotate(-4deg) skewX(-2deg);
+
+    animation: 
+        wallPaintShimmer 6s linear infinite,
+        wallScribblePulse 4s ease-in-out infinite alternate;
+}
+
+
+/* 💋 Red Kiss Cluster 1 (Left - 4 lipstick marks) */
+#prettyQuote::before {
+    content: "💋";
+    position: absolute;
+    left: -75px;
+    top: -50px;
+    font-size: 28px;
+
+    mix-blend-mode: multiply;
+
+    /* Deep red color + crisp black border */
+    filter: 
+        saturate(3) brightness(0.85)
+        drop-shadow(1px 0 0 #000)
+        drop-shadow(-1px 0 0 #000)
+        drop-shadow(0 1px 0 #000)
+        drop-shadow(0 -1px 0 #000);
+
+    /* 1 main + 3 shadow clones = 4 kisses */
+    text-shadow:
+        130px -30px 0 #cc0029,
+        260px 20px 0 #e60033,
+        180px 110px 0 #b7092b;
+
+    transform: rotate(-18deg);
+    opacity: 0.9;
+
+    animation: wallLipstickGlow 3.5s ease-in-out infinite alternate;
+}
+
+
+/* 💋 Red Kiss Cluster 2 (Right - 3 lipstick marks) */
+#prettyQuote::after {
+    content: "💋";
+    position: absolute;
+    right: -65px;
+    bottom: -30px;
+    font-size: 24px;
+
+    mix-blend-mode: multiply;
+
+    /* Deep red color + crisp black border */
+    filter: 
+        saturate(3) brightness(0.85)
+        drop-shadow(1px 0 0 #000)
+        drop-shadow(-1px 0 0 #000)
+        drop-shadow(0 1px 0 #000)
+        drop-shadow(0 -1px 0 #000);
+
+    /* 1 main + 2 shadow clones = 3 kisses */
+    text-shadow:
+        -110px -65px 0 #e60033,
+        -230px -10px 0 #cc0029,
+        -150px 75px 0 #b7092b;
+
+    transform: rotate(22deg);
+    opacity: 0.85;
+
+    animation: wallLipstickGlow 3.5s ease-in-out 0.8s infinite alternate;
+}
+
+
+/* ---------------- GROUNDED WALL ANIMATIONS ---------------- */
+
+@keyframes wallPaintShimmer {
+    0% { background-position: 0% center; }
+    100% { background-position: 200% center; }
+}
+
+@keyframes wallScribblePulse {
+    0% {
+        transform: rotate(-4deg) skewX(-2deg) scale(1);
+    }
+    50% {
+        transform: rotate(-3.5deg) skewX(-1.5deg) scale(1.01);
+    }
+    100% {
+        transform: rotate(-4.2deg) skewX(-2.2deg) scale(0.99);
+    }
+}
+
+@keyframes wallLipstickGlow {
+    0% {
+        opacity: 0.8;
+        filter: 
+            saturate(2.8) brightness(0.8)
+            drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000)
+            drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000)
+            drop-shadow(0 0 2px rgba(230,0,51,0.2));
+    }
+    100% {
+        opacity: 0.95;
+        filter: 
+            saturate(3.5) brightness(0.95)
+            drop-shadow(1px 0 0 #000) drop-shadow(-1px 0 0 #000)
+            drop-shadow(0 1px 0 #000) drop-shadow(0 -1px 0 #000)
+            drop-shadow(0 0 8px rgba(230,0,51,0.6));
+    }
+}
+
+
+
+
+
+    button#camToggle { background-color: #ff1493; color: white; }
+    button#camToggle.off { background-color: #6c757d; }
+    button.reset-btn { background-color: #fff; color: #b03060; border: 2px solid #ffb6c1; }
+    button.control-btn:hover { filter: brightness(1.1); transform: scale(1.02); }
+  
+/* =====================================================
+   iPAD / TABLET RESPONSIVE LAYOUT
+===================================================== */
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    min-height: 100%;
+    overscroll-behavior: none;
+    -webkit-text-size-adjust: 100%;
+}
+
+body {
+    min-height: 100dvh;
+}
+
+.room-wall {
+    width: 100%;
+    height: 100dvh;
+    min-height: 100dvh;
+    padding:
+        max(12px, env(safe-area-inset-top))
+        max(12px, env(safe-area-inset-right))
+        max(12px, env(safe-area-inset-bottom))
+        max(12px, env(safe-area-inset-left));
+}
+
+.vanity-setup {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    min-height: 0;
+    transform: scale(var(--vanity-scale, 1));
+    transform-origin: center center;
+}
+
+.custom-mirror-container,
+.vanity-workspace {
+    flex: 0 0 auto;
+}
+
+.makeup-item {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    touch-action: none;
+    -webkit-tap-highlight-color: transparent;
+}
+
+button,
+input,
+label {
+    touch-action: manipulation;
+}
+
+@media (max-width: 900px) {
+    .vanity-setup {
+        --vanity-scale: min(
+            1,
+            calc((100vw - 24px) / 900)
+        );
+    }
+
+    .custom-mirror-container {
+        width: 720px;
+        height: 440px;
+    }
+
+    .vanity-workspace {
+        width: 900px;
+        height: 200px;
+    }
+}
+
+@media (orientation: portrait) and (max-width: 900px) {
+    .vanity-setup {
+        --vanity-scale: min(
+            0.86,
+            calc((100vw - 24px) / 900)
+        );
+    }
+}
+
+@media (max-width: 600px) {
+    .vanity-setup {
+        --vanity-scale: min(
+            0.72,
+            calc((100vw - 18px) / 900)
+        );
+    }
+
+    button.control-btn {
+        min-height: 36px;
+        padding: 7px 10px;
+        font-size: 10px;
+    }
+}
+
+  </style>
+</head>
+<body>
+
+
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item wall-poster" style="left: 0px; top: -150px; --item-size: 700px; z-index: 2; filter: none; box-shadow: none;" onclick="selectTool(null, this, event)">
+  <img src="assets/wallpaper.jpg" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item wall-poster" style="left: 200px; top: -150px; --item-size: 700px; z-index: 2; filter: none; box-shadow: none;" onclick="selectTool(null, this, event)">
+  <img src="assets/wallpaper.jpg" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item wall-poster" style="left: 830px; top: -150px; --item-size: 700px; z-index: 2; filter: none; box-shadow: none;" onclick="selectTool(null, this, event)">
+  <img src="assets/wallpaper.jpg" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item wall-poster" style="left: 0px; top: -35px; --item-size: 700px; z-index: 2; filter: none; box-shadow: none;" onclick="selectTool(null, this, event)">
+  <img src="assets/wallpaper.jpg" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item wall-poster" style="left: 200px; top: -35px; --item-size: 700px; z-index: 2; filter: none; box-shadow: none;" onclick="selectTool(null, this, event)">
+  <img src="assets/wallpaper.jpg" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item wall-poster" style="left: 830px; top: -35px; --item-size: 700px; z-index: 2; filter: none; box-shadow: none;" onclick="selectTool(null, this, event)">
+  <img src="assets/wallpaper.jpg" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+
+
+
+  <div class="room-wall">
+        
+    <!-- <div class="frame-upload-bar">
+      <span>Mirror Image Frame:</span>
+      <label for="mirrorFileInput">Upload Image</label>
+      <input type="file" id="mirrorFileInput" accept="image/*" onchange="loadCustomMirrorImage(event)">
+    </div> -->
+
+    <!-- <div class="inspector-panel" onclick="event.stopPropagation()">
+      <h4>Position Tuner</h4>
+      <div id="activeItemName" style="font-size: 10px; color: #ffb6c1; text-align: center; margin-bottom: 4px;">Click an item on table</div>
+      <div class="coord-display" id="coordText">style="left: 0px; top: 0px;"</div>
+      <div class="slider-group">
+        <label><span>Left (X)</span><span id="xVal">0</span>px</label>
+        <input type="range" id="itemXSlider" min="-1200" max="1000" value="0" oninput="adjustItemPos('x', this.value)" disabled>
+      </div>
+      <div class="slider-group">
+        <label><span>Top (Y)</span><span id="yVal">0</span>px</label>
+        <input type="range" id="itemYSlider" min="-3000" max="1500" value="0" oninput="adjustItemPos('y', this.value)" disabled>
+      </div>
+      <button class="copy-btn" onclick="copyCoords()">Copy Replacement Code</button>
+    </div>
+     -->
+
+    <div class="vanity-setup">
+      
+      <div class="custom-mirror-container">
+        <img id="mirrorFrameImg" class="mirror-frame-img" src="assets/m2.png" alt="Mirror Frame" onerror="handleMirrorImageError(this)">
+
+        <div class="video-viewport">
+          <video class="input_video" autoplay playsinline></video>
+          <canvas class="output_canvas" width="640" height="480"></canvas>
+        </div>
+      </div>
+
+      <div class="vanity-workspace">
+        <div class="vanity-table-surface"></div>
+
+        <!-- 💄 LIPSTICKS -->
+        <div class="makeup-item" data-tool="lipstick" style="left: 162px; top: -3px; --item-size: 80px;" onpointerdown="initDrag(event, this)" onclick="selectTool('lipstick', this, event)">
+          <img src="assets/L1.png" class="item-img" alt="Lipstick 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">💄</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#b41e28"></div>
+        </div>
+        <div class="makeup-item" data-tool="lipstick" style="left: 198px; top: -30px; --item-size: 80px;" onpointerdown="initDrag(event, this)" onclick="selectTool('lipstick', this, event)">
+          <img src="assets/L2.png" class="item-img" alt="Lipstick 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">💄</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#d63031"></div>
+        </div>
+        <div class="makeup-item" data-tool="lipstick" style="left: 246px; top: -20px; --item-size: 80px;" onpointerdown="initDrag(event, this)" onclick="selectTool('lipstick', this, event)">
+          <img src="assets/L3.png" class="item-img" alt="Lipstick 3" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">💄</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#e84393"></div>
+        </div>
+        <div class="makeup-item" data-tool="lipstick" style="left: 365px; top: 7px; --item-size: 80px;" onpointerdown="initDrag(event, this)" onclick="selectTool('lipstick', this, event)">
+          <img src="assets/L4.png" class="item-img" alt="Lipstick 4" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">💄</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#fd79a8"></div>
+        </div>
+
+        <!-- 🖌️ BLUSHES -->
+        <div class="makeup-item" data-tool="blush" style="left: 447px; top: 37px; --item-size: 80px;" onpointerdown="initDrag(event, this)" onclick="selectTool('blush', this, event)">
+          <img src="assets/Blush.png"
+              class="item-img"
+              style="transform: rotate(-35deg);"
+              alt="Blush 1"
+              onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🖌️</span>
+          <div class="color-popup" onclick="event.stopPropagation()">
+            <input type="color" value="#ff6699">
+          </div>
+        </div>
+        <div class="makeup-item" data-tool="blush" style="left: 732px; top: 91px; --item-size: 52px;" onpointerdown="initDrag(event, this)" onclick="selectTool('blush', this, event)">
+          <img src="assets/Blush.png" class="item-img" alt="Blush 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🖌️</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#ff7979"></div>
+        </div>
+
+        <!-- 🖊️ EYELINERS -->
+
+<div class="makeup-item"
+     data-tool="eyeliner"
+     style="left: 550px; top: 15px; --item-size: 62px; transform: rotate(-35deg);"
+     onpointerdown="initDrag(event, this)"
+     onclick="selectTool('eyeliner', this, event)">
+  <img src="assets/eyeliner.png"
+       class="item-img"
+       alt="Eyeliner 1"
+       onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🖊️</span>
+  <div class="color-popup" onclick="event.stopPropagation()">
+    <input type="color" value="#000000">
+  </div>
+</div>
+
+
+<div class="makeup-item"
+     data-tool="eyeliner"
+     style="left: 485px; top: 6px; --item-size: 62px; transform: rotate(10deg);"
+     onpointerdown="initDrag(event, this)"
+     onclick="selectTool('eyeliner', this, event)">
+  <img src="assets/eyeliner.png"
+       class="item-img"
+       alt="Eyeliner 2"
+       onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🖊️</span>
+  <div class="color-popup" onclick="event.stopPropagation()">
+    <input type="color" value="#008B8B">
+  </div>
+</div>
+
+        <!-- 🧽 SPONGE -->
+        <div class="makeup-item" data-tool="foundation" style="left: 394px; top: 74px; --item-size: 82px;" onpointerdown="initDrag(event, this)" onclick="selectTool('foundation', this, event)">
+          <img src="assets/Spray.png" class="item-img" alt="Sponge" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🧽</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#e8c4a2"></div>
+        </div>
+
+
+        <!-- 📦 BACK LAYER ITEMS -->
+
+<!-- Draggable: Bag -->
+<div class="makeup-item" style="left: 90px; top: 70px; --item-size: 110px; z-index: 2;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+  <img src="assets/Bag.png" class="item-img" alt="Bag" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">👜</span>
+</div>
+
+<!-- Non-Draggable: Stand 1 -->
+<div class="makeup-item" style="left: -164px; top: -108px; --item-size: 200px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/Stand1.png" class="item-img" alt="Stand 1" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🪵</span>
+</div>
+
+<!-- Non-Draggable: Storage -->
+<div class="makeup-item" style="left: -164px; top: -163px; --item-size: 200px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/Storage.png" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item" style="left: 783px; top: -317px; --item-size: 200px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/poster1.png" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Makeup Chart -->
+<div class="makeup-item wall-poster"
+     style="left: -70px; top: -306px; --item-size: 150px; z-index: 2; transform: rotate(-11deg);"
+     onclick="selectTool(null, this, event)">
+  <img src="assets/makeupchart.png"
+       class="item-img"
+       alt="Makeup Chart"
+       draggable="false"
+       onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Caution Chart -->
+<div class="makeup-item wall-poster"
+     style="left: -221px; top: -339px; --item-size: 180px; z-index: 2; transform: rotate(-0deg);"
+     onclick="selectTool(null, this, event)">
+  <img src="assets/cautionchart.png"
+       class="item-img"
+       alt="Caution Chart"
+       draggable="false"
+       onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item" style="left: 793px; top: -306px; --item-size: 400px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/P.png" class="item-img" alt="P" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Posters -->
+<div class="makeup-item" style="left: -180px; top: -141px; --item-size: 160px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/P3.png" class="item-img" alt="P3" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Fairylights -->
+<div class="makeup-item" style="left: -317px; top: -689px; --item-size: 500px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/Fairylights.png" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Fairylights -->
+<div class="makeup-item" style="left: 213px; top: -689px; --item-size: 500px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/Fairylights.png" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Fairylights -->
+<div class="makeup-item" style="left: 213px; top: -689px; --item-size: 500px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/Fairylights.png" class="item-img" alt="Storage" draggable="false" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Non-Draggable: Fairylights -->
+<div class="makeup-item" style="left: 694px; top: -710px; --item-size: 500px; z-index: 2;" onclick="selectTool(null, this, event)">
+  <img src="assets/Fairylights.png"
+      class="item-img"
+      style="transform: scaleX(-1);"
+      alt="Storage"
+      draggable="false"
+      onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+  <span class="item-emoji-fallback" style="display:none;">🗄️</span>
+</div>
+
+<!-- Neon Sign (Top Right) -->
+<div id="neonSign1">
+    theshartechclub's 
+</div>
+
+<!-- Neon Sign (Top Right) -->
+<div id="neonSign2">
+    VANITY
+</div>
+
+<!-- Pretty Cursive Quote (Bottom Left) -->
+<div id="prettyQuote">
+    
+</div>
+
+
+        <!-- ✨ FRONT LAYER DECOS -->
+        <div class="makeup-item" style="left: 314px; top: 61px; --item-size: 85px;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+          <img src="assets/blushh.png" class="item-img" alt="blushh" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">📦</span>
+        </div>
+        <div class="makeup-item" data-tool="eyeshadow" style="left: 223px; top: 62px; --item-size: 85px;" onpointerdown="initDrag(event, this)" onclick="selectTool('eyeshadow', this, event)">
+          <img src="assets/Palette.png" class="item-img" alt="eyeshadow" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🎨</span>
+          <div class="color-popup" onclick="event.stopPropagation()"><input type="color" value="#9b59b6"></div>
+        </div>
+        <div class="makeup-item" style="left: 611px; top: -30px; --item-size: 55px;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+          <img src="assets/Perfume.png" class="item-img" alt="Perfume" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🧴</span>
+        </div>
+        <div class="makeup-item" style="left: 501px; top: 71px; --item-size: 100px;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+          <img src="assets/Scrunchie1.png" class="item-img" alt="Scrunchie 1" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🌸</span>
+        </div>
+        <div class="makeup-item" style="left: 573px; top: 52px; --item-size: 100px;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+          <img src="assets/Scrunchie2.png" class="item-img" alt="Scrunchie 2" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🌸</span>
+        </div>
+        <div class="makeup-item" style="left: 646px; top: 66px; --item-size: 100px;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+          <img src="assets/Scrunchie3.png" class="item-img" alt="Scrunchie 3" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">🌸</span>
+        </div>
+        <div class="makeup-item" style="left: 626px; top: -73px; --item-size: 100px;" onpointerdown="initDrag(event, this)" onclick="selectTool(null, this, event)">
+          <img src="assets/Spray.png" class="item-img" alt="Spray" onerror="this.style.display='none'; this.nextElementSibling.style.display='inline';">
+          <span class="item-emoji-fallback" style="display:none;">💨</span>
+        </div>
+
+        <div class="table-actions">
+          <button id="camToggle" class="control-btn off" onclick="toggleCameraState()">Turn Camera ON</button>
+          <button class="control-btn reset-btn" onclick="washFace()">Wash Face (Reset)</button>
+        </div>
+
+
+      </div>
+    </div>
+  </div>
+
+
+
+<script>
+  const videoElement = document.querySelector('.input_video');
+  const canvasElement = document.querySelector('.output_canvas');
+  const canvasCtx = canvasElement.getContext('2d');
+  const camToggleBtn = document.getElementById('camToggle');
+  
+  let isCameraOn = false;
+  let isProcessing = false; // Deadlock lock flag
+  let currentTool = null;
+  let selectedInspectItem = null;
+
+  // Force video element flags to prevent browser autoplay blocks
+  if (videoElement) {
+    videoElement.muted = true;
+    videoElement.playsInline = true;
+    videoElement.autoplay = true;
+  }
+
+  // MediaPipe Setup - Lightweight model complexity prevents 10s+ initial load times
+  const holistic = new Holistic({
+    locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/holistic/${file}`
+  });
+
+  holistic.setOptions({
+    modelComplexity: 0,
+    smoothLandmarks: true,
+    enableSegmentation: false,
+    smoothSegmentation: false,
+    refineFaceLandmarks: false,
+    minDetectionConfidence: 0.5,
+    minTrackingConfidence: 0.5
+  });
+
+  holistic.onResults(onResults);
+
+  // Safe camera loop wrapped in try...finally so processing NEVER freezes
+  const camera = new Camera(videoElement, {
+    onFrame: async () => {
+      if (isCameraOn && !isProcessing) {
+        isProcessing = true;
+        try {
+          await holistic.send({ image: videoElement });
+        } catch (err) {
+          console.error("MediaPipe Frame Error:", err);
+        } finally {
+          isProcessing = false; // Ensures loop always releases
+        }
+      }
+    },
+    width: 640,
+    height: 480
+  });
+
+  async function toggleCameraState() {
+    if (!isCameraOn) {
+      camToggleBtn.innerText = "Patience is also beauty...";
+      camToggleBtn.disabled = true;
+
+      try {
+        // Explicitly request video stream to trigger browser prompt immediately
+        const stream = await navigator.mediaDevices.getUserMedia({ 
+          video: { width: 640, height: 480 } 
+        });
+        videoElement.srcObject = stream;
+
+        await camera.start();
+        isCameraOn = true;
+        camToggleBtn.innerText = "Turn Camera OFF";
+        camToggleBtn.classList.remove('off');
+      } catch (err) {
+        console.error("Camera Access Error:", err);
+        alert("Could not access camera. Please allow webcam permissions or close other video apps.");
+        isCameraOn = false;
+        camToggleBtn.innerText = "Turn Camera ON";
+        camToggleBtn.classList.add('off');
+      } finally {
+        camToggleBtn.disabled = false;
+      }
+    } else {
+      isCameraOn = false;
+      camToggleBtn.innerText = "Turn Camera ON";
+      camToggleBtn.classList.add('off');
+
+      try {
+        await camera.stop();
+      } catch (e) {
+        console.warn("Camera stop issue:", e);
+      }
+
+      if (videoElement.srcObject) {
+        videoElement.srcObject.getTracks().forEach(track => track.stop());
+        videoElement.srcObject = null;
+      }
+      
+      canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+    }
+  }
+
+  function handleMirrorImageError(imgElement) {
+    console.warn("Mirror image file missing. Use top-left button to upload your PNG frame.");
+  }
+
+  function loadCustomMirrorImage(event) {
+    const file = event.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        const mirrorImg = document.getElementById('mirrorFrameImg');
+        if (mirrorImg) {
+          mirrorImg.src = e.target.result;
+          mirrorImg.style.display = 'block';
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  }
+
+  function updateInspector(item) {
+    selectedInspectItem = item;
+    const xSlider = document.getElementById('itemXSlider');
+    const ySlider = document.getElementById('itemYSlider');
+    const nameLabel = document.getElementById('activeItemName');
+    
+    if (xSlider) xSlider.disabled = false;
+    if (ySlider) ySlider.disabled = false;
+
+    const img = item.querySelector('img');
+    const itemTitle = img ? img.alt : (item.querySelector('span')?.innerText || 'Item');
+    if (nameLabel) nameLabel.innerText = `Selected: ${itemTitle}`;
+
+    const currentLeft = parseInt(item.style.left) || 0;
+    const currentTop = parseInt(item.style.top) || 0;
+
+    if (xSlider) xSlider.value = currentLeft;
+    if (ySlider) ySlider.value = currentTop;
+    
+    const xVal = document.getElementById('xVal');
+    const yVal = document.getElementById('yVal');
+    const coordText = document.getElementById('coordText');
+
+    if (xVal) xVal.innerText = currentLeft;
+    if (yVal) yVal.innerText = currentTop;
+    if (coordText) coordText.innerText = `style="left: ${currentLeft}px; top: ${currentTop}px;"`;
+  }
+
+  function adjustItemPos(axis, val) {
+    if (!selectedInspectItem) return;
+    const numVal = parseInt(val) || 0;
+    if (axis === 'x') {
+      selectedInspectItem.style.left = `${numVal}px`;
+      const xVal = document.getElementById('xVal');
+      if (xVal) xVal.innerText = numVal;
+    } else {
+      selectedInspectItem.style.top = `${numVal}px`;
+      const yVal = document.getElementById('yVal');
+      if (yVal) yVal.innerText = numVal;
+    }
+    const curLeft = parseInt(selectedInspectItem.style.left) || 0;
+    const curTop = parseInt(selectedInspectItem.style.top) || 0;
+    const coordText = document.getElementById('coordText');
+    if (coordText) coordText.innerText = `style="left: ${curLeft}px; top: ${curTop}px;"`;
+  }
+
+  function copyCoords() {
+    const coordText = document.getElementById('coordText');
+    if (!coordText) return;
+    navigator.clipboard.writeText(coordText.innerText);
+    alert("Copied snippet:\n" + coordText.innerText);
+  }
+
+  let activeDragItem = null;
+  let startX = 0, startY = 0;
+  let hasDragged = false;
+  let workspaceRect = null;
+
+  function getVanityScale() {
+    const setup = document.querySelector('.vanity-setup');
+    if (!setup) return 1;
+
+    const value = getComputedStyle(setup)
+      .getPropertyValue('--vanity-scale')
+      .trim();
+
+    const parsed = parseFloat(value);
+    return Number.isFinite(parsed) && parsed > 0 ? parsed : 1;
+  }
+
+  function initDrag(e, element) {
+    if (e.target.type === 'color' || e.target.closest('.color-popup')) return;
+
+    activeDragItem = element;
+    hasDragged = false;
+
+    const workspace = document.querySelector('.vanity-workspace');
+    if (workspace) {
+      workspaceRect = workspace.getBoundingClientRect();
+    }
+
+    /*
+       Keep the original 900px coordinate system.
+       On iPad the whole scene is visually scaled, so pointer
+       movement is converted back into the original coordinates.
+    */
+    const scale = getVanityScale();
+    const rect = element.getBoundingClientRect();
+
+    startX = (e.clientX - rect.left) / scale;
+    startY = (e.clientY - rect.top) / scale;
+
+    element.style.zIndex = 100;
+
+    if (element.setPointerCapture && e.pointerId !== undefined) {
+      try {
+        element.setPointerCapture(e.pointerId);
+      } catch (_) {}
+    }
+
+    if (e.preventDefault) e.preventDefault();
+  }
+
+  document.addEventListener('pointermove', (e) => {
+    if (!activeDragItem) return;
+
+    hasDragged = true;
+
+    const workspace = document.querySelector('.vanity-workspace');
+    if (!workspace) return;
+
+    const scale = getVanityScale();
+    const rect = workspace.getBoundingClientRect();
+
+    const newX =
+      (e.clientX - rect.left) / scale - startX;
+
+    const newY =
+      (e.clientY - rect.top) / scale - startY;
+
+    activeDragItem.style.left = `${newX}px`;
+    activeDragItem.style.top = `${newY}px`;
+
+    if (activeDragItem === selectedInspectItem) {
+      updateInspector(activeDragItem);
+    }
+
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+
+  function finishPointerDrag() {
+    if (!activeDragItem) return;
+
+    const img = activeDragItem.querySelector('img');
+    const altText = img ? img.alt : '';
+
+    if (['Bag', 'Stand 1', 'Stand 2', 'Storage'].includes(altText)) {
+      activeDragItem.style.zIndex = 2;
+    } else {
+      activeDragItem.style.zIndex = 10;
+    }
+
+    activeDragItem = null;
+  }
+
+  document.addEventListener('pointerup', finishPointerDrag);
+  document.addEventListener('pointercancel', finishPointerDrag);
+
+  function selectTool(toolName, element, e) {
+    if (hasDragged) return; 
+    updateInspector(element);
+
+    const wasActive = element.classList.contains('active');
+    document.querySelectorAll('.makeup-item').forEach(item => item.classList.remove('active'));
+
+    if (!wasActive && toolName) {
+      element.classList.add('active');
+      currentTool = toolName;
+    } else {
+      currentTool = null;
+    }
+  }
+
+  function getToolColor(toolName, defaultHex) {
+    const activeItem = document.querySelector(`.makeup-item[data-tool="${toolName}"].active`);
+    if (activeItem) {
+      const colorInput = activeItem.querySelector('input[type="color"]');
+      if (colorInput) return colorInput.value;
+    }
+    const firstItem = document.querySelector(`.makeup-item[data-tool="${toolName}"] input[type="color"]`);
+    return firstItem ? firstItem.value : defaultHex;
+  }
+
+  const faceOval = [10, 338, 297, 332, 284, 251, 389, 356, 454, 323, 361, 288, 397, 365, 379, 378, 400, 377, 152, 148, 176, 149, 150, 136, 172, 58, 132, 93, 234, 127, 162, 21, 54, 103, 67, 109];
+
+  let levels = { 
+    lipstick: 0, 
+    foundation: 0, 
+    blushLeft: 0, 
+    blushRight: 0, 
+    eyelinerLeft: 0, 
+    eyelinerRight: 0, 
+    eyeshadow: 0,
+  };
+
+  function washFace() { for (let key in levels) levels[key] = 0; }
+
+  function hexToRgba(hex, alpha) {
+    let r = parseInt(hex.slice(1, 3), 16),
+        g = parseInt(hex.slice(3, 5), 16),
+        b = parseInt(hex.slice(5, 7), 16);
+    return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+  }
+
+  function drawExtendedFaceOval(landmarks, indices) {
+    const noseY = landmarks[1].y * canvasElement.height;
+    indices.forEach((index, i) => {
+      const pt = landmarks[index];
+      const x = pt.x * canvasElement.width;
+      let y = pt.y * canvasElement.height;
+      if (y < noseY) {
+        const extension = (noseY - y) * 0.35;
+        y -= Math.min(30, Math.max(10, extension));
+      }
+      if (i === 0) canvasCtx.moveTo(x, y);
+      else canvasCtx.lineTo(x, y);
+    });
+    canvasCtx.closePath();
+  }
+
+  function getDistance(pt1, pt2) {
+    const dx = pt1.x - pt2.x;
+    const dy = pt1.y - pt2.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+
+  function applyMakeup(finger, target, levelKey, threshold, speed, max) {
+    if (getDistance(finger, target) < threshold) {
+      levels[levelKey] = Math.min(levels[levelKey] + speed, max);
+    }
+  }
+
+  function onResults(results) {
+    if (!isCameraOn) return;
+
+    canvasCtx.save();
+    canvasCtx.clearRect(0, 0, canvasElement.width, canvasElement.height);
+
+    if (results.image) {
+      canvasCtx.drawImage(results.image, 0, 0, canvasElement.width, canvasElement.height);
+    }
+
+    const face = results.faceLandmarks;
+    let activeHand = results.rightHandLandmarks || results.leftHandLandmarks;
+
+    if (face && activeHand && currentTool) {
+      const finger = activeHand[8]; 
+      let targetPt = null;
+      let toolEmoji = "";
+
+      if (currentTool === 'lipstick') {
+        targetPt = face[13]; toolEmoji = "💄";
+        applyMakeup(finger, targetPt, 'lipstick', 0.15, 0.008, 0.45);
+      } 
+      else if (currentTool === 'eyeliner') {
+        targetPt = getDistance(finger, face[159]) < getDistance(finger, face[386]) ? face[159] : face[386];
+        toolEmoji = "🖊️";
+        applyMakeup(finger, face[159], 'eyelinerLeft', 0.15, 0.01, 0.85);
+        applyMakeup(finger, face[386], 'eyelinerRight', 0.15, 0.01, 0.85);
+      }
+    else if (currentTool === 'eyeshadow') {
+            // Targets whichever upper eyelid finger is closest to (Left: 159, Right: 386)
+            targetPt = getDistance(finger, face[159]) < getDistance(finger, face[386]) ? face[159] : face[386];
+            toolEmoji = "🎨"; 
+            applyMakeup(finger, face[159], 'eyeshadow', 0.20, 0.008, 0.65);
+            applyMakeup(finger, face[386], 'eyeshadow', 0.20, 0.008, 0.65);
+          }
+      else if (currentTool === 'blush') {
+        targetPt = getDistance(finger, face[116]) < getDistance(finger, face[345]) ? face[116] : face[345];
+        toolEmoji = "🖌️";
+        applyMakeup(finger, face[116], 'blushLeft', 0.18, 0.006, 0.35);
+        applyMakeup(finger, face[345], 'blushRight', 0.18, 0.006, 0.35);
+      }
+      else if (currentTool === 'foundation') {
+        targetPt = face[1]; toolEmoji = "🧽";
+        applyMakeup(finger, targetPt, 'foundation', 0.30, 0.008, 0.35); 
+      }
+
+      if (finger && targetPt) {
+        const fX = finger.x * canvasElement.width;
+        const fY = finger.y * canvasElement.height;
+        const dx = (targetPt.x - finger.x) * canvasElement.width;
+        const dy = (targetPt.y - finger.y) * canvasElement.height;
+        const angleToTarget = Math.atan2(dy, dx);
+
+        canvasCtx.save();
+        canvasCtx.translate(fX, fY);
+        canvasCtx.rotate(angleToTarget + (Math.PI / 4));
+        canvasCtx.font = "45px Arial";
+        canvasCtx.textAlign = "center";
+        canvasCtx.textBaseline = "middle";
+        canvasCtx.fillText(toolEmoji, 0, 0); 
+        canvasCtx.restore();
+      }
+    }
+
+    if (face) {
+      if (levels.foundation > 0) {
+        canvasCtx.save();
+        canvasCtx.fillStyle = hexToRgba(getToolColor('foundation', '#e8c4a2'), levels.foundation);
+        canvasCtx.filter = 'blur(8px)';
+        canvasCtx.beginPath();
+        drawExtendedFaceOval(face, faceOval);
+        canvasCtx.fill();
+        canvasCtx.restore();
+      }
+
+
+if (levels.eyeshadow > 0) {
+        canvasCtx.save();
+        canvasCtx.fillStyle = hexToRgba(getToolColor('eyeshadow', '#9b59b6'), levels.eyeshadow);
+        canvasCtx.filter = 'blur(4px)';
+
+        const leftEyelinerLine = [33, 246, 161, 160, 159, 158, 133];
+        const rightEyelinerLine = [362, 398, 384, 385, 386, 387, 263];
+
+        // LEFT EYELID: Traces eyeliner line, then projects 20% toward left eyebrow (70)
+        const leftBrow = face[70];
+        canvasCtx.beginPath();
+        leftEyelinerLine.forEach((idx, i) => {
+          let x = face[idx].x * canvasElement.width;
+          let y = face[idx].y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        });
+        [...leftEyelinerLine].reverse().forEach((idx) => {
+          let pt = face[idx];
+          let bx = (pt.x + (leftBrow.x - pt.x) * 0.20) * canvasElement.width;
+          let by = (pt.y + (leftBrow.y - pt.y) * 0.20) * canvasElement.height;
+          canvasCtx.lineTo(bx, by);
+        });
+        canvasCtx.closePath();
+        canvasCtx.fill();
+
+        // RIGHT EYELID: Traces eyeliner line, then projects 20% toward right eyebrow (300)
+        const rightBrow = face[300];
+        canvasCtx.beginPath();
+        rightEyelinerLine.forEach((idx, i) => {
+          let x = face[idx].x * canvasElement.width;
+          let y = face[idx].y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        });
+        [...rightEyelinerLine].reverse().forEach((idx) => {
+          let pt = face[idx];
+          let bx = (pt.x + (rightBrow.x - pt.x) * 0.20) * canvasElement.width;
+          let by = (pt.y + (rightBrow.y - pt.y) * 0.20) * canvasElement.height;
+          canvasCtx.lineTo(bx, by);
+        });
+        canvasCtx.closePath();
+        canvasCtx.fill();
+
+        canvasCtx.restore();
+      }
+
+
+
+      if (levels.lipstick > 0) {
+        canvasCtx.save();
+        canvasCtx.fillStyle = hexToRgba(getToolColor('lipstick', '#b41e28'), levels.lipstick);
+        
+        const outerLipIndices = [61, 185, 40, 39, 37, 0, 267, 269, 270, 409, 291, 375, 321, 405, 314, 17, 84, 181, 91, 146];
+        const innerLipIndices = [78, 95, 88, 178, 87, 14, 317, 402, 318, 324, 308, 415, 310, 311, 312, 13, 82, 81, 42, 183];
+
+        canvasCtx.beginPath();
+        outerLipIndices.forEach((idx, i) => {
+          let pt = face[idx];
+          let x = pt.x * canvasElement.width;
+          let y = pt.y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        });
+        canvasCtx.closePath();
+
+        innerLipIndices.forEach((idx, i) => {
+          let pt = face[idx];
+          let x = pt.x * canvasElement.width;
+          let y = pt.y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        });
+        canvasCtx.closePath();
+
+        canvasCtx.fill('evenodd');
+        canvasCtx.restore();
+      }
+
+      if (levels.eyelinerLeft > 0) {
+        canvasCtx.save();
+        canvasCtx.strokeStyle = hexToRgba(getToolColor('eyeliner', '#000000'), levels.eyelinerLeft);
+        canvasCtx.lineWidth = 4;
+        canvasCtx.lineCap = 'round';
+        canvasCtx.beginPath();
+        [33, 246, 161, 160, 159, 158, 133].forEach((idx, i) => {
+          let pt = face[idx];
+          let x = pt.x * canvasElement.width;
+          let y = pt.y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        });
+        canvasCtx.stroke();
+        canvasCtx.restore();
+      }
+
+      if (levels.eyelinerRight > 0) {
+        canvasCtx.save();
+        canvasCtx.strokeStyle = hexToRgba(getToolColor('eyeliner', '#000000'), levels.eyelinerRight);
+        canvasCtx.lineWidth = 4;
+        canvasCtx.lineCap = 'round';
+        canvasCtx.beginPath();
+        [362, 398, 384, 385, 386, 387, 263].forEach((idx, i) => {
+          let pt = face[idx];
+          let x = pt.x * canvasElement.width;
+          let y = pt.y * canvasElement.height;
+          if (i === 0) canvasCtx.moveTo(x, y);
+          else canvasCtx.lineTo(x, y);
+        });
+        canvasCtx.stroke();
+        canvasCtx.restore();
+      }
+
+      if (levels.blushLeft > 0) {
+        canvasCtx.save();
+        let bPt = face[116];
+        let bx = bPt.x * canvasElement.width;
+        let by = bPt.y * canvasElement.height;
+        let grad = canvasCtx.createRadialGradient(bx, by, 5, bx, by, 35);
+        grad.addColorStop(0, hexToRgba(getToolColor('blush', '#ff6699'), levels.blushLeft));
+        grad.addColorStop(1, 'rgba(255,102,153,0)');
+        canvasCtx.fillStyle = grad;
+        canvasCtx.beginPath();
+        canvasCtx.arc(bx, by, 35, 0, Math.PI * 2);
+        canvasCtx.fill();
+        canvasCtx.restore();
+      }
+
+      if (levels.blushRight > 0) {
+        canvasCtx.save();
+        let bPt = face[345];
+        let bx = bPt.x * canvasElement.width;
+        let by = bPt.y * canvasElement.height;
+        let grad = canvasCtx.createRadialGradient(bx, by, 5, bx, by, 35);
+        grad.addColorStop(0, hexToRgba(getToolColor('blush', '#ff6699'), levels.blushRight));
+        grad.addColorStop(1, 'rgba(255,102,153,0)');
+        canvasCtx.fillStyle = grad;
+        canvasCtx.beginPath();
+        canvasCtx.arc(bx, by, 35, 0, Math.PI * 2);
+        canvasCtx.fill();
+        canvasCtx.restore();
+      }
+    }
+    canvasCtx.restore();
+  }
+</script>
+
+
+
+</body>
+</html>
