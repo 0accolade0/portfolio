@@ -52,6 +52,13 @@ const appData = {
         url: "./apps/cookie/index.html",
         icon: "./apps/cookie/assets/Packaging1.png",
         type: "app"
+    },
+
+    friendshipband: {
+        name: "friendshipband",
+        url: "./apps/friendshipband/index.html",
+        icon: "./apps/friendshipband/assets/charms/kitty1.png",
+        type: "app"
     }
 
 };

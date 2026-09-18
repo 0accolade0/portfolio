@@ -1,0 +1,6482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Friendship Bracelet Room</title>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<link
+    href="https://fonts.googleapis.com/css2?family=Offside&display=swap"
+    rel="stylesheet"
+>
+
+<audio
+    id="charmAddSound"
+    src="assets/charmadd.mp3"
+    preload="auto">
+</audio>
+
+<audio id="charmHoverSound"
+       src="assets/charmhover.mp3"
+       preload="auto"></audio>
+
+<audio id="charmDragSound"
+       src="assets/charmdrag.mp3"
+       preload="auto"></audio>
+
+<audio
+    id="backgroundMusic"
+    src="assets/backgroundmusic.mp3"
+    loop
+    preload="auto">
+</audio>
+
+<style>
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    font-family: "Offside", sans-serif;
+    background: #fed0f1;
+    color: #604953;
+    overflow: hidden;
+}
+
+.page {
+    width: 100%;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+
+/* =====================================================
+   TOP BAR
+===================================================== */
+
+.topbar {
+    height: 70px;
+    width: 100%;
+
+    background: #fff8fb;
+    border-bottom: 1px solid #f0dce4;
+
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    padding: 0 30px;
+
+    flex-shrink: 0;
+
+    position: relative;
+    z-index: 800;
+
+    font-family: "Offside", sans-serif;
+}
+
+.title {
+    font-size: 21px;
+    font-weight: bold;
+}
+
+.subtitle {
+    margin-top: 4px;
+    font-size: 11px;
+    color: #a38390;
+}
+
+.room-status {
+    padding: 8px 14px;
+    border-radius: 10px;
+
+    background: #6D8578;
+    border: none;
+
+    font-size: 11px;
+    color: white;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 5px 12px rgba(109, 133, 120, 0.20);
+}
+
+.topbar-room-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.room-code-status {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.room-code-status strong {
+    color: white;
+    letter-spacing: 1px;
+    font-size: 11px;
+}
+
+
+
+.topbar-room-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.topbar-room-code {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+
+    padding: 8px 14px;
+
+    border-radius: 10px;
+
+    background: #6D8578;
+
+    color: white;
+
+    font-size: 11px;
+
+    white-space: nowrap;
+
+    box-shadow:
+        0 5px 12px rgba(109, 133, 120, 0.20);
+}
+
+.topbar-room-code strong {
+    color: white;
+
+    letter-spacing: 1px;
+
+    font-size: 11px;
+}
+
+
+/* =====================================================
+   ROOM BAR
+===================================================== */
+
+.room-bar {
+    position: fixed;
+
+    top: 82px;
+    left: 18px;
+
+    z-index: 1000;
+
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    padding: 7px 12px;
+
+    background: #6D8578;
+
+    border: none;
+    border-radius: 10px;
+
+    box-shadow:
+        0 5px 12px rgba(109, 133, 120, 0.20);
+
+    font-family: "Offside", sans-serif;
+}
+
+.room-bar-code {
+    font-size: 11px;
+    color: white;
+    white-space: nowrap;
+}
+
+.room-bar-code strong {
+    color: white;
+    letter-spacing: 1px;
+    font-size: 11px;
+}
+
+.connection-dot {
+    width: 8px;
+    height: 8px;
+
+    border-radius: 50%;
+
+    background: #DECABF;
+
+    flex-shrink: 0;
+}
+
+.connection-dot.connected {
+    background: #F87670;
+}
+
+
+/* =====================================================
+   MAIN
+===================================================== */
+
+.main {
+    flex: 1;
+
+    padding: 20px 25px 25px;
+
+    width: 100%;
+
+    min-height: 0;
+}
+
+.table-area {
+    width: 100%;
+    height: 100%;
+
+    min-width: 0;
+    min-height: 0;
+}
+
+.table {
+    width: 100%;
+    height: 100%;
+
+    min-height: 500px;
+
+    border-radius: 35px;
+
+    /*
+       YOUR TABLE IMAGE
+    */
+
+    background-image:
+        url("assets/table.jpg");
+
+background-size: cover;
+
+    background-position:
+        center;
+
+    background-repeat:
+        no-repeat;
+
+
+    /*
+       Keep the existing table shadow
+    */
+
+    box-shadow:
+        0 20px 50px rgba(100,60,40,0.15),
+        inset 0 0 0 8px rgba(255,255,255,0.12);
+
+    position: relative;
+
+    overflow: hidden;
+}
+
+
+/*
+   REMOVE the old fake wood pattern.
+
+   Your table.png is now the entire
+   table surface.
+*/
+
+.table::before {
+    display: none;
+}
+
+
+/* =====================================================
+   TABLE CHARMS
+===================================================== */
+
+.table-charms {
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 500;
+
+    pointer-events: none;
+}
+
+.table-charm {
+    position: absolute;
+
+    width: 64px;
+    height: 64px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: grab;
+
+    pointer-events: auto;
+
+    user-select: none;
+
+    touch-action: none;
+
+    filter:
+        drop-shadow(
+            0 6px 5px rgba(80,40,30,0.18)
+        );
+
+    transition:
+        filter 0.12s ease;
+}
+
+.table-charm:hover {
+    filter:
+        drop-shadow(
+            0 9px 8px rgba(80,40,30,0.25)
+        );
+}
+
+.table-charm.dragging {
+    position: fixed !important;
+
+    cursor: grabbing;
+
+    z-index: 999999 !important;
+
+    transition: none !important;
+
+    pointer-events: none !important;
+
+    filter:
+        drop-shadow(
+            0 12px 12px rgba(80,40,30,0.30)
+        );
+
+    will-change: left, top;
+}
+
+.table-charm .charm-placeholder {
+    width: 44px;
+    height: 44px;
+
+    font-size: 23px;
+}
+
+
+/* =====================================================
+   PLAYERS
+===================================================== */
+
+.player {
+    position: absolute;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 82%;
+
+    text-align: center;
+
+    z-index: 20;
+}
+
+.player-one {
+    top: 22px;
+}
+
+.player-two {
+    bottom: 8px;
+}
+
+
+/* =====================================================
+   PLAYER NAME
+===================================================== */
+
+.player-name {
+    display: inline-flex;
+
+    align-items: center;
+
+    gap: 8px;
+
+    padding: 7px 14px;
+
+    border-radius: 30px;
+
+    background: rgba(255,255,255,0.88);
+
+    color: #6e505c;
+
+    font-size: 12px;
+
+    box-shadow:
+        0 5px 15px rgba(90,50,40,0.08);
+
+    position: relative;
+
+    z-index: 30;
+
+    pointer-events: none;
+}
+
+.player-avatar {
+    width: 26px;
+    height: 26px;
+
+    border-radius: 50%;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background: #ffd7e5;
+
+    color: #e47d9e;
+
+    font-size: 16px;
+}
+
+.player-two .player-avatar {
+    background: #ddd9f3;
+    color: #9388c3;
+}
+
+
+/* =====================================================
+   PLAYER CONTENT
+===================================================== */
+
+.player-content {
+    position: relative;
+
+    width: 100%;
+
+    height: 145px;
+
+    margin-top: 6px;
+}
+
+.player-one .player-content {
+    margin-top: 90px; 
+}
+
+.player-two {
+    bottom: 22px;
+    height: 280px; /* Increased from 190px to push the bottom band UP */
+}
+
+
+/* =====================================================
+   BRACELET
+===================================================== */
+
+.bracelet {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width: 86%;
+    height: 62px;
+
+    background-image: url("assets/friendship-band.png");
+    background-size: 100% 100%;
+    background-position: center;
+    background-repeat: no-repeat;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    z-index: 1;
+}
+
+/* REMOVE OLD BAND TEXTURE */
+.bracelet::after {
+    display: none;
+}
+
+/* REMOVE OLD THREAD */
+.bracelet-thread {
+    display: none;
+}
+
+/* =====================================================
+   PLACED CHARMS
+===================================================== */
+
+.placed-charms {
+    position: absolute;
+
+    left: 6%;
+    right: 6%;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    height: 75px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 2px;
+
+    z-index: 10;
+
+    overflow-x: auto;
+
+    padding: 0 8px;
+
+    scrollbar-width: none;
+}
+
+.placed-charms::-webkit-scrollbar {
+    display: none;
+}
+
+.placed-charm {
+    width: 50px;
+    height: 55px;
+
+    flex-shrink: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: grab;
+
+    position: relative;
+
+    z-index: 11;
+
+    user-select: none;
+
+    touch-action: none;
+}
+
+.placed-charm:hover {
+    transform:
+        translateY(-5px)
+        scale(1.06);
+}
+
+.placed-charm.dragging {
+    cursor: grabbing;
+
+    z-index: 5000 !important;
+
+    transition: none;
+
+    filter:
+        drop-shadow(
+            0 12px 12px rgba(80,40,30,0.30)
+        );
+}
+
+.placed-charm .charm-placeholder {
+    width: 38px;
+    height: 38px;
+
+    font-size: 19px;
+}
+
+.empty-text {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%,-50%);
+
+    color: rgba(255,255,255,0.7);
+
+    font-size: 11px;
+
+    z-index: 8;
+
+    pointer-events: none;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   MESSAGE ZONES
+===================================================== */
+
+/* =====================================================
+   MESSAGE ZONES
+===================================================== */
+
+.message-zone {
+    position: absolute;
+    /* Removed left: 50% and transform to stop centering */
+    width: 240px; /* Fixed width so it sits nicely on the side */
+    
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    
+    pointer-events: none;
+    z-index: 700;
+}
+
+.player-one .message-zone {
+    top: -5px;
+    right: 0; /* Moves Player 1 chat to the right side */
+    align-items: flex-end; /* Aligns the chat bubbles to the right */
+}
+
+.player-two .message-zone {
+    bottom: -5px;
+    left: 0; /* Moves Player 2 chat to the left side */
+    align-items: flex-start; /* Aligns the chat bubbles to the left */
+}
+
+.message-bubble {
+    max-width: 240px;
+    padding: 8px 13px;
+    border-radius: 16px;
+
+    background: rgba(255,248,251,0.97);
+    border: 1px solid #efdce4;
+
+    color: #765967;
+    font-size: 11px;
+    line-height: 1.35;
+
+    box-shadow:
+        0 7px 18px rgba(90,50,60,0.12);
+
+    pointer-events: none;
+
+    word-break: break-word;
+}
+
+.player-two .message-bubble {
+    background: rgba(244,241,252,0.97);
+    color: #70678e;
+}
+
+.message-input-wrap {
+    width: 210px;
+    height: 36px;
+
+    display: flex;
+    align-items: center;
+    gap: 5px;
+
+    padding: 4px 5px 4px 11px;
+
+    background: rgba(255,255,255,0.96);
+    border: 1px solid #efdce4;
+    border-radius: 20px;
+
+    box-shadow:
+        0 6px 18px rgba(90,50,60,0.1);
+
+    pointer-events: auto;
+
+    position: relative;
+
+    z-index: 701;
+}
+
+.message-input {
+    flex: 1;
+    min-width: 0;
+
+    height: 26px;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+
+    color: #604953;
+    font-size: 10px;
+}
+
+.message-input::placeholder {
+    color: #b394a0;
+}
+
+.message-send {
+    width: 28px;
+    height: 28px;
+    flex-shrink: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #F87670;
+    color: white;
+
+    cursor: pointer;
+    font-size: 12px;
+
+    font-family: "Offside", sans-serif;
+}
+
+.message-send:hover {
+    background: #E96762;
+}
+
+.message-input-wrap.hidden-input {
+    display: none;
+}
+
+
+/* =====================================================
+   BOTTOM PLAYER
+===================================================== */
+
+.player-two {
+    bottom: 22px;
+    height: 190px;
+}
+
+.player-two .player-name {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+
+    transform: translateX(-50%);
+
+    margin: 0;
+
+    white-space: nowrap;
+}
+
+.player-two .player-content {
+    position: absolute;
+
+    left: 0;
+    top: 0;
+
+    width: 100%;
+    height: 150px;
+
+    margin: 0;
+}
+
+.player-two .bracelet-area {
+    top: auto;
+    bottom: 0;
+}
+
+.player-two .message-zone {
+    top: auto;
+    bottom: 112px;
+}
+
+
+/* =====================================================
+   COUNT
+===================================================== */
+
+.charm-count {
+    position: absolute;
+
+    bottom: 18px;
+    right: 20px;
+
+    z-index: 750;
+
+    padding: 7px 11px;
+
+    border-radius: 10px;
+
+    background: #6D8578;
+
+    border: none;
+
+    color: white;
+
+    font-size: 10px;
+
+    pointer-events: none;
+
+    box-shadow:
+        0 5px 12px rgba(109, 133, 120, 0.20);
+
+    font-family: "Offside", sans-serif;
+}
+
+
+/* =====================================================
+   ROOM SCREEN
+===================================================== */
+
+.room-screen {
+    position: fixed;
+    inset: 0;
+
+    background: #fed0f1;
+
+    display: flex;
+    flex-direction: column;
+
+    align-items: center;
+    justify-content: center;
+
+    text-align: center;
+
+    z-index: 9999;
+
+    font-family: "Offside", sans-serif;
+
+    overflow-y: auto;
+    overflow-x: hidden;
+
+    padding: 40px 20px;
+
+    box-sizing: border-box;
+}
+
+.room-screen > * {
+    box-sizing: border-box;
+    width: min(420px, 100%);
+}
+
+
+/* =====================================================
+   ROOM TITLE
+===================================================== */
+
+.room-card-title {
+    position: relative;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 120px;
+
+    width: max-content;
+    max-width: 100%;
+
+    padding: 25px 35px;
+    margin: 0 auto 10px auto;
+
+    font-family: "Offside", sans-serif;
+    font-size: 20px;
+    font-weight: normal;
+
+    color: #604953;
+
+    text-align: center;
+    line-height: 1;
+
+    overflow: visible;
+    white-space: nowrap;
+
+    perspective: 700px;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   STRING
+===================================================== */
+
+.room-card-title::before {
+    content: "";
+
+    position: absolute;
+
+    left: -40px;
+    right: -40px;
+
+    top: 58%;
+
+    height: 3px;
+
+    background: #604953;
+
+    opacity: 0.45;
+
+    border-radius: 10px;
+
+    z-index: 0;
+}
+
+
+/* =====================================================
+   BEADS
+===================================================== */
+
+.room-card-title .title-letter {
+    position: relative;
+
+    display: inline-flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 100px;
+    height: 62px;
+
+    flex: 0 0 58px;
+
+    margin: 0 4px;
+
+    color: #604953;
+
+    z-index: 2;
+
+    translate: 0 var(--curve-y);
+
+    rotate: var(--curve-rotate);
+
+    transform-style: preserve-3d;
+
+    animation:
+        beadAxisSpin 3s ease-in-out infinite;
+
+    animation-delay: var(--delay);
+
+    text-shadow:
+        0 1px 1px rgba(255, 255, 255, 0.7);
+
+    transition:
+        font-size 0.2s ease;
+}
+
+.room-card-title .title-letter::before {
+    content: "";
+
+    position: absolute;
+
+    width: 52px;
+    height: 52px;
+
+    border-radius: 50%;
+
+    background: #F87670;
+
+    border: 2px solid #604953;
+
+    box-shadow:
+        0 3px 5px rgba(96, 73, 83, 0.18),
+        inset 3px 3px 5px rgba(255, 255, 255, 0.65);
+
+    z-index: -1;
+
+    transform: translateZ(-1px);
+}
+
+.room-card-title .title-letter:nth-child(4n + 1)::before,
+.room-card-title .title-letter:nth-child(4n + 2)::before {
+    background: #F87670;
+}
+
+.room-card-title .title-letter:nth-child(4n + 3)::before,
+.room-card-title .title-letter:nth-child(4n + 4)::before {
+    background: #DECABF;
+}
+
+
+/* =====================================================
+   BEAD ROTATION
+===================================================== */
+
+@keyframes beadAxisSpin {
+
+    0% {
+        transform: rotateX(0deg);
+    }
+
+    45% {
+        transform: rotateX(180deg);
+    }
+
+    50% {
+        transform: rotateX(180deg);
+    }
+
+    95% {
+        transform: rotateX(360deg);
+    }
+
+    100% {
+        transform: rotateX(360deg);
+    }
+}
+
+
+/* =====================================================
+   ROOM SUBTITLE
+===================================================== */
+
+.room-card-subtitle {
+    width: min(420px, 100%);
+
+    margin: 0 auto 25px auto;
+
+    font-family: "Offside", sans-serif;
+    font-size: 16px;
+
+    color: #a38390;
+
+    line-height: 1.6;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   ROOM CHOICE
+===================================================== */
+
+#roomChoice {
+    width: min(420px, 100%);
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 10px;
+
+    margin: 0 auto;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   PLAYER NAME INPUT
+===================================================== */
+
+.room-player-name {
+    display: block;
+
+    width: 100%;
+    height: 44px;
+
+    margin: 0 0 12px 0;
+
+    border: 1px solid #efdce4;
+
+    border-radius: 22px;
+
+    padding: 0 15px;
+
+    outline: none;
+
+    text-align: center;
+
+    color: #604953;
+
+    background: white;
+
+    font-family: "Offside", sans-serif;
+    font-size: 20px;
+
+    box-sizing: border-box;
+}
+
+.room-player-name::placeholder,
+.room-code-input::placeholder {
+    color: #b394a0;
+}
+
+.room-player-name:focus,
+.room-code-input:focus {
+    border-color: #e7a2bb;
+
+    box-shadow:
+        0 0 0 3px rgba(243, 181, 203, 0.15);
+}
+
+
+/* =====================================================
+   ROOM BUTTONS
+===================================================== */
+
+.room-button {
+    width: 100%;
+    height: 45px;
+
+    border: none;
+    border-radius: 10px;
+
+    background: #F87670;
+
+    color: white;
+
+    font-family: "Offside", sans-serif;
+    font-size: 20px;
+    font-weight: normal;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.15s ease,
+        background 0.15s ease,
+        box-shadow 0.15s ease;
+
+    box-sizing: border-box;
+}
+
+.room-button:hover {
+    background: #E96762;
+
+    transform: translateY(-1px);
+
+    box-shadow:
+        0 5px 12px rgba(248, 118, 112, 0.25);
+}
+
+.room-button:active {
+    transform: translateY(0);
+}
+
+.room-button.secondary {
+    background: #DECABF;
+
+    color: #604953;
+}
+
+.room-button.secondary:hover {
+    background: #D0B9AD;
+
+    box-shadow:
+        0 5px 12px rgba(222, 202, 191, 0.35);
+}
+
+
+/* =====================================================
+   ROOM CODE INPUT
+===================================================== */
+
+.room-code-input {
+    width: 100%;
+    height: 45px;
+
+    margin: 0 0 10px 0;
+
+    padding: 0 15px;
+
+    border: 1px solid #efdce4;
+
+    border-radius: 22px;
+
+    outline: none;
+
+    background: white;
+
+    color: #604953;
+
+    text-align: center;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 20px;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    box-sizing: border-box;
+}
+
+
+/* =====================================================
+   BACK BUTTON
+===================================================== */
+
+.room-divider {
+    display: none;
+}
+
+.room-back-button {
+    display: block;
+
+    margin: 14px auto 0 auto;
+
+    border: none;
+
+    background: transparent;
+
+    color: #a38390;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 20px;
+
+    cursor: pointer;
+}
+
+.room-back-button:hover {
+    color: #d9799d;
+}
+
+
+/* =====================================================
+   ROOM CODE DISPLAY
+===================================================== */
+
+.room-code-display {
+    display: none;
+
+    width: min(420px, 100%);
+
+    margin: 20px auto 0 auto;
+
+    padding: 15px;
+
+    border-radius: 20px;
+
+    background: #fff;
+
+    border: 1px solid #efdce4;
+
+    box-sizing: border-box;
+}
+
+.room-card-code-label {
+    font-family: "Offside", sans-serif;
+
+    font-size: 9px;
+
+    color: #a38390;
+
+    margin-bottom: 6px;
+}
+
+.room-card-code {
+    font-family: "Offside", sans-serif;
+
+    font-size: 22px;
+
+    font-weight: normal;
+
+    letter-spacing: 4px;
+
+    color: #d9799d;
+
+    margin-bottom: 12px;
+}
+
+.room-copy-button {
+    border: none;
+
+    background: #f8e5ed;
+
+    color: #9a6679;
+
+    padding: 8px 15px;
+
+    border-radius: 15px;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 9px;
+
+    cursor: pointer;
+}
+
+.room-copy-button:hover {
+    background: #f3d9e4;
+}
+
+.room-status-message {
+    width: min(420px, 100%);
+
+    min-height: 18px;
+
+    margin: 15px auto 0 auto;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 9px;
+
+    color: #a38390;
+
+    text-align: center;
+}
+
+
+/* =====================================================
+   CHARM COLORS
+===================================================== */
+
+/* =====================================================
+   CUSTOM CHARM ASSETS
+===================================================== */
+
+/* =====================================================
+   CUSTOM CHARM ASSETS
+===================================================== */
+
+.charm-placeholder {
+    width: 42px;
+    height: 42px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    background-color: transparent !important;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    border-radius: 0;
+
+    box-shadow: none;
+
+    font-size: 0;
+    color: transparent;
+}
+
+
+/* =====================================================
+   INDIVIDUAL CHARM ASSETS
+===================================================== */
+
+/* =====================================================
+   27 CHARMS
+===================================================== */
+
+.charm-avocado {
+    background-image: url("assets/charms/avocado.png");
+}
+
+.charm-bag1 {
+    background-image: url("assets/charms/bag1.png");
+}
+
+.charm-bag2 {
+    background-image: url("assets/charms/bag2.png");
+}
+
+.charm-bow {
+    background-image: url("assets/charms/bow.png");
+}
+
+.charm-bubblepet1 {
+    background-image: url("assets/charms/bubblepet1.png");
+}
+
+.charm-bubblepet2 {
+    background-image: url("assets/charms/bubblepet2.png");
+}
+
+.charm-chilli {
+    background-image: url("assets/charms/chilli.png");
+}
+
+.charm-choco {
+    background-image: url("assets/charms/choco.png");
+}
+
+.charm-drink1 {
+    background-image: url("assets/charms/drink1.png");
+}
+
+.charm-drink2 {
+    background-image: url("assets/charms/drink2.png");
+}
+
+.charm-drink3 {
+    background-image: url("assets/charms/drink3.png");
+}
+
+.charm-flamingo {
+    background-image: url("assets/charms/flamingo.png");
+}
+
+.charm-flower1 {
+    background-image: url("assets/charms/flower1.png");
+}
+
+.charm-flower2 {
+    background-image: url("assets/charms/flower2.png");
+}
+
+.charm-flower3 {
+    background-image: url("assets/charms/flower3.png");
+}
+
+.charm-heart1 {
+    background-image: url("assets/charms/heart1.png");
+}
+
+.charm-heart2 {
+    background-image: url("assets/charms/heart2.png");
+}
+
+.charm-kitty1 {
+    background-image: url("assets/charms/kitty1.png");
+}
+
+.charm-kitty2 {
+    background-image: url("assets/charms/kitty2.png");
+}
+
+.charm-lip1 {
+    background-image: url("assets/charms/lip1.png");
+}
+
+.charm-lip2 {
+    background-image: url("assets/charms/lip2.png");
+}
+
+.charm-pastry {
+    background-image: url("assets/charms/pastry.png");
+}
+
+.charm-star1 {
+    background-image: url("assets/charms/star1.png");
+}
+
+.charm-star2 {
+    background-image: url("assets/charms/star2.png");
+}
+
+.charm-star3 {
+    background-image: url("assets/charms/star3.png");
+}
+
+.charm-star4 {
+    background-image: url("assets/charms/star4.png");
+}
+
+.charm-toast {
+    background-image: url("assets/charms/toast.png");
+}
+
+
+/* =====================================================
+   SAVE CONTROLS
+===================================================== */
+
+#braceletSaveControls {
+    display: none;
+
+    position: fixed;
+    bottom: 30px;
+    left: 50px;
+
+    gap: 8px;
+
+    z-index: 999999;
+}
+
+#saveBraceletButton {
+    border: none;
+    border-radius: 10px;
+
+    padding: 7px 12px;
+
+    background: #F87670;
+    color: white;
+
+    font-family: "Offside", sans-serif;
+    font-size: 12px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 12px rgba(248, 118, 112, 0.20);
+}
+
+#openGalleryButton {
+    border: none;
+    border-radius: 10px;
+
+    padding: 7px 12px;
+
+    background: #DECABF;
+    color: #604953;
+
+    font-family: "Offside", sans-serif;
+    font-size: 12px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 5px 12px rgba(222, 202, 191, 0.25);
+}
+
+
+/* =====================================================
+   GALLERY OVERLAY
+===================================================== */
+
+#galleryOverlay {
+    display: none;
+
+    position: fixed;
+    inset: 0;
+
+    z-index: 1000000;
+
+    align-items: center;
+    justify-content: center;
+
+    background: rgba(255, 220, 230, 0.45);
+
+    backdrop-filter: blur(5px);
+
+    font-family: "Offside", sans-serif;
+}
+
+
+#galleryPopup {
+    position: relative;
+
+    width: min(700px, 90vw);
+    height: min(600px, 80vh);
+
+    background: #fffaf2;
+
+    border: 2px solid #ffb8d0;
+
+    border-radius: 22px;
+
+    box-shadow:
+        0 15px 50px rgba(180, 80, 120, 0.25);
+
+    padding: 25px;
+
+    box-sizing: border-box;
+
+    overflow-y: auto;
+
+    font-family: "Offside", sans-serif;
+}
+
+
+#closeGalleryButton {
+    position: absolute;
+
+    top: 10px;
+    right: 15px;
+
+    border: none;
+
+    background: none;
+
+    color: #d77b9b;
+
+    font-size: 27px;
+
+    cursor: pointer;
+
+    font-family: "Offside", sans-serif;
+}
+
+
+#galleryTitle {
+    text-align: center;
+
+    color: #d95c88;
+
+    font-size: 23px;
+
+    font-weight: bold;
+
+    margin-bottom: 5px;
+
+    font-family: "Offside", sans-serif;
+}
+
+
+#gallerySubtitle {
+    text-align: center;
+
+    color: #b58296;
+
+    font-size: 13px;
+
+    margin-bottom: 20px;
+
+    font-family: "Offside", sans-serif;
+}
+
+
+#galleryGrid {
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            auto-fill,
+            minmax(360px, 1fr)
+        );
+
+    gap: 18px;
+
+    width: 100%;
+
+    box-sizing: border-box;
+
+    font-family: "Offside", sans-serif;
+}
+
+
+/* =====================================================
+   SAVED GALLERY BLOCKS
+===================================================== */
+
+#galleryGrid > * {
+    background: #fdf5e9;
+
+    border: 2px solid #f3aec7;
+
+    border-radius: 16px;
+
+    box-sizing: border-box;
+
+    font-family: "Offside", sans-serif;
+
+    box-shadow:
+        0 5px 15px rgba(210, 130, 155, 0.10);
+
+    padding: 12px 15px;
+}
+/* =====================================================
+   GALLERY BRACELET
+===================================================== */
+
+.galleryBraceletPreview {
+    position: relative;
+
+    width: 100%;
+    height: 70px;
+
+    margin-top: 10px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    overflow: visible;
+
+    box-sizing: border-box;
+}
+
+.galleryBraceletString {
+    position: absolute;
+
+    left: 3%;
+    right: 3%;
+
+    top: 50%;
+    transform: translateY(-50%);
+
+    height: 62px;
+
+    background-image: url("assets/friendship-band.png");
+
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: contain;
+
+    z-index: 1;
+
+    pointer-events: none;
+}
+
+/* =====================================================
+   GALLERY BRACELET CHARMS
+===================================================== */
+
+.galleryBraceletCharms {
+    position: relative;
+
+    z-index: 2;
+
+    width: auto;
+
+    display: flex !important;
+
+    flex-direction: row !important;
+
+    flex-wrap: nowrap !important;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 2px !important;
+
+    margin: 0 auto;
+
+    padding: 0;
+
+    white-space: nowrap;
+
+    overflow: visible;
+}
+
+
+/* =====================================================
+   GALLERY CUSTOM CHARM ASSET
+===================================================== */
+
+.galleryCharm {
+    display: flex !important;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 32px !important;
+    min-width: 32px !important;
+    max-width: 32px !important;
+
+    height: 32px !important;
+    min-height: 32px !important;
+    max-height: 32px !important;
+
+    flex: 0 0 32px !important;
+
+    box-sizing: border-box;
+
+    background-color: transparent !important;
+    background-repeat: no-repeat !important;
+    background-position: center !important;
+    background-size: contain !important;
+
+    border: none !important;
+    border-radius: 0 !important;
+
+    box-shadow: none !important;
+
+    font-size: 0 !important;
+    color: transparent !important;
+
+    line-height: 1;
+
+    white-space: nowrap;
+}
+
+
+/* =====================================================
+   RESPONSIVE
+===================================================== */
+
+@media (max-width: 850px) {
+
+    .main {
+        padding: 15px;
+    }
+
+    .player {
+        width: 92%;
+    }
+
+    .bracelet {
+        width: 94%;
+    }
+
+}
+
+
+@media (max-width: 650px) {
+
+    .topbar {
+        height: 65px;
+
+        padding:
+            0 15px;
+    }
+
+    .title {
+        font-size: 17px;
+    }
+
+    .subtitle,
+    .room-status {
+        display: none;
+    }
+
+    .room-bar {
+        top: 74px;
+        left: 10px;
+    }
+
+    .main {
+        padding: 10px;
+
+        height:
+            calc(100vh - 65px);
+    }
+
+    .table {
+        min-height: 0;
+
+        border-radius: 25px;
+    }
+
+    .player {
+        width: 94%;
+    }
+
+    .bracelet {
+        width: 95%;
+    }
+
+    .player-content {
+        height: 135px;
+    }
+
+    .message-input-wrap {
+        width: 180px;
+    }
+
+    .table-charm {
+        width: 56px;
+        height: 56px;
+    }
+
+    .charm-count {
+        bottom: 10px;
+        right: 10px;
+    }
+
+}
+
+
+@media (max-height: 700px) {
+
+    .player-one {
+        top: 12px;
+    }
+
+    .player-two {
+        bottom: 5px;
+    }
+
+    .player-content {
+        height: 125px;
+    }
+
+    .bracelet-area {
+        height: 100px;
+    }
+
+    .bracelet {
+        height: 54px;
+    }
+
+}
+
+
+@media (max-width: 600px) {
+
+    .room-screen {
+        padding: 30px 15px;
+    }
+
+    .room-card-title {
+        width: 100%;
+
+        min-height: 100px;
+
+        padding: 20px 5px;
+
+        font-size: 26px;
+
+        perspective: 500px;
+    }
+
+    .room-card-title .title-letter {
+        width: 44px;
+        height: 50px;
+
+        flex: 0 0 44px;
+
+        margin: 0 2px;
+
+        font-size: 26px;
+    }
+
+    .room-card-title .title-letter::before {
+        width: 40px;
+        height: 40px;
+    }
+
+    .room-card-subtitle {
+        font-size: 10px;
+
+        margin-bottom: 20px;
+    }
+
+    .room-card-title:hover .title-letter {
+        font-size: 29px;
+    }
+
+}
+
+
+@media (max-width: 500px) {
+
+    .room-bar {
+        max-width: calc(100% - 20px);
+    }
+
+    .room-bar-code {
+        font-size: 9px;
+    }
+
+    .player {
+        width: 96%;
+    }
+
+    .player-name {
+        padding:
+            5px 10px;
+
+        font-size: 10px;
+    }
+
+    .player-avatar {
+        width: 22px;
+        height: 22px;
+        font-size: 13px;
+    }
+
+    .bracelet {
+        width: 96%;
+    }
+
+    .message-input-wrap {
+        width: 170px;
+        height: 34px;
+    }
+
+    .message-send {
+        width: 26px;
+        height: 26px;
+    }
+
+    .message-bubble {
+        max-width: 200px;
+    }
+
+}
+
+
+@media (max-width: 400px) {
+
+    .room-screen {
+        padding: 25px 10px;
+    }
+
+    .room-card-title {
+        font-size: 22px;
+
+        padding-left: 0;
+        padding-right: 0;
+    }
+
+    .room-card-title .title-letter {
+        width: 38px;
+        height: 46px;
+
+        flex: 0 0 38px;
+
+        margin: 0 1px;
+
+        font-size: 22px;
+    }
+
+    .room-card-title .title-letter::before {
+        width: 36px;
+        height: 36px;
+    }
+
+}
+
+/* =====================================================
+   BRACELET FULL WARNING
+===================================================== */
+
+
+/* =====================================================
+   BRACELET FULL WARNING
+===================================================== */
+
+.bracelet-full-warning {
+
+    position: fixed;
+
+    left: 50%;
+    top: 50%;
+
+    z-index: 999999;
+
+    white-space: nowrap;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 20px;
+
+    font-weight: normal;
+
+    color: #111111;
+
+    -webkit-text-stroke: 1px #ff78b7;
+
+    text-shadow: none;
+
+    background: transparent !important;
+
+    border: none !important;
+
+    box-shadow: none !important;
+
+    padding: 0 !important;
+
+    margin: 0 !important;
+
+    pointer-events: none;
+
+    opacity: 0;
+
+    transform:
+        translate(-50%, -50%)
+        scale(0.8);
+
+    animation:
+        braceletWarningPop
+        0.3s
+        ease-out
+        forwards;
+}
+
+
+/* Individual letters */
+
+.bracelet-warning-letter {
+
+    display: inline-block;
+
+    color: #111111;
+
+    -webkit-text-stroke: 1px #ff78b7;
+
+    background: transparent !important;
+
+    animation:
+        braceletLetterShake
+        0.4s
+        ease-in-out
+        infinite
+        alternate;
+
+}
+
+
+/* Spaces */
+
+.bracelet-warning-space {
+
+    display: inline-block;
+
+    width: 7px;
+
+}
+
+
+/* Pop */
+
+@keyframes braceletWarningPop {
+
+    0% {
+
+        opacity: 0;
+
+        transform:
+            translate(-50%, -50%)
+            scale(0.7)
+            rotate(-2deg);
+
+    }
+
+    70% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1.05)
+            rotate(1deg);
+
+    }
+
+    100% {
+
+        opacity: 1;
+
+        transform:
+            translate(-50%, -50%)
+            scale(1)
+            rotate(0deg);
+
+    }
+
+}
+
+
+/* Tiny shaky letters */
+
+@keyframes braceletLetterShake {
+
+    0% {
+
+        transform:
+            translateY(-1px)
+            rotate(-1.5deg);
+
+    }
+
+    100% {
+
+        transform:
+            translateY(1px)
+            rotate(1.5deg);
+
+    }
+
+}
+
+
+</style>
+
+
+</head>
+
+<body>
+
+<div id="braceletSaveControls">
+
+    <button id="saveBraceletButton" type="button">
+        ♡ Save Bracelet
+    </button>
+
+    <button id="openGalleryButton" type="button">
+        ✦ Gallery
+    </button>
+
+</div>
+
+<!-- =====================================================
+     ROOM SCREEN
+===================================================== -->
+
+<div class="room-screen" id="roomScreen">
+
+    <div class="room-card">
+
+        <div class="room-card-title">
+            ♡ tst ♡
+        </div>
+
+        <div class="room-card-subtitle">
+            Make a friendship bracelet together!
+        </div>
+
+        <!-- STEP 1: CHOOSE WHAT YOU WANT TO DO -->
+        <div id="roomChoice">
+
+            <button
+                class="room-button"
+                id="showCreateRoomButton"
+            >
+                Create Room
+            </button>
+
+            <button
+                class="room-button secondary"
+                id="showJoinRoomButton"
+            >
+                Join Room
+            </button>
+
+        </div>
+
+        <!-- CREATE ROOM -->
+        <div id="createRoomPanel" style="display:none;">
+
+            <input
+                type="text"
+                id="playerNameInput"
+                class="room-player-name"
+                placeholder="Your name"
+                maxlength="20"
+                autocomplete="off"
+            >
+
+            <button
+                class="room-button"
+                id="createRoomButton"
+            >
+                Create Room
+            </button>
+
+            <button
+                class="room-back-button"
+                id="backFromCreateButton"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+        <!-- JOIN ROOM -->
+        <div id="joinRoomPanel" style="display:none;">
+
+            <input
+                type="text"
+                id="joinPlayerNameInput"
+                class="room-player-name"
+                placeholder="Your name"
+                maxlength="20"
+                autocomplete="off"
+            >
+
+            <input
+                type="text"
+                id="joinRoomInput"
+                class="room-code-input"
+                placeholder="ROOM CODE"
+                maxlength="6"
+                autocomplete="off"
+            >
+
+            <button
+                class="room-button secondary"
+                id="joinRoomButton"
+            >
+                Join Room
+            </button>
+
+            <button
+                class="room-back-button"
+                id="backFromJoinButton"
+            >
+                ← Back
+            </button>
+
+        </div>
+
+        <!-- CREATED ROOM CODE -->
+        <div
+            class="room-code-display"
+            id="roomCodeDisplayCard"
+        >
+
+            <div class="room-card-code-label">
+                Send this code to your friend
+            </div>
+
+            <div
+                class="room-card-code"
+                id="roomCardCode"
+            >
+                ------
+            </div>
+
+            <button
+                class="room-copy-button"
+                id="copyRoomButton"
+            >
+                Copy Room Code
+            </button>
+
+        </div>
+
+        <div
+            class="room-status-message"
+            id="roomStatusMessage"
+        ></div>
+
+    </div>
+
+</div>
+
+<div class="page">
+
+<header class="topbar">
+
+    <div>
+
+        <div class="title">
+            ♡ theshartechclub's studio ♡
+        </div>
+
+        <div class="subtitle">
+            make something special together
+        </div>
+
+    </div>
+
+    <div class="topbar-room-info">
+
+        <!-- ROOM CODE -->
+        <div class="topbar-room-code">
+
+            <span>Room:</span>
+
+            <strong id="roomBarCode">
+                ------
+            </strong>
+
+        </div>
+
+        <!-- CONNECTION / WAITING STATUS -->
+        <div
+            class="room-status"
+            id="roomStatus"
+        >
+            ● connecting...
+        </div>
+
+        <!-- KEEP THESE FOR JAVASCRIPT -->
+        <div
+            id="connectionDot"
+            class="connection-dot"
+            style="display:none;"
+        ></div>
+
+        <span
+            id="playerRole"
+            style="display:none;"
+        >
+            connecting...
+        </span>
+
+    </div>
+
+</header>
+
+
+
+<main class="main">
+
+<section class="table-area">
+
+<div class="table" id="table">
+
+    <div
+        class="table-charms"
+        id="tableCharms"
+    ></div>
+
+    <div
+        class="charm-count"
+        id="charmCount"
+    >
+        ✦ charms left: 0
+    </div>
+
+    <!-- =================================================
+         PLAYER ONE
+    ================================================= -->
+
+    <div class="player player-one">
+
+        <div class="player-name">
+
+            <div class="player-avatar">
+                ♡
+            </div>
+
+            <span id="player1Name">
+                Player 1
+            </span>
+
+        </div>
+
+        <div class="player-content">
+
+            <div
+                class="bracelet-area"
+                data-side="player1"
+            >
+
+                <div class="bracelet">
+
+                    <div class="bracelet-thread"></div>
+
+                    <div
+                        class="empty-text"
+                        id="player1Empty"
+                    >
+                        drop charms here
+                    </div>
+
+                    <div
+                        class="placed-charms"
+                        id="player1Charms"
+                    ></div>
+
+                </div>
+
+            </div>
+
+            <div
+                class="message-zone"
+                id="player1MessageZone"
+            >
+
+                <div
+                    class="message-bubble"
+                    id="player1Message"
+                    style="display:none;"
+                ></div>
+
+                <div
+                    class="message-input-wrap"
+                    id="player1InputWrap"
+                >
+
+                    <input
+                        type="text"
+                        class="message-input"
+                        id="player1MessageInput"
+                        placeholder="Say something..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        class="message-send"
+                        id="player1MessageSend"
+                    >
+                        ♡
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+    <!-- =================================================
+         PLAYER TWO
+    ================================================= -->
+
+    <div class="player player-two">
+
+        <div class="player-name">
+
+            <div class="player-avatar">
+                ♡
+            </div>
+
+            <span id="player2Name">
+                Waiting for friend
+            </span>
+
+        </div>
+
+        <div class="player-content">
+
+            <div
+                class="bracelet-area"
+                data-side="player2"
+            >
+
+                <div class="bracelet">
+
+                    <div class="bracelet-thread"></div>
+
+                    <div
+                        class="empty-text"
+                        id="player2Empty"
+                    >
+                        drop charms here
+                    </div>
+
+                    <div
+                        class="placed-charms"
+                        id="player2Charms"
+                    ></div>
+
+                </div>
+
+            </div>
+
+            <div
+                class="message-zone"
+                id="player2MessageZone"
+            >
+
+                <div
+                    class="message-bubble"
+                    id="player2Message"
+                    style="display:none;"
+                ></div>
+
+                <div
+                    class="message-input-wrap"
+                    id="player2InputWrap"
+                >
+
+                    <input
+                        type="text"
+                        class="message-input"
+                        id="player2MessageInput"
+                        placeholder="Say something..."
+                        autocomplete="off"
+                    >
+
+                    <button
+                        class="message-send"
+                        id="player2MessageSend"
+                    >
+                        ♡
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+</section>
+
+</main>
+
+</div>
+
+<div id="galleryOverlay">
+
+    <div id="galleryPopup">
+
+        <button id="closeGalleryButton" type="button">
+            ×
+        </button>
+
+        <div id="galleryTitle">
+            ♡ Bracelet Gallery ♡
+        </div>
+
+        <div id="gallerySubtitle">
+           ♡♡♡ made by besties ♡♡♡
+        </div>
+
+        <div id="galleryGrid"></div>
+
+    </div>
+
+</div>
+
+<script>
+
+/* =====================================================
+   FIREBASE CONFIG
+   KEEP YOUR EXISTING CONFIG HERE
+===================================================== */
+
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBJP26HYxWaXRIc2HVTtEbkakylRSj8RjY",
+  authDomain: "friendshipbracelet.firebaseapp.com",
+  projectId: "friendshipbracelet",
+  storageBucket: "friendshipbracelet.firebasestorage.app",
+  messagingSenderId: "291707801639",
+  appId: "1:291707801639:web:56cff1c74ea6259637be02"
+};
+
+/* =====================================================
+   FIREBASE
+===================================================== */
+
+firebase.initializeApp(firebaseConfig);
+
+const auth =
+    firebase.auth();
+
+const db =
+    firebase.database();
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let myUid = null;
+
+let roomId = null;
+
+let mySide = null;
+
+let roomRef = null;
+
+let charmsRef = null;
+
+let messagesRef = null;
+
+let tableCharmsRef = null;
+
+let myName = "";
+
+
+/* =====================================================
+   DRAG STATE
+===================================================== */
+
+let activeDrag = null;
+let dragPreview = null;
+
+
+/*
+   Last safe position while dragging.
+
+   This is what prevents a charm from
+   entering the message/input areas.
+*/
+
+let lastSafeTablePosition = null;
+
+/*
+   Cached chat rectangles.
+
+   IMPORTANT:
+   These are calculated ONLY when dragging starts.
+   We do NOT calculate them on every pointermove.
+*/
+let cachedForbiddenChatRects = [];
+
+
+/* =====================================================
+   CHARM TYPES
+   EXACTLY 27
+===================================================== */
+
+const charmTypes = [
+
+    "avocado",
+    "bag1",
+    "bag2",
+    "bow",
+    "bubblepet1",
+    "bubblepet2",
+    "chilli",
+    "choco",
+    "drink1",
+    "drink2",
+    "drink3",
+    "flamingo",
+    "flower1",
+    "flower2",
+    "flower3",
+    "heart1",
+    "heart2",
+    "kitty1",
+    "kitty2",
+    "lip1",
+    "lip2",
+    "pastry",
+    "star1",
+    "star2",
+    "star3",
+    "star4",
+    "toast"
+
+];
+
+
+/* =====================================================
+   CHARM MAP
+===================================================== */
+
+const charmMap = {
+
+    avocado: ["", "charm-avocado"],
+
+    bag1: ["", "charm-bag1"],
+    bag2: ["", "charm-bag2"],
+
+    bow: ["", "charm-bow"],
+
+    bubblepet1: ["", "charm-bubblepet1"],
+    bubblepet2: ["", "charm-bubblepet2"],
+
+    chilli: ["", "charm-chilli"],
+
+    choco: ["", "charm-choco"],
+
+    drink1: ["", "charm-drink1"],
+    drink2: ["", "charm-drink2"],
+    drink3: ["", "charm-drink3"],
+
+    flamingo: ["", "charm-flamingo"],
+
+    flower1: ["", "charm-flower1"],
+    flower2: ["", "charm-flower2"],
+    flower3: ["", "charm-flower3"],
+
+    heart1: ["", "charm-heart1"],
+    heart2: ["", "charm-heart2"],
+
+    kitty1: ["", "charm-kitty1"],
+    kitty2: ["", "charm-kitty2"],
+
+    lip1: ["", "charm-lip1"],
+    lip2: ["", "charm-lip2"],
+
+    pastry: ["", "charm-pastry"],
+
+    star1: ["", "charm-star1"],
+    star2: ["", "charm-star2"],
+    star3: ["", "charm-star3"],
+    star4: ["", "charm-star4"],
+
+    toast: ["", "charm-toast"]
+
+};
+
+
+/* =====================================================
+   ROOM UI
+===================================================== */
+
+const roomScreen = document.getElementById("roomScreen");
+const roomChoice = document.getElementById("roomChoice");
+const createRoomPanel = document.getElementById("createRoomPanel");
+const joinRoomPanel = document.getElementById("joinRoomPanel");
+
+const showCreateRoomButton = document.getElementById("showCreateRoomButton");
+const showJoinRoomButton = document.getElementById("showJoinRoomButton");
+const backFromCreateButton = document.getElementById("backFromCreateButton");
+const backFromJoinButton = document.getElementById("backFromJoinButton");
+
+const createRoomButton = document.getElementById("createRoomButton");
+const joinRoomButton = document.getElementById("joinRoomButton");
+
+const playerNameInput = document.getElementById("playerNameInput");
+const joinPlayerNameInput = document.getElementById("joinPlayerNameInput");
+const joinRoomInput = document.getElementById("joinRoomInput");
+
+const roomStatusMessage = document.getElementById("roomStatusMessage");
+const roomCodeDisplayCard = document.getElementById("roomCodeDisplayCard");
+const roomCardCode = document.getElementById("roomCardCode");
+const copyRoomButton = document.getElementById("copyRoomButton");
+
+
+/* =====================================================
+   ROOM SCREEN NAVIGATION
+===================================================== */
+
+function showRoomChoice() {
+    roomChoice.style.display = "flex";
+    createRoomPanel.style.display = "none";
+    joinRoomPanel.style.display = "none";
+
+    roomCodeDisplayCard.style.display = "none";
+    roomStatusMessage.textContent = "";
+
+    playerNameInput.value = "";
+    joinPlayerNameInput.value = "";
+    joinRoomInput.value = "";
+}
+
+showCreateRoomButton.addEventListener("click", function() {
+    roomChoice.style.display = "none";
+    createRoomPanel.style.display = "block";
+    joinRoomPanel.style.display = "none";
+    roomStatusMessage.textContent = "";
+    playerNameInput.focus();
+});
+
+showJoinRoomButton.addEventListener("click", function() {
+    roomChoice.style.display = "none";
+    createRoomPanel.style.display = "none";
+    joinRoomPanel.style.display = "block";
+    roomStatusMessage.textContent = "";
+    joinPlayerNameInput.focus();
+});
+
+backFromCreateButton.addEventListener("click", showRoomChoice);
+backFromJoinButton.addEventListener("click", showRoomChoice);
+
+/* =====================================================
+   GENERATE ROOM CODE
+===================================================== */
+
+function generateRoomCode() {
+
+    const chars =
+        "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let code = "";
+
+    for (
+        let i = 0;
+        i < 6;
+        i++
+    ) {
+
+        code +=
+            chars[
+                Math.floor(
+                    Math.random() *
+                    chars.length
+                )
+            ];
+
+    }
+
+    return code;
+
+}
+
+
+/* =====================================================
+   CREATE ROOM BUTTON
+===================================================== */
+
+createRoomButton.addEventListener(
+    "click",
+    async function() {
+
+        const name =
+            playerNameInput.value.trim();
+
+        if (!name) {
+            roomStatusMessage.textContent =
+                "Please enter your name first ♡";
+            playerNameInput.focus();
+            return;
+        }
+
+        myName = name;
+
+        roomStatusMessage.textContent =
+            "Creating your room...";
+
+        try {
+            await createRoom();
+        }
+        catch (error) {
+            console.error(error);
+            roomStatusMessage.textContent =
+                "Couldn't create the room ♡";
+        }
+    }
+);
+
+
+/* =====================================================
+   JOIN ROOM BUTTON
+===================================================== */
+
+joinRoomButton.addEventListener(
+    "click",
+    async function() {
+
+        const name =
+            joinPlayerNameInput.value.trim();
+
+        const code =
+            joinRoomInput.value
+                .trim()
+                .toUpperCase();
+
+        if (!name) {
+            roomStatusMessage.textContent =
+                "Please enter your name first ♡";
+            joinPlayerNameInput.focus();
+            return;
+        }
+
+        if (!code) {
+            roomStatusMessage.textContent =
+                "Enter your friend's room code ♡";
+            joinRoomInput.focus();
+            return;
+        }
+
+        myName = name;
+
+        roomStatusMessage.textContent =
+            "Joining room...";
+
+        try {
+            await joinRoom(code);
+        }
+        catch (error) {
+            console.error(error);
+            roomStatusMessage.textContent =
+                "Couldn't join that room ♡";
+        }
+    }
+);
+
+
+/* =====================================================
+   COPY ROOM
+===================================================== */
+
+copyRoomButton.addEventListener(
+    "click",
+    async function() {
+
+        if (!roomId) {
+            return;
+        }
+
+        try {
+
+            await navigator.clipboard.writeText(
+                roomId
+            );
+
+            copyRoomButton.textContent =
+                "Copied ♡";
+
+            setTimeout(
+                function() {
+
+                    copyRoomButton.textContent =
+                        "Copy Room Code";
+
+                },
+                1500
+            );
+
+        }
+
+        catch (error) {
+
+            roomStatusMessage.textContent =
+                "Copy failed ♡";
+
+        }
+
+    }
+);
+
+
+/* =====================================================
+   CREATE ROOM
+===================================================== */
+
+async function createRoom() {
+
+    let code = "";
+
+    let exists = true;
+
+    while (exists) {
+
+        code =
+            generateRoomCode();
+
+        const snapshot =
+            await db
+                .ref(
+                    "rooms/" +
+                    code
+                )
+                .once("value");
+
+        exists =
+            snapshot.exists();
+
+    }
+
+    roomId =
+        code;
+
+    mySide =
+        "player1";
+
+    roomRef =
+        db.ref(
+            "rooms/" +
+            roomId
+        );
+
+
+    /*
+       Create the 15 shared table charms.
+    */
+
+    const tableCharms = {};
+
+    charmTypes.forEach(
+        function(type,index) {
+
+            const id =
+                "charm_" +
+                index;
+
+            tableCharms[id] = {
+
+                type: type,
+
+                x:
+                    10 +
+                    Math.random() * 80,
+
+                y:
+                    20 +
+                    Math.random() * 60,
+
+                rotation:
+                    -20 +
+                    Math.random() * 40
+
+            };
+
+        }
+    );
+
+
+    await roomRef.set({
+
+        createdAt:
+            firebase.database.ServerValue.TIMESTAMP,
+
+        players: {
+
+            player1: {
+
+                uid:
+                    myUid,
+
+                name:
+                    myName,
+
+                online:
+                    true
+
+            }
+
+        },
+
+        charms: {
+
+            player1: {},
+
+            player2: {}
+
+        },
+
+        messages: {},
+
+        tableCharms:
+            tableCharms
+
+    });
+
+
+    roomCardCode.textContent =
+        roomId;
+
+    roomCodeDisplayCard.style.display =
+        "block";
+
+    roomStatusMessage.textContent =
+        "You're inside! Waiting for your friend ♡";
+
+    startRoom();
+
+}
+
+
+/* =====================================================
+   JOIN ROOM
+===================================================== */
+
+async function joinRoom(code) {
+
+    const ref =
+        db.ref(
+            "rooms/" +
+            code
+        );
+
+    const snapshot =
+        await ref.once("value");
+
+    if (!snapshot.exists()) {
+
+        throw new Error(
+            "Room does not exist."
+        );
+
+    }
+
+    const room =
+        snapshot.val();
+
+    const players =
+        room.players || {};
+
+
+    if (
+        players.player1 &&
+        players.player1.uid === myUid
+    ) {
+
+        mySide =
+            "player1";
+
+    }
+
+    else if (
+        players.player2 &&
+        players.player2.uid === myUid
+    ) {
+
+        mySide =
+            "player2";
+
+    }
+
+    else if (
+        !players.player1
+    ) {
+
+        mySide =
+            "player1";
+
+    }
+
+    else if (
+        !players.player2
+    ) {
+
+        mySide =
+            "player2";
+
+    }
+
+    else {
+
+        throw new Error(
+            "Room is full."
+        );
+
+    }
+
+
+    roomId =
+        code;
+
+
+    await ref
+        .child(
+            "players/" +
+            mySide
+        )
+        .set({
+
+            uid:
+                myUid,
+
+            name:
+                myName,
+
+            online:
+                true
+
+        });
+
+
+    startRoom();
+
+}
+
+
+/* =====================================================
+   START ROOM
+===================================================== */
+
+function startRoom() {
+
+    roomRef =
+        db.ref(
+            "rooms/" +
+            roomId
+        );
+
+    charmsRef =
+        roomRef.child(
+            "charms"
+        );
+
+    messagesRef =
+        roomRef.child(
+            "messages"
+        );
+
+    tableCharmsRef =
+        roomRef.child(
+            "tableCharms"
+        );
+
+
+    roomScreen.style.display =
+        "none";
+
+
+    document.getElementById(
+        "braceletSaveControls"
+    ).style.display =
+        "flex";
+
+
+    document.getElementById(
+        "roomBarCode"
+    ).textContent =
+        roomId;
+
+
+    document.getElementById(
+        "playerRole"
+    ).textContent =
+        "you";
+
+
+    document.getElementById(
+        "roomStatus"
+    ).textContent =
+        "● waiting for friend";
+
+
+    document.getElementById(
+        "connectionDot"
+    ).classList.add(
+        "connected"
+    );
+
+
+    setupNames();
+
+    setupOwnership();
+
+    setupTableCharmSync();
+
+    setupBraceletSync();
+
+    setupTableDragging();
+
+    setupMessageSync();
+
+    setupMessageSending();
+
+    setupPresence();
+
+}
+
+
+/* =====================================================
+   PLAYER NAMES
+===================================================== */
+
+function setupNames() {
+
+    roomRef
+        .child("players")
+        .on(
+            "value",
+            function(snapshot) {
+
+                const players =
+                    snapshot.val() || {};
+
+                const p1 =
+                    players.player1;
+
+                const p2 =
+                    players.player2;
+
+
+                document.getElementById(
+                    "player1Name"
+                ).textContent =
+                    p1 && p1.name
+                        ? p1.name
+                        : "Player 1";
+
+
+                document.getElementById(
+                    "player2Name"
+                ).textContent =
+                    p2 && p2.name
+                        ? p2.name
+                        : "Waiting for friend";
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   OWNERSHIP
+===================================================== */
+
+function setupOwnership() {
+
+    document
+        .querySelectorAll(
+            ".bracelet-area"
+        )
+        .forEach(
+            function(area) {
+
+                if (
+                    area.dataset.side ===
+                    mySide
+                ) {
+
+                    area.style.cursor =
+                        "default";
+
+                }
+
+                else {
+
+                    area.style.cursor =
+                        "not-allowed";
+
+                }
+
+            }
+        );
+
+
+    const p1 =
+        document.getElementById(
+            "player1InputWrap"
+        );
+
+    const p2 =
+        document.getElementById(
+            "player2InputWrap"
+        );
+
+
+    if (
+        mySide === "player1"
+    ) {
+
+        p1.classList.remove(
+            "hidden-input"
+        );
+
+        p2.classList.add(
+            "hidden-input"
+        );
+
+    }
+
+    else {
+
+        p1.classList.add(
+            "hidden-input"
+        );
+
+        p2.classList.remove(
+            "hidden-input"
+        );
+
+    }
+
+}
+
+
+/* =====================================================
+   TABLE CHARM SYNC
+===================================================== */
+
+function setupTableCharmSync() {
+
+    tableCharmsRef.on(
+        "value",
+        function(snapshot) {
+
+            renderTableCharms(
+                snapshot.val() || {}
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RENDER TABLE CHARMS
+===================================================== */
+
+function renderTableCharms(charms) {
+
+    const container =
+        document.getElementById(
+            "tableCharms"
+        );
+
+    container.innerHTML =
+        "";
+
+
+    Object.entries(charms)
+        .forEach(
+            function(entry) {
+
+                const id =
+                    entry[0];
+
+                const data =
+                    entry[1];
+
+
+                if (
+                    !data ||
+                    !data.type
+                ) {
+
+                    return;
+
+                }
+
+
+                const charm =
+                    createTableCharm(
+                        id,
+                        data
+                    );
+
+
+                container.appendChild(
+                    charm
+                );
+
+            }
+        );
+
+
+    updateCharmCount();
+
+}
+
+
+/* =====================================================
+   CREATE TABLE CHARM
+===================================================== */
+
+function createTableCharm(
+    charmId,
+    data
+) {
+
+    const charm =
+        document.createElement(
+            "div"
+        );
+
+
+    charm.className =
+        "table-charm";
+
+
+    charm.dataset.charmId =
+        charmId;
+
+
+    charm.dataset.charmType =
+        data.type;
+
+
+    charm.style.left =
+        data.x +
+        "%";
+
+
+    charm.style.top =
+        data.y +
+        "%";
+
+
+    const rotation =
+        data.rotation || 0;
+
+
+    charm.style.transform =
+        "translate(-50%, -50%) rotate(" +
+        rotation +
+        "deg)";
+
+
+    const map =
+        charmMap[data.type] ||
+        charmMap.heart;
+
+
+    charm.innerHTML = `
+
+        <div class="charm-placeholder ${map[1]}">
+            ${map[0]}
+        </div>
+
+    `;
+
+
+    setupTablePointerDrag(
+        charm,
+        charmId,
+        data
+    );
+
+
+    return charm;
+
+}
+
+
+/* =====================================================
+   GET FORBIDDEN CHAT AREAS
+===================================================== */
+
+/*
+   These are the places where table charms
+   are NOT allowed to be dropped.
+
+   We include:
+   - visible message bubbles
+   - visible input boxes
+*/
+
+function getForbiddenChatRects() {
+
+    const forbidden = [];
+
+    document
+        .querySelectorAll(
+            ".message-bubble, .message-input-wrap"
+        )
+        .forEach(function(element) {
+
+            if (
+                element.style.display === "none"
+            ) {
+                return;
+            }
+
+            const rect =
+                element.getBoundingClientRect();
+
+            if (
+                rect.width <= 0 ||
+                rect.height <= 0
+            ) {
+                return;
+            }
+
+            forbidden.push({
+                left: rect.left,
+                right: rect.right,
+                top: rect.top,
+                bottom: rect.bottom
+            });
+
+        });
+
+    return forbidden;
+}
+
+/* =====================================================
+   CHECK CHARM COLLISION
+===================================================== */
+
+function tableCharmHitsChat(
+    clientX,
+    clientY
+) {
+
+    const charmSize =
+        window.innerWidth <= 650
+            ? 56
+            : 64;
+
+    const radius =
+        charmSize / 2 + 5;
+
+    const left =
+        clientX - radius;
+
+    const right =
+        clientX + radius;
+
+    const top =
+        clientY - radius;
+
+    const bottom =
+        clientY + radius;
+
+
+    /*
+       USE THE CACHED RECTANGLES.
+
+       No DOM queries.
+       No getBoundingClientRect().
+       No layout calculation.
+       This is extremely cheap during dragging.
+    */
+
+    for (
+        let i = 0;
+        i < cachedForbiddenChatRects.length;
+        i++
+    ) {
+
+        const rect =
+            cachedForbiddenChatRects[i];
+
+        if (
+            right > rect.left &&
+            left < rect.right &&
+            bottom > rect.top &&
+            top < rect.bottom
+        ) {
+
+            return true;
+
+        }
+
+    }
+
+    return false;
+}
+
+/* =====================================================
+   GET TABLE POSITION
+===================================================== */
+
+function getTablePercentPosition(
+    clientX,
+    clientY
+) {
+
+    const table =
+        document.getElementById(
+            "table"
+        );
+
+    const rect =
+        table.getBoundingClientRect();
+
+
+    let x =
+        (
+            (clientX - rect.left) /
+            rect.width
+        ) *
+        100;
+
+
+    let y =
+        (
+            (clientY - rect.top) /
+            rect.height
+        ) *
+        100;
+
+
+    x =
+        Math.max(
+            4,
+            Math.min(
+                96,
+                x
+            )
+        );
+
+
+    y =
+        Math.max(
+            7,
+            Math.min(
+                93,
+                y
+            )
+        );
+
+
+    return {
+        x: x,
+        y: y
+    };
+
+}
+
+
+/* =====================================================
+   SMOOTH TABLE POINTER DRAG
+===================================================== */
+
+function setupTablePointerDrag(
+    charm,
+    charmId,
+    data
+) {
+
+    charm.addEventListener(
+        "pointerdown",
+        function(event) {
+
+            event.preventDefault();
+            event.stopPropagation();
+
+            const table =
+                document.getElementById(
+                    "table"
+                );
+
+            const rect =
+                table.getBoundingClientRect();
+
+
+            const currentX =
+                rect.left +
+                (
+                    data.x / 100
+                ) *
+                rect.width;
+
+
+            const currentY =
+                rect.top +
+                (
+                    data.y / 100
+                ) *
+                rect.height;
+
+
+            /*
+               Cache chat rectangles ONCE.
+
+               This is the big performance fix.
+            */
+
+            cachedForbiddenChatRects =
+                getForbiddenChatRects();
+
+
+            activeDrag = {
+
+                element:
+                    charm,
+
+                source:
+                    "table",
+
+                charmId:
+                    charmId,
+
+                type:
+                    data.type,
+
+                pointerId:
+                    event.pointerId,
+
+                offsetX:
+                    event.clientX -
+                    currentX,
+
+                offsetY:
+                    event.clientY -
+                    currentY,
+
+                rotation:
+                    data.rotation || 0
+
+            };
+
+
+            lastSafeTablePosition = {
+
+                x:
+                    data.x,
+
+                y:
+                    data.y
+
+            };
+
+
+            /*
+               IMPORTANT:
+
+               Remove the charm from the table
+               stacking context.
+
+               It is now allowed to travel
+               over the chat UI smoothly.
+            */
+
+            document.body.appendChild(
+                charm
+            );
+
+
+            charm.classList.add(
+                "dragging"
+            );
+
+
+            charm.style.position =
+                "fixed";
+
+            charm.style.left =
+                currentX +
+                "px";
+
+            charm.style.top =
+                currentY +
+                "px";
+
+            charm.style.transform =
+                "translate(-50%, -50%) rotate(" +
+                (data.rotation || 0) +
+                "deg)";
+
+            charm.style.zIndex =
+                "999999";
+
+            charm.style.pointerEvents =
+                "none";
+
+
+            charm.setPointerCapture(
+                event.pointerId
+            );
+
+        }
+    );
+
+
+    charm.addEventListener(
+        "pointermove",
+        function(event) {
+
+            if (
+                !activeDrag ||
+                activeDrag.element !== charm ||
+                activeDrag.pointerId !==
+                    event.pointerId
+            ) {
+                return;
+            }
+
+
+            /*
+               NO DOM LOOKUPS HERE.
+
+               This is now just two calculations
+               and two style updates.
+            */
+
+            const x =
+                event.clientX -
+                activeDrag.offsetX;
+
+
+            const y =
+                event.clientY -
+                activeDrag.offsetY;
+
+
+            /*
+               Always allow the charm to visually
+               travel over the chat.
+
+               We ONLY use the cached collision
+               information when deciding the
+               last valid drop position.
+            */
+
+            charm.style.left =
+                x +
+                "px";
+
+            charm.style.top =
+                y +
+                "px";
+
+        }
+    );
+
+
+    charm.addEventListener(
+        "pointerup",
+        function(event) {
+
+            if (
+                !activeDrag ||
+                activeDrag.element !== charm
+            ) {
+                return;
+            }
+
+
+            finishTableDrag(
+                event.clientX,
+                event.clientY
+            );
+
+        }
+    );
+
+
+    charm.addEventListener(
+        "pointercancel",
+        function() {
+
+            cancelDrag();
+
+        }
+    );
+
+}
+
+/* =====================================================
+   MOVE TABLE CHARM VISUALLY
+===================================================== */
+
+function moveTableCharmVisually(
+    charm,
+    clientX,
+    clientY
+) {
+
+    const position =
+        getTablePercentPosition(
+            clientX,
+            clientY
+        );
+
+
+    charm.style.left =
+        position.x +
+        "%";
+
+
+    charm.style.top =
+        position.y +
+        "%";
+
+}
+
+
+/* =====================================================
+   FINISH TABLE DRAG
+===================================================== */
+
+function finishTableDrag(
+    clientX,
+    clientY
+) {
+
+    const drag =
+        activeDrag;
+
+
+    if (!drag) {
+        return;
+    }
+
+
+    const charm =
+        drag.element;
+
+
+    /*
+       Check chat ONLY when released.
+
+       Dragging itself is completely unrestricted.
+    */
+
+    if (
+        tableCharmHitsChat(
+            clientX,
+            clientY
+        )
+    ) {
+
+        /*
+           Put it back into the table
+           at its last safe location.
+        */
+
+        const table =
+            document.getElementById(
+                "table"
+            );
+
+        const container =
+            document.getElementById(
+                "tableCharms"
+            );
+
+
+        container.appendChild(
+            charm
+        );
+
+
+        charm.style.position =
+            "";
+
+        charm.style.left =
+            lastSafeTablePosition.x +
+            "%";
+
+        charm.style.top =
+            lastSafeTablePosition.y +
+            "%";
+
+        charm.style.transform =
+            "translate(-50%, -50%) rotate(" +
+            (
+                drag.rotation || 0
+            ) +
+            "deg)";
+
+        charm.style.zIndex =
+            "";
+
+        charm.style.pointerEvents =
+            "";
+
+        charm.classList.remove(
+            "dragging"
+        );
+
+
+        activeDrag = null;
+
+        lastSafeTablePosition =
+            null;
+
+        cachedForbiddenChatRects =
+            [];
+
+        return;
+
+    }
+
+
+    /*
+       Check bracelet.
+    */
+
+    const bracelet =
+        document.querySelector(
+            '.bracelet-area[data-side="' +
+            mySide +
+            '"] .bracelet'
+        );
+
+
+    const braceletRect =
+        bracelet.getBoundingClientRect();
+
+
+    const insideBracelet =
+        clientX >= braceletRect.left &&
+        clientX <= braceletRect.right &&
+        clientY >= braceletRect.top &&
+        clientY <= braceletRect.bottom;
+
+
+    if (insideBracelet) {
+
+        const charmId =
+            drag.charmId;
+
+        const type =
+            drag.type;
+
+
+        activeDrag = null;
+
+        lastSafeTablePosition =
+            null;
+
+        cachedForbiddenChatRects =
+            [];
+
+
+        charm.classList.remove(
+            "dragging"
+        );
+
+
+        charm.remove();
+
+
+        addCharmToBraceletFromTable(
+            charmId,
+            type
+        );
+
+        return;
+
+    }
+
+
+    /*
+       Normal table drop.
+    */
+
+    const position =
+        getTablePercentPosition(
+            clientX,
+            clientY
+        );
+
+
+    const container =
+        document.getElementById(
+            "tableCharms"
+        );
+
+
+    container.appendChild(
+        charm
+    );
+
+
+    charm.style.position =
+        "";
+
+    charm.style.left =
+        position.x +
+        "%";
+
+    charm.style.top =
+        position.y +
+        "%";
+
+    charm.style.transform =
+        "translate(-50%, -50%) rotate(" +
+        (
+            drag.rotation || 0
+        ) +
+        "deg)";
+
+    charm.style.zIndex =
+        "";
+
+    charm.style.pointerEvents =
+        "";
+
+    charm.classList.remove(
+        "dragging"
+    );
+
+
+    tableCharmsRef
+        .child(
+            drag.charmId
+        )
+        .update({
+
+            x:
+                position.x,
+
+            y:
+                position.y
+
+        });
+
+
+    activeDrag = null;
+
+    lastSafeTablePosition =
+        null;
+
+    cachedForbiddenChatRects =
+        [];
+
+}
+
+/* =====================================================
+   TABLE -> BRACELET
+===================================================== */
+
+function addCharmToBraceletFromTable(
+
+
+    tableCharmId,
+    charmType
+) {
+
+    charmsRef
+        .child(mySide)
+        .once("value")
+        .then(
+            function(snapshot) {
+
+                const existingCharms =
+                    snapshot.val() || {};
+
+
+                const count =
+                    Object.keys(
+                        existingCharms
+                    ).length;
+
+
+                /*
+                   MAX 11.
+                */
+
+                if (
+                    count >= 11
+                ) {
+
+                   showBraceletWarning(
+    "Your bracelet is full ♡ Maximum 11 charms!"
+);
+
+return;
+
+                }
+
+
+                /*
+                   Remove same charm
+                   from table.
+                */
+
+                tableCharmsRef
+                    .child(
+                        tableCharmId
+                    )
+                    .remove();
+
+
+                /*
+                   Add same physical charm
+                   to bracelet.
+                */
+
+                charmsRef
+                    .child(mySide)
+                    .push()
+                    .set({
+
+                        type:
+                            charmType,
+
+                        sourceTableCharm:
+                            tableCharmId,
+
+                        createdAt:
+                            firebase.database
+                                .ServerValue
+                                .TIMESTAMP,
+
+                        order:
+                            Date.now()
+
+                    });
+
+            }
+        )
+        .catch(
+            function(error) {
+
+                console.error(
+                    "Could not add charm to bracelet:",
+                    error
+                );
+
+            }
+        );
+
+        playCharmAddSound();
+
+}
+
+
+/* =====================================================
+   BRACELET SYNC
+===================================================== */
+
+function setupBraceletSync() {
+
+    charmsRef.on(
+        "value",
+        function(snapshot) {
+
+            const data =
+                snapshot.val() || {};
+
+
+            renderBracelet(
+                "player1",
+                data.player1 || {}
+            );
+
+
+            renderBracelet(
+                "player2",
+                data.player2 || {}
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RENDER BRACELET
+===================================================== */
+
+function renderBracelet(
+    side,
+    charms
+) {
+
+    const container =
+        document.getElementById(
+            side +
+            "Charms"
+        );
+
+
+    const empty =
+        document.getElementById(
+            side +
+            "Empty"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    container.innerHTML =
+        "";
+
+
+    const entries =
+        Object.entries(
+            charms
+        );
+
+
+entries.sort(
+    function(a, b) {
+
+        const orderA =
+            typeof a[1].order === "number"
+                ? a[1].order
+                : (a[1].createdAt || 0);
+
+        const orderB =
+            typeof b[1].order === "number"
+                ? b[1].order
+                : (b[1].createdAt || 0);
+
+        return orderA - orderB;
+
+    }
+);
+
+
+    entries.forEach(
+        function(entry) {
+
+            const id =
+                entry[0];
+
+            const data =
+                entry[1];
+
+
+            if (
+                !data ||
+                !data.type
+            ) {
+
+                return;
+
+            }
+
+
+            const charm =
+                createPlacedCharm(
+                    side,
+                    id,
+                    data
+                );
+
+
+            container.appendChild(
+                charm
+            );
+
+        }
+    );
+
+
+    empty.style.display =
+        entries.length
+            ? "none"
+            : "block";
+
+}
+
+
+/* =====================================================
+   CREATE PLACED CHARM
+===================================================== */
+
+function createPlacedCharm(
+    side,
+    charmId,
+    data
+) {
+
+    const charm =
+        document.createElement(
+            "div"
+        );
+
+
+    charm.className =
+        "placed-charm";
+
+
+    charm.dataset.charmId =
+        charmId;
+
+
+    charm.dataset.charmType =
+        data.type;
+
+
+    const map =
+        charmMap[data.type] ||
+        charmMap.heart;
+
+
+    charm.innerHTML = `
+
+        <div class="charm-placeholder ${map[1]}">
+            ${map[0]}
+        </div>
+
+    `;
+
+
+    /*
+       Only owner can drag.
+    */
+
+    if (
+        side === mySide
+    ) {
+
+        setupPlacedPointerDrag(
+            charm,
+            charmId,
+            data
+        );
+
+    }
+
+
+
+/*
+   Cute sound when hovering
+   over a charm on the bracelet.
+*/
+
+charm.addEventListener(
+    "mouseenter",
+    function() {
+
+        playCharmHoverSound();
+
+    }
+);
+
+    return charm;
+
+}
+
+
+/* =====================================================
+   BRACELET CHARM DRAG
+===================================================== */
+
+/* =====================================================
+   CREATE DRAG PREVIEW
+===================================================== */
+
+function createDragPreview(charm) {
+
+    if (dragPreview) {
+        dragPreview.remove();
+        dragPreview = null;
+    }
+
+    dragPreview =
+        charm.cloneNode(true);
+
+    dragPreview.classList.add(
+        "drag-preview"
+    );
+
+    /*
+       Make sure the preview keeps
+       the exact same visual appearance.
+    */
+
+    const rect =
+        charm.getBoundingClientRect();
+
+    dragPreview.style.position =
+        "fixed";
+
+    dragPreview.style.width =
+        rect.width + "px";
+
+    dragPreview.style.height =
+        rect.height + "px";
+
+    dragPreview.style.left =
+        rect.left +
+        rect.width / 2 +
+        "px";
+
+    dragPreview.style.top =
+        rect.top +
+        rect.height / 2 +
+        "px";
+
+    dragPreview.style.transform =
+        "translate(-50%, -50%)";
+
+    dragPreview.style.zIndex =
+        "999999";
+
+    dragPreview.style.pointerEvents =
+        "none";
+
+    dragPreview.style.margin =
+        "0";
+
+    document.body.appendChild(
+        dragPreview
+    );
+
+}
+
+/* =====================================================
+   BRACELET CHARM DRAG
+===================================================== */
+
+function setupPlacedPointerDrag(
+    charm,
+    charmId,
+    data
+) {
+
+charm.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        event.preventDefault();
+        event.stopPropagation();
+
+                /*
+           Play the tiny drag sound
+           when the table charm is picked up.
+        */
+
+        playCharmDragSound();
+
+
+        const rect =
+            charm.getBoundingClientRect();
+
+
+        activeDrag = {
+
+            element:
+                charm,
+
+            source:
+                "bracelet",
+
+            charmId:
+                charmId,
+
+            type:
+                data.type,
+
+            side:
+                mySide,
+
+            pointerId:
+                event.pointerId,
+
+            offsetX:
+                event.clientX -
+                (
+                    rect.left +
+                    rect.width / 2
+                ),
+
+            offsetY:
+                event.clientY -
+                (
+                    rect.top +
+                    rect.height / 2
+                )
+
+        };
+
+
+        /*
+           CREATE THE ACTUAL
+           VISUAL CHARM IN THE HAND.
+        */
+
+        createDragPreview(
+            charm
+        );
+
+
+        /*
+           Keep original charm in place
+           while dragging.
+
+           This prevents the bracelet
+           from jumping/reordering visually.
+        */
+
+        charm.style.opacity =
+            "0.25";
+
+
+        charm.classList.add(
+            "dragging"
+        );
+
+
+        charm.setPointerCapture(
+            event.pointerId
+        );
+
+    }
+);
+
+charm.addEventListener(
+    "pointermove",
+    function(event) {
+
+        if (
+            !activeDrag ||
+            activeDrag.element !== charm ||
+            activeDrag.pointerId !==
+                event.pointerId
+        ) {
+
+            return;
+
+        }
+
+
+        const x =
+            event.clientX -
+            activeDrag.offsetX;
+
+
+        const y =
+            event.clientY -
+            activeDrag.offsetY;
+
+
+        /*
+           MOVE THE VISUAL COPY,
+           NOT THE ORIGINAL.
+        */
+
+        if (dragPreview) {
+
+            dragPreview.style.left =
+                x + "px";
+
+            dragPreview.style.top =
+                y + "px";
+
+        }
+
+    }
+);
+
+    charm.addEventListener(
+        "pointerup",
+        function(event) {
+
+            if (
+                !activeDrag ||
+                activeDrag.element !== charm
+            ) {
+
+                return;
+
+            }
+
+
+            finishPlacedDrag(
+                event.clientX,
+                event.clientY
+            );
+
+            playCharmAddSound();
+
+        }
+    );
+
+
+    charm.addEventListener(
+        "pointercancel",
+        function() {
+
+            cancelDrag();
+
+        }
+    );
+
+}
+
+/* =====================================================
+   FINISH BRACELET DRAG
+===================================================== */
+
+
+function removeDragPreview() {
+
+    if (dragPreview) {
+
+        dragPreview.remove();
+
+        dragPreview =
+            null;
+
+    }
+
+}
+
+
+/* =====================================================
+   FINISH BRACELET DRAG
+===================================================== */
+
+function finishPlacedDrag(
+    clientX,
+    clientY
+) {
+
+    const drag =
+        activeDrag;
+
+
+    if (!drag) {
+        return;
+    }
+
+
+    const charm =
+        drag.element;
+
+    removeDragPreview();
+
+charm.style.opacity = "";
+
+
+    const table =
+        document.getElementById(
+            "table"
+        );
+
+
+    const tableRect =
+        table.getBoundingClientRect();
+
+
+    const insideTable =
+        clientX >= tableRect.left &&
+        clientX <= tableRect.right &&
+        clientY >= tableRect.top &&
+        clientY <= tableRect.bottom;
+
+
+    const bracelet =
+        document.querySelector(
+            '.bracelet-area[data-side="' +
+            mySide +
+            '"] .bracelet'
+        );
+
+
+    const braceletRect =
+        bracelet.getBoundingClientRect();
+
+
+    const insideBracelet =
+        clientX >= braceletRect.left &&
+        clientX <= braceletRect.right &&
+        clientY >= braceletRect.top &&
+        clientY <= braceletRect.bottom;
+
+
+    /* =================================================
+       RETURN BRACELET CHARM TO TABLE
+    ================================================= */
+
+    if (
+        insideTable &&
+        !insideBracelet
+    ) {
+
+        /*
+           Don't allow dropping onto chat.
+        */
+
+        if (
+            tableCharmHitsChat(
+                clientX,
+                clientY
+            )
+        ) {
+
+            resetDraggedPlacedCharm(
+                charm
+            );
+
+            activeDrag = null;
+
+            return;
+
+        }
+
+
+        returnPlacedCharmToTable(
+            drag.charmId,
+            drag.type,
+            clientX,
+            clientY
+        );
+
+
+        activeDrag = null;
+
+        return;
+
+    }
+
+
+    /* =================================================
+       REORDER ON BRACELET
+    ================================================= */
+
+    if (insideBracelet) {
+
+        reorderBraceletCharm(
+            charm,
+            clientX
+        );
+
+        resetDraggedPlacedCharm(
+            charm
+        );
+
+        activeDrag = null;
+
+        return;
+
+    }
+
+
+    /* =================================================
+       RELEASED SOMEWHERE ELSE
+       RETURN TO ORIGINAL POSITION
+    ================================================= */
+
+    resetDraggedPlacedCharm(
+        charm
+    );
+
+    activeDrag = null;
+
+}
+
+/* =====================================================
+   REORDER BRACELET CHARM
+===================================================== */
+
+function reorderBraceletCharm(
+    draggedCharm,
+    mouseX
+) {
+
+    const container =
+        document.getElementById(
+            mySide +
+            "Charms"
+        );
+
+
+    if (!container) {
+        return;
+    }
+
+
+    /*
+       Get every charm except the one
+       currently being dragged.
+    */
+
+    const charms =
+        Array.from(
+            container.querySelectorAll(
+                ".placed-charm"
+            )
+        ).filter(
+            function(charm) {
+
+                return charm !== draggedCharm;
+
+            }
+        );
+
+
+    /*
+       Find where the mouse is.
+
+       We compare the mouse X position
+       against the CENTER of each charm.
+
+       If the mouse is before that center,
+       insert before that charm.
+    */
+
+    let inserted = false;
+
+
+    for (
+        let i = 0;
+        i < charms.length;
+        i++
+    ) {
+
+        const other =
+            charms[i];
+
+
+        const rect =
+            other.getBoundingClientRect();
+
+
+        const centerX =
+            rect.left +
+            rect.width / 2;
+
+
+        if (
+            mouseX < centerX
+        ) {
+
+            container.insertBefore(
+                draggedCharm,
+                other
+            );
+
+
+            inserted = true;
+
+            break;
+
+        }
+
+    }
+
+
+    /*
+       If we didn't find anything to insert
+       before, put it at the END.
+    */
+
+    if (!inserted) {
+
+        container.appendChild(
+            draggedCharm
+        );
+
+    }
+
+
+    /*
+       Now save the NEW visual order
+       to Firebase.
+    */
+
+    saveBraceletOrder(
+        container
+    );
+
+}
+
+/* =====================================================
+   SAVE BRACELET ORDER
+===================================================== */
+
+function saveBraceletOrder(
+    container
+) {
+
+    const charms =
+        Array.from(
+            container.querySelectorAll(
+                ".placed-charm"
+            )
+        );
+
+
+    /*
+       Update every charm with its
+       current position in the bracelet.
+    */
+
+    const updates = {};
+
+
+    charms.forEach(
+        function(charm, index) {
+
+            const charmId =
+                charm.dataset.charmId;
+
+
+            if (!charmId) {
+                return;
+            }
+
+
+            updates[
+                charmId +
+                "/order"
+            ] =
+                index;
+
+        }
+    );
+
+
+    if (
+        Object.keys(updates).length === 0
+    ) {
+
+        return;
+
+    }
+
+
+    charmsRef
+        .child(mySide)
+        .update(
+            updates
+        )
+        .catch(
+            function(error) {
+
+                console.error(
+                    "Could not save bracelet order:",
+                    error
+                );
+
+            }
+        );
+
+}
+
+/* =====================================================
+   RESET DRAGGED BRACELET CHARM
+===================================================== */
+
+function resetDraggedPlacedCharm(
+    charm
+) {
+
+    removeDragPreview();
+
+    charm.classList.remove(
+        "dragging"
+    );
+
+    charm.style.position =
+        "";
+
+    charm.style.left =
+        "";
+
+    charm.style.top =
+        "";
+
+    charm.style.transform =
+        "";
+
+    charm.style.zIndex =
+        "";
+
+    charm.style.opacity =
+        "";
+
+}
+
+
+/* =====================================================
+   RETURN BRACELET CHARM TO TABLE
+===================================================== */
+
+function returnPlacedCharmToTable(
+    charmId,
+    charmType,
+    clientX,
+    clientY
+) {
+
+    const position =
+        getTablePercentPosition(
+            clientX,
+            clientY
+        );
+
+
+    charmsRef
+        .child(mySide)
+        .child(charmId)
+        .once(
+            "value",
+            function(snapshot) {
+
+                const data =
+                    snapshot.val() || {};
+
+
+                const originalId =
+                    data.sourceTableCharm ||
+                    null;
+
+
+                /*
+                   Remove from bracelet.
+                */
+
+                charmsRef
+                    .child(mySide)
+                    .child(charmId)
+                    .remove();
+
+
+                /*
+                   Restore original physical
+                   table charm.
+                */
+
+                if (originalId) {
+
+                    tableCharmsRef
+                        .child(originalId)
+                        .set({
+
+                            type:
+                                charmType,
+
+                            x:
+                                position.x,
+
+                            y:
+                                position.y,
+
+                            rotation:
+                                -20 +
+                                Math.random() * 40
+
+                        });
+
+                }
+
+                else {
+
+                    const newRef =
+                        tableCharmsRef.push();
+
+
+                    newRef.set({
+
+                        type:
+                            charmType,
+
+                        x:
+                            position.x,
+
+                        y:
+                            position.y,
+
+                        rotation:
+                            -20 +
+                            Math.random() * 40
+
+                    });
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   TABLE DRAGGING SETUP
+===================================================== */
+
+function setupTableDragging() {
+
+    /*
+       Intentionally lightweight.
+
+       Individual charms handle their own
+       pointer events, keeping dragging fast.
+    */
+
+    const table =
+        document.getElementById(
+            "table"
+        );
+
+
+    table.addEventListener(
+        "pointerdown",
+        function(event) {
+
+            if (
+                event.target.closest(
+                    ".table-charm"
+                )
+            ) {
+
+                return;
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   CANCEL DRAG
+===================================================== */
+
+function cancelDrag() {
+
+    if (
+        activeDrag &&
+        activeDrag.element
+    ) {
+
+        activeDrag.element.classList.remove(
+            "dragging"
+        );
+
+        /*
+           If this was a bracelet charm,
+           restore its normal styling.
+        */
+
+        if (
+            activeDrag.source ===
+            "bracelet"
+        ) {
+
+            resetDraggedPlacedCharm(
+                activeDrag.element
+            );
+
+        }
+
+    }
+
+    removeDragPreview();
+
+    activeDrag =
+        null;
+
+        
+
+    lastSafeTablePosition =
+        null;
+
+}
+
+
+/* =====================================================
+   COUNT
+===================================================== */
+
+function updateCharmCount() {
+
+    const count =
+        document.querySelectorAll(
+            "#tableCharms .table-charm"
+        ).length;
+
+
+    document.getElementById(
+        "charmCount"
+    ).textContent =
+        "✦ charms left: " +
+        count;
+
+}
+
+
+/* =====================================================
+   MESSAGE SYNC
+===================================================== */
+
+function setupMessageSync() {
+
+    messagesRef.on(
+        "value",
+        function(snapshot) {
+
+            const messages =
+                snapshot.val() || {};
+
+
+            renderMessage(
+                "player1",
+                messages.player1
+            );
+
+
+            renderMessage(
+                "player2",
+                messages.player2
+            );
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   RENDER MESSAGE
+===================================================== */
+
+function renderMessage(
+    side,
+    message
+) {
+
+    const bubble =
+        document.getElementById(
+            side +
+            "Message"
+        );
+
+
+    if (
+        !message ||
+        !message.text
+    ) {
+
+        bubble.style.display =
+            "none";
+
+        return;
+
+    }
+
+
+    bubble.textContent =
+        message.text;
+
+
+    bubble.style.display =
+        "block";
+
+}
+
+
+/* =====================================================
+   MESSAGE SENDING
+===================================================== */
+
+function setupMessageSending() {
+
+    const input =
+        document.getElementById(
+            mySide +
+            "MessageInput"
+        );
+
+
+    const button =
+        document.getElementById(
+            mySide +
+            "MessageSend"
+        );
+
+
+    if (
+        !input ||
+        !button
+    ) {
+
+        return;
+
+    }
+
+
+    function sendMessage() {
+
+        const text =
+            input.value.trim();
+
+
+        if (!text) {
+            return;
+        }
+
+
+        messagesRef
+            .child(mySide)
+            .set({
+
+                text:
+                    text,
+
+                sentAt:
+                    firebase.database
+                        .ServerValue
+                        .TIMESTAMP
+
+            });
+
+
+        input.value =
+            "";
+
+    }
+
+
+    button.addEventListener(
+        "click",
+        sendMessage
+    );
+
+
+    input.addEventListener(
+        "keydown",
+        function(event) {
+
+            if (
+                event.key ===
+                "Enter"
+            ) {
+
+                event.preventDefault();
+
+                sendMessage();
+
+            }
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   PRESENCE
+===================================================== */
+
+function setupPresence() {
+
+    const myPresence =
+        roomRef.child(
+            "players/" +
+            mySide
+        );
+
+
+    myPresence.update({
+
+        uid:
+            myUid,
+
+        name:
+            myName,
+
+        online:
+            true
+
+    });
+
+
+    myPresence
+        .onDisconnect()
+        .update({
+
+            online:
+                false
+
+        });
+
+
+    roomRef
+        .child("players")
+        .on(
+            "value",
+            function(snapshot) {
+
+                const players =
+                    snapshot.val() || {};
+
+
+                const otherSide =
+                    mySide === "player1"
+                        ? "player2"
+                        : "player1";
+
+
+                const other =
+                    players[
+                        otherSide
+                    ];
+
+
+                const status =
+                    document.getElementById(
+                        "roomStatus"
+                    );
+
+
+                if (
+                    other &&
+                    other.online
+                ) {
+
+                    status.textContent =
+                        "● friend connected";
+
+                }
+
+                else {
+
+                    status.textContent =
+                        "● waiting for friend";
+
+                }
+
+            }
+        );
+
+}
+
+
+/* =====================================================
+   ANONYMOUS LOGIN
+===================================================== */
+
+auth.signInAnonymously()
+    .then(
+        function(result) {
+
+            myUid =
+                result.user.uid;
+
+
+            roomScreen.style.display =
+                "flex";
+
+        }
+    )
+    .catch(
+        function(error) {
+
+            console.error(
+                "Firebase login error:",
+                error
+            );
+
+
+            document.getElementById(
+                "roomStatus"
+            ).textContent =
+                "● Firebase error";
+
+        }
+    );
+
+
+saveBraceletButton.addEventListener(
+    "click",
+    function() {
+
+        const name =
+            prompt(
+                "Name your bracelet ♡",
+                myName + " ♡ Besties"
+            );
+
+        if (!name) {
+            return;
+        }
+
+
+        /*
+           Get BOTH bracelets.
+        */
+
+        Promise.all([
+
+            charmsRef
+                .child("player1")
+                .once("value"),
+
+            charmsRef
+                .child("player2")
+                .once("value")
+
+        ])
+        .then(
+            function(results) {
+
+                const player1Charms =
+                    results[0].val() || {};
+
+                const player2Charms =
+                    results[1].val() || {};
+
+
+                /*
+                   Get both names.
+                */
+
+                const player1Name =
+                    document.getElementById(
+                        "player1Name"
+                    ).textContent ||
+                    "Bestie 1";
+
+
+                const player2Name =
+                    document.getElementById(
+                        "player2Name"
+                    ).textContent ||
+                    "Bestie 2";
+
+
+                /*
+                   Create gallery entry.
+                */
+
+                const galleryRef =
+                    db.ref(
+                        "gallery"
+                    ).push();
+
+
+                return galleryRef.set({
+
+                    name:
+                        name,
+
+                    savedBy:
+                        myUid,
+
+                    savedByName:
+                        myName,
+
+
+                    /*
+                       BOTH PEOPLE
+                    */
+
+                    player1Name:
+                        player1Name,
+
+                    player2Name:
+                        player2Name,
+
+
+                    /*
+                       COMPLETE BRACELETS
+                    */
+
+                    player1Charms:
+                        player1Charms,
+
+                    player2Charms:
+                        player2Charms,
+
+
+                    /*
+                       Likes
+                    */
+
+                    likes:
+                        0,
+
+
+                    /*
+                       Save time
+                    */
+
+                    createdAt:
+                        firebase.database
+                            .ServerValue
+                            .TIMESTAMP
+
+                });
+
+            }
+        )
+        .then(
+            function() {
+
+                 showBraceletWarning(
+            "Saved! ♡"
+        );
+
+            }
+        )
+        .catch(
+            function(error) {
+
+                console.error(
+                    "Could not save bracelets:",
+                    error
+                );
+
+
+                 showBraceletWarning(
+            "Couldn't save ♡"
+        );
+
+            }
+        );
+
+    }
+);
+
+
+document.getElementById(
+    "openGalleryButton"
+).addEventListener(
+    "click",
+    function() {
+
+        document.getElementById(
+            "galleryOverlay"
+        ).style.display = "flex";
+
+        loadGallery();
+
+    }
+);
+
+const closeGalleryButton =
+    document.getElementById(
+        "closeGalleryButton"
+    );
+
+closeGalleryButton.onclick =
+    function() {
+
+        document.getElementById(
+            "galleryOverlay"
+        ).style.display = "none";
+
+    };
+
+
+function loadGallery() {
+
+    const galleryGrid =
+        document.getElementById(
+            "galleryGrid"
+        );
+
+    galleryGrid.innerHTML =
+        "Loading bracelets...";
+
+
+    db.ref("gallery")
+        .once("value")
+        .then(
+            function(snapshot) {
+
+                const gallery =
+                    snapshot.val() || {};
+
+                galleryGrid.innerHTML =
+                    "";
+
+                const entries =
+                    Object.entries(
+                        gallery
+                    );
+
+
+                if (
+                    entries.length === 0
+                ) {
+
+                    galleryGrid.innerHTML =
+                        "No bracelets saved yet ♡";
+
+                    return;
+
+                }
+
+
+                /*
+                   Newest first.
+                */
+
+                entries.reverse();
+
+
+                entries.forEach(
+                    function(entry) {
+
+                        const data =
+                            entry[1];
+
+
+                        if (!data) {
+                            return;
+                        }
+
+
+                        const card =
+                            document.createElement(
+                                "div"
+                            );
+
+
+                        card.className =
+                            "galleryCard";
+
+
+
+
+
+/* =================================================
+   PLAYER 1
+================================================= */
+
+let player1CharmHTML = "";
+
+const player1Entries =
+    Object.entries(
+        data.player1Charms || {}
+    );
+
+
+/*
+   IMPORTANT:
+   Restore the exact bracelet order
+   saved in Firebase.
+*/
+
+player1Entries.sort(
+    function(a, b) {
+
+        const orderA =
+            typeof a[1].order === "number"
+                ? a[1].order
+                : (a[1].createdAt || 0);
+
+        const orderB =
+            typeof b[1].order === "number"
+                ? b[1].order
+                : (b[1].createdAt || 0);
+
+        return orderA - orderB;
+
+    }
+);
+
+
+player1Entries.forEach(
+    function(entry) {
+
+        const charm =
+            entry[1];
+
+        if (
+            !charm ||
+            !charm.type
+        ) {
+            return;
+        }
+
+        const map =
+            charmMap[
+                charm.type
+            ] ||
+            charmMap.heart1;
+
+        player1CharmHTML += `
+
+            <span
+                class="galleryCharm charm-${charm.type}"
+            >
+                ${map[0]}
+            </span>
+
+        `;
+
+    }
+);
+
+
+/* =================================================
+   PLAYER 2
+================================================= */
+
+let player2CharmHTML = "";
+
+const player2Entries =
+    Object.entries(
+        data.player2Charms || {}
+    );
+
+
+/*
+   IMPORTANT:
+   Restore the exact bracelet order
+   saved in Firebase.
+*/
+
+player2Entries.sort(
+    function(a, b) {
+
+        const orderA =
+            typeof a[1].order === "number"
+                ? a[1].order
+                : (a[1].createdAt || 0);
+
+        const orderB =
+            typeof b[1].order === "number"
+                ? b[1].order
+                : (b[1].createdAt || 0);
+
+        return orderA - orderB;
+
+    }
+);
+
+
+player2Entries.forEach(
+    function(entry) {
+
+        const charm =
+            entry[1];
+
+        if (
+            !charm ||
+            !charm.type
+        ) {
+            return;
+        }
+
+        const map =
+            charmMap[
+                charm.type
+            ] ||
+            charmMap.heart;
+
+        player2CharmHTML += `
+
+            <span
+                class="galleryCharm charm-${charm.type}"
+            >
+                ${map[0]}
+            </span>
+
+        `;
+
+    }
+);
+
+
+                        /* =================================================
+                           CARD
+                        ================================================= */
+
+                        card.innerHTML = `
+
+                            <div class="galleryCardName">
+                                ${data.name || "Unnamed bracelet"}
+                            </div>
+
+
+                            <!-- BRACELET 1 -->
+
+                            <div class="galleryBraceletPreview">
+
+                                <div class="galleryBraceletString"></div>
+
+                                <div class="galleryBraceletCharms">
+                                    ${player1CharmHTML}
+                                </div>
+
+                            </div>
+
+
+                            <!-- BRACELET 2 -->
+
+                            <div class="galleryBraceletPreview">
+
+                                <div class="galleryBraceletString"></div>
+
+                                <div class="galleryBraceletCharms">
+                                    ${player2CharmHTML}
+                                </div>
+
+                            </div>
+
+                        `;
+
+
+                        galleryGrid.appendChild(
+                            card
+                        );
+
+                    }
+                );
+
+            }
+        )
+        .catch(
+            function(error) {
+
+                console.error(
+                    "Gallery error:",
+                    error
+                );
+
+                galleryGrid.innerHTML =
+                    "Couldn't load gallery ♡";
+
+            }
+        );
+
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+
+    const title = document.querySelector(".room-card-title");
+
+    if (!title) return;
+
+    const text = title.textContent.trim();
+
+    title.textContent = "";
+
+    /*
+     * Spaces are completely ignored.
+     * Every actual character gets one bead.
+     */
+    const characters = [...text].filter(char => char !== " ");
+
+    const total = characters.length;
+
+    characters.forEach((character, index) => {
+
+        const letter = document.createElement("span");
+
+        letter.className = "title-letter";
+        letter.textContent = character;
+
+        /*
+         * Find position relative to center.
+         *
+         * Example:
+         *
+         *        B E S T I E S
+         *        \ \ \ | / / /
+         *
+         * Outer beads tilt more.
+         */
+        const center = (total - 1) / 2;
+
+        const distance = index - center;
+
+        /*
+         * Curve depth.
+         * Bigger number = deeper string curve.
+         */
+        const curveY =
+            Math.abs(distance) * 3;
+
+        /*
+         * Individual rotation.
+         *
+         * Left side = negative
+         * Middle = 0
+         * Right side = positive
+         */
+        const curveRotate =
+            distance * 7;
+
+        letter.style.setProperty(
+            "--curve-y",
+            `${curveY}px`
+        );
+
+        letter.style.setProperty(
+            "--curve-rotate",
+            `${curveRotate}deg`
+        );
+
+        /*
+         * Each bead moves slightly after
+         * the previous one.
+         */
+        letter.style.setProperty(
+            "--delay",
+            `${index * 0.12}s`
+        );
+
+        title.appendChild(letter);
+    });
+
+});
+
+/* =====================================================
+   SOUND VOLUME SETTINGS
+===================================================== */
+
+const SOUND_VOLUMES = {
+
+    /* Hover over bracelet charm */
+    charmHover: 0.25,
+
+    /* Pick up / start dragging table charm */
+    charmDrag: 0.18,
+
+    /* Successfully add charm to bracelet */
+    charmAdd: 0.65,
+
+    /* Background music */
+    backgroundMusic: 0.2
+
+};
+
+
+/* =====================================================
+   CHARM HOVER SOUND
+===================================================== */
+
+function playCharmHoverSound() {
+
+    const sound =
+        document.getElementById(
+            "charmHoverSound"
+        );
+
+    if (!sound) {
+        return;
+    }
+
+    sound.currentTime = 0;
+
+    sound.volume =
+        SOUND_VOLUMES.charmHover;
+
+    sound.play().catch(() => {});
+
+}
+
+
+/* =====================================================
+   CHARM DRAG SOUND
+===================================================== */
+
+function playCharmDragSound() {
+
+    const sound =
+        document.getElementById(
+            "charmDragSound"
+        );
+
+    if (!sound) {
+        return;
+    }
+
+    sound.currentTime = 0;
+
+    sound.volume =
+        SOUND_VOLUMES.charmDrag;
+
+    sound.play().catch(() => {});
+
+}
+
+
+/* =====================================================
+   CHARM ADD SOUND
+===================================================== */
+
+function playCharmAddSound() {
+
+    const sound =
+        document.getElementById(
+            "charmAddSound"
+        );
+
+    if (!sound) {
+        return;
+    }
+
+    sound.currentTime = 0;
+
+    sound.volume =
+        SOUND_VOLUMES.charmAdd;
+
+    sound.play().catch(() => {});
+
+}
+
+
+/* =====================================================
+   BACKGROUND MUSIC
+===================================================== */
+
+const backgroundMusic =
+    document.getElementById(
+        "backgroundMusic"
+    );
+
+
+function startBackgroundMusic() {
+
+    if (!backgroundMusic) {
+        return;
+    }
+
+    backgroundMusic.volume =
+        SOUND_VOLUMES.backgroundMusic;
+
+    backgroundMusic.loop =
+        true;
+
+    backgroundMusic.play().catch(
+        function() {}
+    );
+
+}
+
+
+/*
+   Browser autoplay fallback.
+*/
+
+document.addEventListener(
+    "pointerdown",
+    function startMusicOnce() {
+
+        startBackgroundMusic();
+
+    },
+    { once: true }
+);
+
+
+/* =====================================================
+   BRACELET FULL WARNING
+===================================================== */
+
+/* =====================================================
+   BRACELET FULL WARNING
+===================================================== */
+
+function showBraceletWarning(message) {
+
+    const warning =
+        document.createElement("div");
+
+
+    warning.className =
+        "bracelet-full-warning";
+
+
+    /*
+       Remove any accidental <br>
+       tags from the message.
+    */
+
+    message =
+        message.replace(
+            /<br\s*\/?>/gi,
+            " "
+        );
+
+
+    let letterIndex = 0;
+
+
+    for (
+        const character of message
+    ) {
+
+        /*
+           Space
+        */
+
+        if (
+            character === " "
+        ) {
+
+            const space =
+                document.createElement(
+                    "span"
+                );
+
+            space.className =
+                "bracelet-warning-space";
+
+            warning.appendChild(
+                space
+            );
+
+            continue;
+
+        }
+
+
+        /*
+           Letter
+        */
+
+        const letter =
+            document.createElement(
+                "span"
+            );
+
+        letter.className =
+            "bracelet-warning-letter";
+
+        letter.textContent =
+            character;
+
+        letter.style.animationDelay =
+            `${letterIndex * 0.035}s`;
+
+        warning.appendChild(
+            letter
+        );
+
+        letterIndex++;
+
+    }
+
+
+    document.body.appendChild(
+        warning
+    );
+
+
+    /*
+       Remove after 1.8 seconds
+    */
+
+    setTimeout(
+        function() {
+
+            warning.style.opacity =
+                "0";
+
+            warning.style.transform =
+                "translate(-50%, -50%) scale(0.8)";
+
+            warning.style.transition =
+                "opacity 0.2s ease, transform 0.2s ease";
+
+
+            setTimeout(
+                function() {
+
+                    warning.remove();
+
+                },
+                220
+            );
+
+        },
+        1800
+    );
+
+}
+
+</script>
+
+</body>
+</html>
