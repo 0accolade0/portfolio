@@ -1,0 +1,4061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>theshartechclub's bubblegum</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Offside&display=swap" rel="stylesheet">
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+body {
+    background-color: #ffd1e1;
+    background-image: repeating-linear-gradient(
+        90deg,
+        #ffd1e1 0px,
+        #ffd1e1 6px,
+        #fffafc 6px,
+        #fffafc 12px
+    );
+    font-family: "Offside", sans-serif;
+    user-select: none;
+    -webkit-user-select: none;
+    -webkit-touch-callout: none;
+    color: #F87670;
+}
+
+/* =========================================================
+   APP
+========================================================= */
+
+#app {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+}
+
+/* =========================================================
+   BACKGROUND BUBBLES
+========================================================= */
+
+#backgroundBubbles {
+    display: none;
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.bg-bubble {
+    position: absolute;
+    border-radius: 50%;
+
+    /* stronger color visibility */
+    opacity: .90;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(255,255,255,.95) 0%,
+            color-mix(in srgb, var(--bubble-color) 75%, white) 28%,
+            color-mix(in srgb, var(--bubble-color) 55%, transparent) 62%,
+            color-mix(in srgb, var(--bubble-color) 30%, transparent) 78%,
+            transparent 82%
+        );
+
+    border:
+        1.5px solid color-mix(
+            in srgb,
+            var(--bubble-color) 65%,
+            white
+        );
+
+    box-shadow:
+        inset 4px 5px 8px rgba(255,255,255,.55),
+        inset -5px -6px 10px color-mix(
+            in srgb,
+            var(--bubble-color) 18%,
+            transparent
+        ),
+        0 8px 18px rgba(130,90,80,.08);
+
+    animation:
+        bgFloat var(--duration) ease-in-out var(--delay) infinite alternate;
+}
+
+@keyframes bgFloat {
+
+    0% {
+        transform:
+            translate3d(0,0,0)
+            rotate(0deg);
+    }
+
+    50% {
+        transform:
+            translate3d(
+                var(--move-x),
+                var(--move-y),
+                0
+            )
+            rotate(8deg);
+    }
+
+    100% {
+        transform:
+            translate3d(
+                calc(var(--move-x) * -.6),
+                calc(var(--move-y) * -.7),
+                0
+            )
+            rotate(-8deg);
+    }
+}
+
+.bg-pop {
+    position: fixed;
+
+    width: 8px;
+    height: 8px;
+
+    margin-left: -4px;
+    margin-top: -4px;
+
+    border-radius: 50%;
+
+    border: 2px solid rgba(248,118,112,.7);
+
+    animation: bgPop .5s ease-out forwards;
+
+    pointer-events: none;
+}
+
+@keyframes bgPop {
+
+    0% {
+        transform: scale(.2);
+        opacity: 1;
+        box-shadow:
+            0 0 0 0 rgba(248,118,112,.45);
+    }
+
+    100% {
+        transform: scale(8);
+        opacity: 0;
+        box-shadow:
+            0 0 0 10px rgba(248,118,112,0);
+    }
+}
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+#titleArea {
+    position: absolute;
+
+    left: 50%;
+    top: 18px;
+
+    transform: translateX(-50%);
+
+    z-index: 100;
+
+    pointer-events: none;
+}
+
+#siteTitle{
+    font-family:"Offside",sans-serif;
+
+    font-size:clamp(15px,2vw,22px);
+    font-weight:400;
+    letter-spacing:.6px;
+
+    color:#000;
+
+    background:#ffd9ea;
+    padding:10px 18px;
+
+
+    white-space:nowrap;
+    text-align:center;
+}
+
+.title-letter {
+    position: relative;
+    display: inline-block;
+
+    color: #000;
+
+    animation:
+        titleFloat 3.5s ease-in-out infinite;
+}
+
+.title-letter:nth-child(2) {
+    animation-delay: -.2s;
+}
+
+.title-letter:nth-child(3) {
+    animation-delay: -.4s;
+}
+
+.title-letter:nth-child(4) {
+    animation-delay: -.6s;
+}
+
+.title-letter:nth-child(5) {
+    animation-delay: -.8s;
+}
+
+.title-letter:nth-child(6) {
+    animation-delay: -1s;
+}
+
+.title-letter:nth-child(7) {
+    animation-delay: -1.2s;
+}
+
+.title-letter:nth-child(8) {
+    animation-delay: -1.4s;
+}
+
+.title-letter:nth-child(9) {
+    animation-delay: -1.6s;
+}
+
+.title-letter:nth-child(10) {
+    animation-delay: -1.8s;
+}
+
+@keyframes titleFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-3px);
+    }
+}
+
+.title-letter.bubble-letter::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 18px;
+    height: 18px;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(255,255,255,.95),
+            rgba(248,118,112,.65) 35%,
+            rgba(248,118,112,.22) 70%
+        );
+
+    border:
+        1px solid rgba(248,118,112,.85);
+
+    z-index: -1;
+
+    opacity: .85;
+
+    animation:
+        letterBubble 3.5s ease-in-out infinite;
+}
+
+@keyframes letterBubble {
+
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(.9);
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.15);
+    }
+}
+
+/* =========================================================
+   SHELF AREA
+========================================================= */
+
+#shelfArea {
+
+    position: absolute;
+
+    top: 82px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    width:
+        min(770px, 84vw);
+
+    z-index: 80;
+}
+
+/* =========================================================
+   GLASS CABINET
+========================================================= */
+
+#gumCabinet {
+
+    position: relative;
+
+    width: 100%;
+    height: 125px;
+
+    border-radius: 18px;
+
+    background:
+        linear-gradient(
+            180deg,
+            rgba(255,255,255,.36),
+            rgba(255,255,255,.12)
+        );
+
+    border:
+        3px solid rgba(255,255,255,.72);
+
+    box-shadow:
+        0 14px 35px rgba(120,80,70,.18),
+        inset 0 2px 8px rgba(255,255,255,.65);
+
+    overflow: hidden;
+
+    cursor: pointer;
+
+    transition:
+        transform .15s ease;
+}
+
+#gumCabinet:active {
+    transform: scale(.985);
+}
+
+/* =========================================================
+   CABINET TOP
+========================================================= */
+
+.cabinet-top {
+
+    position: absolute;
+
+    left: 8px;
+    right: 8px;
+
+    top: 5px;
+
+    height: 9px;
+
+    border-radius: 10px;
+
+    background:
+        linear-gradient(
+            90deg,
+            rgba(255,255,255,.75),
+            rgba(248,118,112,.12),
+            rgba(255,255,255,.75)
+        );
+
+    pointer-events: none;
+
+    z-index: 50;
+}
+
+/* =========================================================
+   GUM SHELF
+========================================================= */
+
+#gumShelf {
+
+    position: absolute;
+
+    left: 18px;
+    right: 18px;
+
+    bottom: 13px;
+
+    height: 83px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 13px;
+
+    z-index: 8;
+}
+
+/* =========================================================
+   BUBBLEGUM PACKAGING
+========================================================= */
+
+.gum-pack{
+    position:relative;
+    width:92px;
+    height:72px;
+    flex:0 0 92px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:transform .2s ease;
+}
+
+.gum-pack::before{
+    content:"";
+    position:absolute;
+    inset:0;
+    border-radius:8px;
+    background:var(--pack-color);
+    border:3px solid rgba(255,255,255,.9);
+    box-shadow:0 4px 10px rgba(100,70,60,.12);
+}
+
+.gum-pack::after{
+    content:"";
+    position:absolute;
+    top:0;
+    bottom:0;
+    left:0;
+    width:12px;
+
+    background:
+    repeating-linear-gradient(
+        45deg,
+        rgba(255,255,255,.35) 0px,
+        rgba(255,255,255,.35) 4px,
+        transparent 4px,
+        transparent 8px
+    );
+
+    border-radius:6px 0 0 6px;
+}
+
+/* hide brand text */
+.pack-brand{
+    display:none;
+}
+
+/* remove gum circle completely */
+.pack-gum{
+    display:none;
+}
+
+.gum{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    opacity:0;
+    cursor:pointer;
+    z-index:10;
+}
+
+.gum::before,
+.gum::after{
+    display:none !important;
+    content:none !important;
+}
+
+.pack-fruit{
+    position:absolute;
+    top:6px;
+    left:50%;
+    transform:translateX(-50%);
+
+    width:52px;
+    height:38px;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    z-index:5;
+    pointer-events:none;
+}
+
+.pack-fruit img{
+    width:100%;
+    height:100%;
+    object-fit:contain;
+    display:block;
+}
+
+.pack-label{
+    position:absolute;
+    left:4px;
+    right:4px;
+    bottom:12px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    text-align:center;
+
+    font-size:12px;
+    font-weight:700;
+    letter-spacing:.5px;
+    line-height:1;
+
+    color:#fff;
+    z-index:5;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.25);
+}
+
+.gum-pack:hover{
+    transform:translateY(-4px);
+}
+
+/* =========================================================
+   GUM BUTTONS
+========================================================= */
+
+.gum {
+
+    position: relative;
+
+    width: 78px;
+    height: 70px;
+
+    border: 0;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    transition:
+        transform .2s ease;
+}
+
+.gum::before {
+
+    content: "";
+
+    width: 42px;
+    height: 42px;
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 30% 25%,
+            rgba(255,255,255,.95),
+            var(--gum-light) 32%,
+            var(--gum-color) 72%
+        );
+
+    border:
+        2px solid rgba(255,255,255,.65);
+
+    box-shadow:
+        inset 5px 6px 8px rgba(255,255,255,.45),
+        0 6px 10px rgba(100,70,60,.14);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease;
+}
+
+.gum::after {
+
+    content: attr(data-name);
+
+    position: absolute;
+
+    left: 50%;
+    bottom: -2px;
+
+    transform:
+        translateX(-50%);
+
+    white-space: nowrap;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 8px;
+
+    color: #F87670;
+
+    opacity: .9;
+}
+
+.gum:hover {
+    transform: translateY(-5px);
+}
+
+.gum:hover::before {
+
+    transform:
+        scale(1.1);
+
+    box-shadow:
+        inset 5px 6px 8px rgba(255,255,255,.5),
+        0 9px 15px rgba(100,70,60,.18);
+}
+
+.gum.selected::before {
+
+    transform: scale(1.13);
+
+    box-shadow:
+        0 0 0 4px rgba(248,118,112,.16),
+        inset 5px 6px 8px rgba(255,255,255,.5),
+        0 8px 14px rgba(100,70,60,.18);
+}
+
+/* =========================================================
+   GLASS DOORS
+========================================================= */
+
+.glass-door {
+
+    position: absolute;
+
+    top: 0;
+
+    width: 50%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(255,255,255,.38),
+            rgba(255,255,255,.10)
+        );
+
+    backdrop-filter: blur(2px);
+
+    border:
+        2px solid rgba(255,255,255,.65);
+
+    transition:
+        transform .55s cubic-bezier(
+            .68,
+            -.25,
+            .25,
+            1.25
+        );
+
+    z-index: 20;
+
+    pointer-events: none;
+}
+
+#glassDoorLeft {
+    left: 0;
+}
+
+#glassDoorRight {
+    right: 0;
+}
+
+#gumCabinet.door-open
+#glassDoorLeft {
+
+    transform:
+        translateX(-104%);
+}
+
+#gumCabinet.door-open
+#glassDoorRight {
+
+    transform:
+        translateX(104%);
+}
+
+/* =========================================================
+   DOOR HANDLES
+========================================================= */
+
+.door-handle {
+
+    position: absolute;
+
+    top: 50%;
+
+    width: 5px;
+    height: 30px;
+
+    transform:
+        translateY(-50%);
+
+    border-radius: 10px;
+
+    background:
+        rgba(248,118,112,.55);
+
+    box-shadow:
+        0 2px 5px rgba(100,60,60,.12);
+}
+
+#glassDoorLeft .door-handle {
+    right: 10px;
+}
+
+#glassDoorRight .door-handle {
+    left: 10px;
+}
+
+/* =========================================================
+   SHELF BASE
+========================================================= */
+
+#gumShelf::after {
+
+    content: "";
+
+    position: absolute;
+
+    left: 0;
+    right: 0;
+
+    bottom: -5px;
+
+    height: 9px;
+
+    border-radius: 10px;
+
+    background:
+        rgba(255,255,255,.55);
+
+    box-shadow:
+        0 4px 7px rgba(100,70,60,.1);
+
+    pointer-events: none;
+}
+
+/* =========================================================
+   MESSAGE + SHARE + MUSIC BUTTONS
+========================================================= */
+
+#messageFloatButton,
+#shareButton,
+#musicToggleButton {
+
+    position: absolute;
+
+    top: 82px;
+
+    width: 48px;
+    height: 48px;
+
+    border:
+        3px solid rgba(255,255,255,.75);
+
+    border-radius: 14px;
+
+    background: #F87670;
+
+    color: white;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 8px 18px rgba(120,80,70,.18),
+        inset 0 2px 4px rgba(255,255,255,.35);
+
+    z-index: 100;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+#messageFloatButton {
+
+    left:
+        calc(
+            50%
+            -
+            min(770px, 84vw) / 2
+            -
+            62px
+        );
+}
+
+#shareButton {
+
+    right:
+        calc(
+            50%
+            -
+            min(770px, 84vw) / 2
+            -
+            62px
+        );
+}
+
+#musicToggleButton {
+
+    right:
+        calc(
+            50%
+            -
+            min(770px, 84vw) / 2
+            -
+            122px
+        );
+    font-size: 20px;
+}
+
+#musicToggleButton.muted {
+    background: #d4a5a3;
+}
+
+#messageFloatButton:hover,
+#shareButton:hover,
+#musicToggleButton:hover {
+
+    transform:
+        translateY(-3px);
+
+    box-shadow:
+        0 12px 24px rgba(120,80,70,.22),
+        inset 0 2px 4px rgba(255,255,255,.35);
+}
+
+#messageFloatButton:active,
+#shareButton:active,
+#musicToggleButton:active {
+
+    transform:
+        scale(.94);
+}
+
+#messageFloatButton {
+
+    font-size: 22px;
+}
+
+#shareButton {
+
+    font-size: 20px;
+}
+
+
+/* =========================================================
+   MAIN STAGE
+========================================================= */
+
+#stage {
+    position: absolute;
+
+    left: 50%;
+    top: 45%;
+
+    transform: translate(-50%, -50%);
+
+    width: min(600px, 70vw);
+    height: min(500px, 60vh);
+
+    z-index: 30;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CHARACTER WRAPPER
+========================================================= */
+
+#characterWrapper {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    /* The wrapper is the single, shared center reference. */
+
+
+    transform: translate(-50%, -50%);
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   CHARACTER
+========================================================= */
+
+#character {
+    position: absolute;
+
+    left: 50%;
+    top: 50%;
+
+    width: 330px;
+    height: 440px;
+
+    /* EXACT CENTER ANCHOR:
+       every character is positioned from the same
+       center point between the navigation arrows. */
+    transform: translate(-50%, -50%);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    pointer-events: auto;
+
+    cursor: pointer;
+
+    transform-origin: center center;
+
+    transition:
+        transform .35s ease;
+        
+    touch-action: none;
+    -webkit-touch-callout: none;
+}
+
+
+/* =========================================================
+   CHARACTER IMAGE
+========================================================= */
+
+#characterImage {
+    width: auto;
+
+    height: min(390px, 52vh);
+
+    /* Keep the visible character centered inside its anchor. */
+    margin: 0 auto;
+    object-position: 50% 50%;
+
+    max-width: 310px;
+
+    object-fit: contain;
+
+    display: block;
+
+    user-select: none;
+
+    -webkit-user-drag: none;
+
+    pointer-events: none;
+
+    filter:
+        drop-shadow(
+            0 12px 12px rgba(100, 70, 70, .13)
+        );
+}
+
+/* =========================================================
+   BUBBLE
+========================================================= */
+
+#bubble {
+
+    position: absolute;
+
+    left: 50%;
+    top: 20px;
+
+    width: 140px;
+    height: 140px;
+
+    transform:
+        translateX(-50%)
+        scale(.25);
+
+    border-radius: 50%;
+
+    background:
+        radial-gradient(
+            circle at 28% 23%,
+            rgba(255,255,255,.95),
+            rgba(255,255,255,.62) 13%,
+            rgba(248,118,112,.28) 42%,
+            rgba(248,118,112,.12) 72%,
+            rgba(255,255,255,.18)
+        );
+
+    border:
+        2px solid rgba(255,255,255,.72);
+
+    box-shadow:
+        inset 8px 8px 15px rgba(255,255,255,.42),
+        inset -8px -8px 15px rgba(248,118,112,.08),
+        0 10px 22px rgba(100,70,70,.12);
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    opacity: .95;
+
+    pointer-events: auto;
+
+    cursor: pointer;
+
+    transition:
+        transform .12s ease,
+        opacity .15s ease;
+}
+
+#bubble::before {
+
+    content: "";
+
+    position: absolute;
+
+    width: 18px;
+    height: 9px;
+
+    left: 28px;
+    top: 22px;
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.75);
+
+    transform:
+        rotate(-20deg);
+
+    filter:
+        blur(.5px);
+}
+
+#bubbleText {
+    color: #000000;
+    font-family: "Offside", sans-serif;
+    font-size: 10px;
+    font-weight: 600;
+    text-align: center;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    width: 100%;
+    height: 100%;
+
+    padding: 12px;
+    line-height: 1.35;
+
+    text-shadow: none;
+}
+
+#mouthGum {
+    position: absolute;
+
+    width: 28px;
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: #ff5796;
+
+    box-shadow:
+        inset 2px 2px 4px rgba(255,255,255,.4),
+        0 0 10px rgba(0,0,0,.08);
+
+    pointer-events: none;
+
+    z-index: 2;
+}
+
+/* =========================================================
+   BUBBLE SPLATS
+========================================================= */
+
+.bubble-splat {
+    position: absolute;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+
+    pointer-events: none;
+    z-index: 1000;
+
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(.2);
+}
+
+
+/* little stretched gum pieces */
+
+.bubble-splat:nth-child(1) {
+    width: 13px;
+    height: 8px;
+}
+
+.bubble-splat:nth-child(2) {
+    width: 8px;
+    height: 13px;
+}
+
+.bubble-splat:nth-child(3) {
+    width: 6px;
+    height: 6px;
+}
+
+.bubble-splat:nth-child(4) {
+    width: 11px;
+    height: 7px;
+}
+
+.bubble-splat:nth-child(5) {
+    width: 7px;
+    height: 11px;
+}
+
+.bubble-splat:nth-child(6) {
+    width: 5px;
+    height: 5px;
+}
+
+
+/* =========================================================
+   GUM STUCK TO FACE
+========================================================= */
+
+.sticky-gum {
+    position: absolute;
+
+    width: 25px;
+    height: 22px;
+
+    border-radius: 52% 48% 45% 55%;
+
+    pointer-events: auto;
+
+    z-index: 1001;
+
+    cursor: pointer;
+
+    transform-origin: center center;
+}
+
+/* tiny highlight */
+.sticky-gum::after {
+    content: "";
+
+    position: absolute;
+
+    width: 6px;
+    height: 4px;
+
+    left: 6px;
+    top: 5px;
+
+    border-radius: 50%;
+
+    background: rgba(255,255,255,.7);
+
+    transform: rotate(-15deg);
+}
+
+/* =========================================================
+   CHARACTER INFO
+========================================================= */
+
+#characterInfo {
+
+    position: fixed;
+
+    left: 50%;
+
+    bottom: -160px;
+
+    transform:
+        translateX(-50%);
+
+    text-align: center;
+
+    white-space: nowrap;
+
+    pointer-events: none;
+}
+
+#characterName {
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 22px;
+
+    color: #000000;
+
+    letter-spacing: 1px;
+}
+
+#characterPersonality {
+
+    margin-top: 3px;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 16px;
+
+    color: rgba(119, 0, 93, 0.72);
+
+    letter-spacing: .7px;
+}
+
+#characterInfo::before {
+    content: "";
+    position: absolute;
+    left: 50%;
+    top: -8px;
+    width: 110px;
+    height: 2px;
+    transform: translateX(-50%);
+    background: rgba(255,255,255,.9);
+    border-radius: 99px;
+}
+
+/* =========================================================
+   CHARACTER NAVIGATION
+========================================================= */
+
+#previousCharacter,
+#nextCharacter {
+
+    position: absolute;
+
+    top: 50%;
+
+    width: 38px;
+    height: 38px;
+
+    transform:
+        translateY(-50%);
+
+    border:
+        2px solid rgba(255,255,255,.7);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,.45);
+
+    color: #F87670;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 16px;
+
+    cursor: pointer;
+
+    pointer-events: auto;
+
+    z-index: 50;
+
+    box-shadow:
+        0 5px 12px rgba(100,70,70,.1);
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+#previousCharacter {
+    left: 5px;
+}
+
+#nextCharacter {
+    right: 5px;
+}
+
+#previousCharacter:hover,
+#nextCharacter:hover {
+
+    background:
+        rgba(255,255,255,.7);
+
+    transform:
+        translateY(-50%)
+        scale(1.08);
+}
+
+/* =========================================================
+   MESSAGE PANEL
+========================================================= */
+
+#messagePanel {
+
+    position: fixed;
+
+    left: 50%;
+    top: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    width:
+        min(430px, 88vw);
+
+    max-height:
+        82vh;
+
+    overflow-y: auto;
+
+    padding: 26px;
+
+    border-radius: 22px;
+
+    background:
+        rgba(255, 250, 252, 0.96);
+
+    border:
+        2px solid rgba(255, 255, 255, 0.95);
+
+    box-shadow:
+        0 20px 55px rgba(90, 60, 60, 0.18);
+
+    z-index: 1000;
+
+    backdrop-filter:
+        blur(14px) saturate(120%);
+
+    font-family:
+        "Offside", sans-serif;
+
+    color:
+        #4d3b39;
+
+    transition:
+        opacity .2s ease,
+        transform .2s ease;
+}
+
+#messagePanel.hidden-panel {
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform:
+        translate(-50%, -47%)
+        scale(.96);
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+#panelTitle {
+
+    color: #F87670;
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size: 17px;
+
+    line-height: 1.5;
+
+    text-align: center;
+
+    margin-bottom: 20px;
+}
+
+
+/* =========================================================
+   GUM FLAVOR BUTTONS
+========================================================= */
+
+#messageGums {
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(3, 1fr);
+
+    gap: 10px;
+
+    margin-bottom: 18px;
+}
+
+.message-gum {
+
+    position: relative;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    min-height: 84px;
+
+    padding: 8px;
+
+    border:
+        1.5px solid rgba(255,255,255,.8);
+
+    border-radius: 13px;
+
+    background:
+        var(--pack-color);
+
+    cursor: pointer;
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        filter .2s ease;
+
+    overflow: hidden;
+
+    font-family:
+        "Offside", sans-serif;
+}
+
+.message-gum::before {
+
+    content: "";
+
+    position: absolute;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+
+    width: 9px;
+
+    background:
+        repeating-linear-gradient(
+            45deg,
+            rgba(255,255,255,.32) 0px,
+            rgba(255,255,255,.32) 4px,
+            transparent 4px,
+            transparent 8px
+        );
+
+    pointer-events: none;
+}
+
+.message-gum:hover {
+
+    transform:
+        translateY(-2px);
+
+    filter:
+        brightness(1.04);
+}
+
+.message-gum.active {
+
+    box-shadow:
+        0 0 0 3px rgba(248,118,112,.22),
+        0 7px 16px rgba(100,70,60,.12);
+}
+
+.message-gum-image {
+
+    width: 44px;
+    height: 31px;
+
+    object-fit: contain;
+
+    pointer-events: none;
+}
+
+.message-gum-label {
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size: 9px;
+
+    font-weight: 400;
+
+    letter-spacing: .2px;
+
+    color: #fff;
+
+    text-align: center;
+
+    text-shadow:
+        0 1px 2px rgba(0,0,0,.2);
+}
+
+
+/* =========================================================
+   MESSAGE TEXTAREA
+========================================================= */
+
+#messageInput {
+
+    width: 100%;
+
+    min-height: 125px;
+
+    resize: vertical;
+
+    border:
+        2px solid rgba(248,118,112,.16);
+
+    border-radius: 15px;
+
+    padding: 15px;
+
+    outline: none;
+
+    color: #463937;
+
+    background:
+        rgba(255,255,255,.78);
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size: 11px;
+
+    line-height: 1.65;
+
+    letter-spacing: .1px;
+    
+    user-select: text;
+    -webkit-user-select: text;
+
+    box-shadow:
+        inset 0 1px 3px rgba(80,50,50,.04);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+#messageInput::placeholder {
+
+    color: #9c8582;
+
+    opacity: .9;
+
+    font-family:
+        "Offside", sans-serif;
+}
+
+#messageInput:focus {
+
+    border-color:
+        rgba(248,118,112,.5);
+
+    background:
+        rgba(255,255,255,.95);
+
+    box-shadow:
+        0 0 0 3px rgba(248,118,112,.09);
+}
+
+
+/* =========================================================
+   SAVE BUTTON
+========================================================= */
+
+#saveMessage {
+
+    width: 100%;
+
+    margin-top: 14px;
+
+    padding: 13px;
+
+    border:
+        0;
+
+    border-radius: 13px;
+
+    background:
+        #F87670;
+
+    color:
+        white;
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size: 11px;
+
+    letter-spacing: .1px;
+
+    cursor: pointer;
+
+    box-shadow:
+        0 6px 15px rgba(248,118,112,.16);
+
+    transition:
+        transform .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+#saveMessage:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        #f56c66;
+
+    box-shadow:
+        0 8px 18px rgba(248,118,112,.22);
+}
+
+#saveMessage:active {
+
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   FORCE OFFSIDE INSIDE ENTIRE MESSAGE DIALOG
+========================================================= */
+
+#messagePanel,
+#messagePanel *,
+#messagePanel button,
+#messagePanel textarea,
+#messagePanel input,
+#messagePanel select {
+
+    font-family:
+        "Offside", sans-serif;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+
+    #messagePanel {
+
+        width: 90vw;
+
+        padding: 20px;
+
+        border-radius: 19px;
+    }
+
+    #messageGums {
+
+        gap: 7px;
+    }
+
+    .message-gum {
+
+        min-height: 76px;
+    }
+
+    .message-gum-image {
+
+        width: 39px;
+        height: 28px;
+    }
+
+    #panelTitle {
+
+        font-size: 15px;
+    }
+
+    #messageInput {
+
+        min-height: 115px;
+
+        font-size: 10px;
+    }
+}
+
+/* =========================================================
+   SHARE OVERLAY
+========================================================= */
+
+#shareOverlay {
+
+    position: fixed;
+
+    inset: 0;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    background:
+        rgba(222,202,191,.48);
+
+    backdrop-filter:
+        blur(8px);
+
+    z-index: 1200;
+
+    opacity: 1;
+
+    transition:
+        opacity .2s ease;
+}
+
+#shareOverlay.hidden {
+
+    opacity: 0;
+
+    pointer-events: none;
+}
+
+
+/* =========================================================
+   SHARE BOX
+========================================================= */
+
+#shareBox {
+
+    width:
+        min(430px, 88vw);
+
+    max-height:
+        82vh;
+
+    overflow-y: auto;
+
+    padding:
+        26px;
+
+    border-radius:
+        22px;
+
+    background:
+        rgba(255,250,252,.97);
+
+    border:
+        2px solid rgba(255,255,255,.95);
+
+    box-shadow:
+        0 20px 55px rgba(90,60,60,.18);
+
+    text-align:
+        center;
+
+    font-family:
+        "Offside", sans-serif;
+
+    color:
+        #463937;
+
+    animation:
+        shareBoxIn .2s ease;
+}
+
+@keyframes shareBoxIn {
+
+    from {
+
+        opacity: 0;
+
+        transform:
+            translateY(6px)
+            scale(.97);
+    }
+
+    to {
+
+        opacity: 1;
+
+        transform:
+            translateY(0)
+            scale(1);
+    }
+}
+
+
+/* =========================================================
+   SHARE TITLE
+========================================================= */
+
+#shareBox h2 {
+
+    color:
+        #F87670;
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size:
+        17px;
+
+    line-height:
+        1.5;
+
+    margin-bottom:
+        18px;
+}
+
+
+/* =========================================================
+   SHARE URL
+========================================================= */
+
+#shareURL {
+
+    display:
+        block;
+
+    width:
+        100%;
+
+    min-height:
+        42px;
+
+    border:
+        2px solid rgba(248,118,112,.16);
+
+    border-radius:
+        13px;
+
+    padding:
+        12px 13px;
+
+    outline:
+        none;
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size:
+        9px;
+
+    line-height:
+        1.5;
+
+    color:
+        #463937;
+
+    background:
+        rgba(255,255,255,.84);
+
+    user-select: text;
+    -webkit-user-select: text;
+
+    box-shadow:
+        inset 0 1px 3px rgba(80,50,50,.04);
+
+    transition:
+        border-color .2s ease,
+        box-shadow .2s ease,
+        background .2s ease;
+}
+
+#shareURL:focus {
+
+    border-color:
+        rgba(248,118,112,.5);
+
+    background:
+        rgba(255,255,255,.98);
+
+    box-shadow:
+        0 0 0 3px rgba(248,118,112,.09);
+}
+
+
+/* =========================================================
+   COPY BUTTON
+========================================================= */
+
+#copyURL {
+
+    margin-top:
+        14px;
+
+    padding:
+        12px 18px;
+
+    border:
+        0;
+
+    border-radius:
+        13px;
+
+    background:
+        #F87670;
+
+    color:
+        white;
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.4;
+
+    cursor:
+        pointer;
+
+    box-shadow:
+        0 6px 15px rgba(248,118,112,.16);
+
+    transition:
+        transform .2s ease,
+        background .2s ease,
+        box-shadow .2s ease;
+}
+
+#copyURL:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        #f56c66;
+
+    box-shadow:
+        0 8px 18px rgba(248,118,112,.22);
+}
+
+#copyURL:active {
+
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+#closeShare {
+
+    margin-left:
+        7px;
+
+    padding:
+        11px 18px;
+
+    border:
+        1.5px solid rgba(248,118,112,.18);
+
+    border-radius:
+        13px;
+
+    background:
+        #ffe8ef;
+
+    color:
+        #F87670;
+
+    font-family:
+        "Offside", sans-serif;
+
+    font-size:
+        10px;
+
+    line-height:
+        1.4;
+
+    cursor:
+        pointer;
+
+    transition:
+        transform .2s ease,
+        background .2s ease;
+}
+
+#closeShare:hover {
+
+    transform:
+        translateY(-2px);
+
+    background:
+        #ffdae5;
+}
+
+#closeShare:active {
+
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   FORCE OFFSIDE EVERYWHERE IN SHARE BOX
+========================================================= */
+
+#shareBox,
+#shareBox *,
+#shareBox h2,
+#shareBox input,
+#shareBox textarea,
+#shareBox button {
+
+    font-family:
+        "Offside", sans-serif;
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 500px) {
+
+    #shareBox {
+
+        width:
+            90vw;
+
+        padding:
+            20px;
+
+        border-radius:
+            19px;
+    }
+
+    #shareBox h2 {
+
+        font-size:
+            15px;
+    }
+
+    #shareURL {
+
+        font-size:
+            8px;
+    }
+
+    #copyURL,
+    #closeShare {
+
+        font-size:
+            9px;
+
+        padding:
+            11px 15px;
+    }
+}
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 900px) {
+
+    #shelfArea {
+
+        width:
+            min(650px, 72vw);
+
+        top: 78px;
+    }
+
+    #gumCabinet {
+
+        height: 112px;
+    }
+
+    #gumShelf {
+
+        gap: 5px;
+    }
+
+    .gum {
+
+        width: 67px;
+    }
+
+    #messageFloatButton {
+
+        left:
+            calc(
+                50%
+                -
+                min(650px, 72vw) / 2
+                -
+                57px
+            );
+
+        top: 78px;
+    }
+
+    #shareButton {
+
+        right:
+            calc(
+                50%
+                -
+                min(650px, 72vw) / 2
+                -
+                57px
+            );
+
+        top: 78px;
+    }
+
+    #musicToggleButton {
+
+        right:
+            calc(
+                50%
+                -
+                min(650px, 72vw) / 2
+                -
+                114px
+            );
+
+        top: 78px;
+    }
+
+    #stage {
+
+        width: 75vw;
+        height: 58vh;
+    }
+}
+
+@media (max-width: 700px) {
+
+    #siteTitle {
+
+        font-size: 15px;
+    }
+
+    #shelfArea {
+
+        width: 76vw;
+        top: 76px;
+    }
+
+    #gumCabinet {
+
+        height: 108px;
+    }
+
+    #gumShelf {
+
+        left: 8px;
+        right: 8px;
+
+        gap: 0;
+    }
+
+    .gum {
+
+        width: 16.5%;
+
+        height: 65px;
+    }
+
+    .gum::before {
+
+        width: 32px;
+        height: 32px;
+    }
+
+    .gum::after {
+
+        font-size: 6px;
+    }
+
+    #messageFloatButton {
+
+        left:
+            calc(
+                50% - 38vw - 54px
+            );
+
+        top: 76px;
+
+        width: 43px;
+        height: 43px;
+
+        border-radius: 13px;
+    }
+
+    #shareButton {
+
+        right:
+            calc(
+                50% - 38vw - 54px
+            );
+
+        top: 76px;
+
+        width: 43px;
+        height: 43px;
+
+        border-radius: 13px;
+    }
+
+    #musicToggleButton {
+
+        right:
+            calc(
+                50% - 38vw - 106px
+            );
+
+        top: 76px;
+
+        width: 43px;
+        height: 43px;
+
+        border-radius: 13px;
+    }
+
+    #stage {
+
+        width: 82vw;
+        height: 58vh;
+
+        transform:
+            translate(
+                -50%,
+                -41%
+            );
+    }
+
+    #character {
+
+        width: 280px;
+        height: 390px;
+    }
+
+    #characterImage {
+
+        height:
+            min(350px, 49vh);
+
+        max-width: 260px;
+    }
+
+    #bubble {
+
+        width: 120px;
+        height: 120px;
+    }
+
+    #previousCharacter,
+    #nextCharacter {
+
+        width: 34px;
+        height: 34px;
+    }
+}
+
+@media (max-height: 700px) {
+
+    #titleArea {
+
+        top: 10px;
+    }
+
+    #shelfArea {
+
+        top: 58px;
+    }
+
+    #messageFloatButton,
+    #shareButton,
+    #musicToggleButton {
+
+        top: 58px;
+    }
+
+    #gumCabinet {
+
+        height: 100px;
+    }
+
+    #gumShelf {
+
+        bottom: 8px;
+        height: 70px;
+    }
+
+    #stage {
+
+        height: 55vh;
+
+        transform:
+            translate(
+                -50%,
+                -40%
+            );
+    }
+
+    #characterImage {
+
+        height:
+            min(325px, 48vh);
+    }
+
+    #characterInfo {
+
+        bottom: 0;
+    }
+}
+
+@media (max-height: 600px) {
+
+    #shelfArea {
+
+        top: 48px;
+    }
+
+    #messageFloatButton,
+    #shareButton,
+    #musicToggleButton {
+
+        top: 48px;
+    }
+
+    #gumCabinet {
+
+        height: 88px;
+    }
+
+    #gumShelf {
+
+        height: 62px;
+        bottom: 4px;
+    }
+
+    .gum {
+
+        height: 58px;
+    }
+
+    .gum::before {
+
+        width: 29px;
+        height: 29px;
+    }
+
+    #stage {
+
+        transform:
+            translate(
+                -50%,
+                -38%
+            );
+    }
+
+    #characterImage {
+
+        height:
+            min(285px, 45vh);
+    }
+}
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media (prefers-reduced-motion: reduce) {
+
+    *,
+    *::before,
+    *::after {
+
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+
+        transition-duration: .01ms !important;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div id="app">
+
+    <!-- =====================================================
+         BACKGROUND MUSIC
+    ====================================================== -->
+    <audio id="bgMusic" src="background-music.mp3" loop></audio>
+
+
+    <!-- =====================================================
+         BACKGROUND
+    ====================================================== -->
+
+    <div id="backgroundBubbles"></div>
+
+
+    <!-- =====================================================
+         TITLE
+    ====================================================== -->
+
+    <div id="titleArea">
+
+        <div id="siteTitle">
+
+
+            <span class="title-letter">t</span>
+            <span class="title-letter bubble-letter">h</span>
+            <span class="title-letter">e</span>
+            <span class="title-letter">s</span>
+            <span class="title-letter bubble-letter">h</span>
+            <span class="title-letter">a</span>
+            <span class="title-letter">r</span>
+            <span class="title-letter">t</span>
+            <span class="title-letter">e</span>
+            <span class="title-letter bubble-letter">c</span>
+            <span class="title-letter">h</span>
+            <span class="title-letter">c</span>
+            <span class="title-letter">l</span>
+            <span class="title-letter bubble-letter">u</span>
+            <span class="title-letter">b</span>
+            <span class="title-letter">'</span>
+            <span class="title-letter">s</span>
+
+            &nbsp;
+
+            <span class="title-letter">b</span>
+            <span class="title-letter bubble-letter">u</span>
+            <span class="title-letter">b</span>
+            <span class="title-letter">b</span>
+            <span class="title-letter">l</span>
+            <span class="title-letter bubble-letter">e</span>
+            <span class="title-letter">g</span>
+            <span class="title-letter">u</span>
+            <span class="title-letter">m</span>
+
+        </div>
+
+    </div>
+
+
+    <!-- =====================================================
+         MESSAGE BUTTON
+    ====================================================== -->
+
+    <button
+        id="messageFloatButton"
+        aria-label="Write a message"
+    >
+        ✉︎
+    </button>
+
+
+    <!-- =====================================================
+         SHARE BUTTON
+    ====================================================== -->
+
+    <button
+        id="shareButton"
+        aria-label="Share"
+    >
+        ↗
+    </button>
+
+
+    <!-- =====================================================
+         MUSIC TOGGLE BUTTON
+    ====================================================== -->
+
+    <button
+        id="musicToggleButton"
+        aria-label="Toggle background music"
+    >
+        🎵
+    </button>
+
+
+    <!-- =====================================================
+         GUM DISPLAY CABINET
+    ====================================================== -->
+
+    <section id="shelfArea">
+
+        <div id="gumCabinet">
+
+            <div class="cabinet-top"></div>
+
+
+<div id="gumShelf">
+
+    <div class="gum-pack" style="--pack-color:#ff5796; --gum-color:#ff5796; --gum-light:#ffb7d2;">
+        <div class="pack-fruit">
+            <img src="strawberry.png" alt="Strawberry">
+        </div>
+        <div class="pack-label">STRAWBERRY</div>
+        <button class="gum selected" data-gum="strawberry" data-name="STRAWBERRY"></button>
+    </div>
+
+    <div class="gum-pack" style="--pack-color:#6d9cff; --gum-color:#6d9cff; --gum-light:#bdd2ff;">
+        <div class="pack-fruit">
+            <img src="blueberry.png" alt="Blueberry">
+        </div>
+        <div class="pack-label">BLUEBERRY</div>
+        <button class="gum" data-gum="blueberry" data-name="BLUEBERRY"></button>
+    </div>
+
+    <div class="gum-pack" style="--pack-color:#5dd8bd; --gum-color:#5dd8bd; --gum-light:#b2f4e7;">
+        <div class="pack-fruit">
+            <img src="mint.png" alt="Mint">
+        </div>
+        <div class="pack-label">MINT</div>
+        <button class="gum" data-gum="mint" data-name="MINT"></button>
+    </div>
+
+    <div class="gum-pack" style="--pack-color:#ffd34f; --gum-color:#ffd34f; --gum-light:#fff0a8;">
+        <div class="pack-fruit">
+            <img src="lemon.png" alt="Lemon">
+        </div>
+        <div class="pack-label">LEMON</div>
+        <button class="gum" data-gum="lemon" data-name="LEMON"></button>
+    </div>
+
+    <div class="gum-pack" style="--pack-color:#b26be8; --gum-color:#b26be8; --gum-light:#ddb7ff;">
+        <div class="pack-fruit">
+            <img src="grape.png" alt="Grape">
+        </div>
+        <div class="pack-label">GRAPE</div>
+        <button class="gum" data-gum="grape" data-name="GRAPE"></button>
+    </div>
+
+    <div class="gum-pack" style="--pack-color:#ff9867; --gum-color:#ff9867; --gum-light:#ffd0b6;">
+        <div class="pack-fruit">
+            <img src="orange.png" alt="Orange">
+        </div>
+        <div class="pack-label">ORANGE</div>
+        <button class="gum" data-gum="orange" data-name="ORANGE"></button>
+    </div>
+
+</div>
+
+
+            <!-- CLICK THE SHELF TO OPEN/CLOSE -->
+
+            <div
+                id="glassDoorLeft"
+                class="glass-door"
+            >
+                <span class="door-handle"></span>
+            </div>
+
+            <div
+                id="glassDoorRight"
+                class="glass-door"
+            >
+                <span class="door-handle"></span>
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MAIN CHARACTER STAGE
+    ====================================================== -->
+
+    <main id="stage">
+
+        <div id="characterWrapper">
+
+            <button
+                id="previousCharacter"
+                aria-label="Previous character"
+            >
+                ‹
+            </button>
+
+
+            <div id="character">
+
+                <img
+                    id="characterImage"
+                    src="C1.gif"
+                    alt="Character"
+                    draggable="false"
+                >
+
+                <div id="bubble">
+
+                    <div id="bubbleText"></div>
+
+                </div>
+
+            </div>
+
+
+            <button
+                id="nextCharacter"
+                aria-label="Next character"
+            >
+                ›
+            </button>
+
+
+            <div id="characterInfo">
+
+                <div id="characterName">
+                    MAYA
+                </div>
+
+                <div id="characterPersonality">
+                    NERVOUS
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+
+    <!-- =====================================================
+         MESSAGE PANEL
+    ====================================================== -->
+
+    <section
+        id="messagePanel"
+        class="hidden-panel"
+    >
+
+        <div id="panelTitle">
+            leave a little bubblegum message ♡
+        </div>
+
+
+<div id="messageGums">
+
+    <button class="message-gum active"
+        data-gum="strawberry"
+        style="--pack-color:#ff5796">
+
+        <img class="message-gum-image"
+            src="strawberry.png"
+            alt="Strawberry">
+
+        <span class="message-gum-label">
+            STRAWBERRY
+        </span>
+    </button>
+
+    <button class="message-gum"
+        data-gum="blueberry"
+        style="--pack-color:#6d9cff">
+
+        <img class="message-gum-image"
+            src="blueberry.png"
+            alt="Blueberry">
+
+        <span class="message-gum-label">
+            BLUEBERRY
+        </span>
+    </button>
+
+    <button class="message-gum"
+        data-gum="mint"
+        style="--pack-color:#5dd8bd">
+
+        <img class="message-gum-image"
+            src="mint.png"
+            alt="Mint">
+
+        <span class="message-gum-label">
+            MINT
+        </span>
+    </button>
+
+    <button class="message-gum"
+        data-gum="lemon"
+        style="--pack-color:#ffd34f">
+
+        <img class="message-gum-image"
+            src="lemon.png"
+            alt="Lemon">
+
+        <span class="message-gum-label">
+            LEMON
+        </span>
+    </button>
+
+    <button class="message-gum"
+        data-gum="grape"
+        style="--pack-color:#b26be8">
+
+        <img class="message-gum-image"
+            src="grape.png"
+            alt="Grape">
+
+        <span class="message-gum-label">
+            GRAPE
+        </span>
+    </button>
+
+    <button class="message-gum"
+        data-gum="orange"
+        style="--pack-color:#ff9867">
+
+        <img class="message-gum-image"
+            src="orange.png"
+            alt="Orange">
+
+        <span class="message-gum-label">
+            ORANGE
+        </span>
+    </button>
+
+</div>
+
+
+        <textarea
+            id="messageInput"
+            placeholder="write something cute..."
+        ></textarea>
+
+
+        <button id="saveMessage">
+            save message ♡
+        </button>
+
+    </section>
+
+
+    <!-- =====================================================
+         SHARE OVERLAY
+    ====================================================== -->
+
+    <div
+        id="shareOverlay"
+        class="hidden"
+    >
+
+        <div id="shareBox">
+
+            <h2>
+                share your bubblegum ♡
+            </h2>
+
+            <input
+                id="shareURL"
+                type="text"
+                readonly
+            >
+
+            <div>
+
+                <button id="copyURL">
+                    copy link
+                </button>
+
+                <button id="closeShare">
+                    close
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div id="mouthGum"></div>
+
+
+<script>
+
+/* =========================================================
+   AUDIO CONFIG
+========================================================= */
+
+const doorSound = new Audio('door-open.wav');
+const doorCloseSound = new Audio('door-close.wav');
+const selectSound = new Audio('button.mp3');
+const blowSound = new Audio('blowing.mp3');
+const popSound = new Audio('pop.wav');
+
+blowSound.loop = true;
+
+/* =========================================================
+   BACKGROUND MUSIC CONFIG & CONTROL
+========================================================= */
+
+const bgMusic = document.getElementById("bgMusic");
+const musicToggleButton = document.getElementById("musicToggleButton");
+
+bgMusic.volume = 0.4; // Comfortable background volume
+let isMusicPlaying = false;
+
+musicToggleButton.addEventListener("click", function() {
+    if (isMusicPlaying) {
+        bgMusic.pause();
+        musicToggleButton.textContent = "🔇";
+        musicToggleButton.classList.add("muted");
+        isMusicPlaying = false;
+    } else {
+        bgMusic.play().then(() => {
+            musicToggleButton.textContent = "🎵";
+            musicToggleButton.classList.remove("muted");
+            isMusicPlaying = true;
+        }).catch(error => {
+            console.warn("Audio playback prevented:", error);
+        });
+    }
+});
+
+/* =========================================================
+   CONFIG
+========================================================= */
+
+const background =
+    document.getElementById(
+        "backgroundBubbles"
+    );
+
+const gumCabinet =
+    document.getElementById(
+        "gumCabinet"
+    );
+
+const character =
+    document.getElementById(
+        "character"
+    );
+
+const characterImage =
+    document.getElementById(
+        "characterImage"
+    );
+
+const bubble =
+    document.getElementById(
+        "bubble"
+    );
+
+const bubbleText =
+    document.getElementById(
+        "bubbleText"
+    );
+
+const characterName =
+    document.getElementById(
+        "characterName"
+    );
+
+const characterPersonality =
+    document.getElementById(
+        "characterPersonality"
+    );
+
+const previousCharacter =
+    document.getElementById(
+        "previousCharacter"
+    );
+
+const nextCharacter =
+    document.getElementById(
+        "nextCharacter"
+    );
+
+const messageFloatButton =
+    document.getElementById(
+        "messageFloatButton"
+    );
+
+const messagePanel =
+    document.getElementById(
+        "messagePanel"
+    );
+
+const messageInput =
+    document.getElementById(
+        "messageInput"
+    );
+
+const saveMessage =
+    document.getElementById(
+        "saveMessage"
+    );
+
+const shareButton =
+    document.getElementById(
+        "shareButton"
+    );
+
+const shareOverlay =
+    document.getElementById(
+        "shareOverlay"
+    );
+
+const shareURL =
+    document.getElementById(
+        "shareURL"
+    );
+
+const copyURL =
+    document.getElementById(
+        "copyURL"
+    );
+
+const closeShare =
+    document.getElementById(
+        "closeShare"
+    );
+
+
+/* =========================================================
+   CHARACTERS
+========================================================= */
+
+const characters = [
+
+    {
+        name: "MAYA",
+        personality: "NERVOUS",
+        image: "C1.gif",
+        x: 0,
+        y: -100,
+        scale: 1,
+        bubbleX: 0,
+        bubbleY: 255
+    },
+
+    {
+        name: "LEO",
+        personality: "COMPETITIVE",
+        image: "C2.gif",
+        x: 0,
+        y: -100,
+        scale: 1,
+        bubbleX: 4,
+        bubbleY: 255
+    },
+
+    {
+        name: "JUNE",
+        personality: "CHAOTIC",
+        image: "C4.gif",
+        x: 0,
+        y: -100,
+        scale: 1,
+        bubbleX: 0,
+        bubbleY: 230
+    },
+
+    {
+        name: "ARI",
+        personality: "CURIOUS",
+        image: "C5.gif",
+        x: 0,
+        y: -100,
+        scale: 1,
+        bubbleX: 5,
+        bubbleY: 270
+    },
+
+    {
+        name: "NOA",
+        personality: "EASILY ANNOYED",
+        image: "C3.gif",
+        x: -30,
+        y: -90,
+        scale: 1.45,
+        bubbleX: 23,
+        bubbleY: 150
+    },
+
+];
+
+
+/* =========================================================
+   GUMS
+========================================================= */
+
+const gums = {
+
+    strawberry: {
+        color: "#ff5796",
+        light: "#ffb7d2",
+        max: 220,
+        speed: 3
+    },
+
+    blueberry: {
+        color: "#6d9cff",
+        light: "#bdd2ff",
+        max: 310,
+        speed: 5
+    },
+
+    mint: {
+        color: "#5dd8bd",
+        light: "#b2f4e7",
+        max: 230,
+        speed: 3
+    },
+
+    lemon: {
+        color: "#ffd34f",
+        light: "#fff0a8",
+        max: 250,
+        speed: 3.2
+    },
+
+    grape: {
+        color: "#b26be8",
+        light: "#ddb7ff",
+        max: 240,
+        speed: 3.2
+    },
+
+    orange: {
+        color: "#ff9867",
+        light: "#ffd0b6",
+        max: 235,
+        speed: 3.2
+    }
+
+};
+
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let currentCharacter = 0;
+
+let selectedGum = "strawberry";
+
+let editingGum = "strawberry";
+
+let messages = {
+    strawberry: "",
+    blueberry: "",
+    mint: "",
+    lemon: "",
+    grape: "",
+    orange: ""
+};
+
+let blowing = false;
+
+let bubbleSize = 25;
+
+let blowTimer = null;
+
+let doorOpen = false;
+
+let bubbleAvailable = true;
+
+let popping = false;
+
+/* =========================================================
+   CHARACTER RENDER
+========================================================= */
+
+function renderCharacter() {
+
+    const c =
+        characters[currentCharacter];
+
+    characterImage.src =
+        c.image;
+
+    characterName.textContent =
+        c.name;
+
+    characterPersonality.textContent =
+        c.personality;
+
+    character.style.transform = `
+        translateX(calc(-50% + ${c.x}px))
+        translateY(${c.y}px)
+        scale(${c.scale})
+    `;
+
+    bubble.style.left =
+        `calc(50% + ${c.bubbleX}px)`;
+
+    bubble.style.top =
+        `${c.bubbleY}px`;
+
+    updateBubble();
+}
+
+/* =========================================================
+   CHARACTER NAVIGATION
+========================================================= */
+
+function changeCharacter(direction) {
+
+    currentCharacter +=
+        direction;
+
+    if (
+        currentCharacter <
+        0
+    ) {
+
+        currentCharacter =
+            characters.length - 1;
+
+    }
+
+    if (
+        currentCharacter >=
+        characters.length
+    ) {
+
+        currentCharacter = 0;
+
+    }
+
+    renderCharacter();
+
+}
+
+previousCharacter.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        changeCharacter(-1);
+
+    }
+);
+
+nextCharacter.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        changeCharacter(1);
+
+    }
+);
+
+
+/* =========================================================
+   SELECT GUM
+========================================================= */
+
+function selectGum(gumName) {
+
+    if (!gums[gumName]) {
+        return;
+    }
+
+    selectSound.currentTime = 0;
+    selectSound.play();
+
+    selectedGum = gumName;
+
+    bubbleAvailable = true;
+    blowing = false;
+    popping = false;
+
+    bubbleSize = 25;
+
+    if (blowTimer) {
+        clearInterval(blowTimer);
+        blowTimer = null;
+    }
+
+    document
+        .querySelectorAll(".gum")
+        .forEach(function(button) {
+
+            button.classList.toggle(
+                "selected",
+                button.dataset.gum === gumName
+            );
+
+        });
+
+    showMouthGum();
+
+    updateBubble();
+}
+
+/* =========================================================
+   GUM SHELF CLICK
+========================================================= */
+
+gumCabinet.addEventListener(
+    "click",
+    function(event) {
+
+        if (
+            event.target.closest(".gum")
+        ) {
+
+            return;
+
+        }
+
+        doorOpen =
+            !doorOpen;
+
+        gumCabinet.classList.toggle(
+            "door-open",
+            doorOpen
+        );
+
+        if (doorOpen) {
+            doorSound.currentTime = 0;
+            doorSound.play();
+        } else {
+            doorCloseSound.currentTime = 0;
+            doorCloseSound.play();
+        }
+
+    }
+);
+
+
+/* =========================================================
+   GUM SELECTION
+========================================================= */
+
+document
+    .querySelectorAll(".gum")
+    .forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function(event) {
+
+                    event.stopPropagation();
+
+                    if (!doorOpen) {
+
+                        return;
+
+                    }
+
+                    selectGum(
+                        button.dataset.gum
+                    );
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   BUBBLE
+========================================================= */
+
+function showMouthGum() {
+
+    bubble.style.display = "flex";
+    bubble.style.opacity = ".95";
+
+    bubbleSize = 25;
+
+    updateBubble();
+}
+
+
+function hideBubble() {
+
+    bubble.style.opacity = "0";
+    bubble.style.display = "none";
+
+    bubbleSize = 25;
+}
+
+
+function updateBubble() {
+
+    const gum = gums[selectedGum];
+
+    if (!gum) {
+        return;
+    }
+
+    if (!bubbleAvailable) {
+
+        bubble.style.display = "none";
+
+        return;
+    }
+
+    bubble.style.display = "flex";
+    bubble.style.opacity = ".95";
+
+    const scale =
+        bubbleSize / 140;
+
+    bubble.style.transform = `
+        translateX(-50%)
+        scale(${Math.max(.25, scale)})
+    `;
+
+    bubble.style.background = `
+        radial-gradient(
+            circle at 28% 23%,
+            rgba(255,255,255,.98),
+            rgba(255,255,255,.8) 12%,
+            ${gum.light}DD 35%,
+            ${gum.color}CC 68%,
+            ${gum.color}AA 100%
+        )
+    `;
+
+    bubble.style.border = `
+        3px solid ${gum.light}
+    `;
+
+    bubble.style.boxShadow = `
+        inset 8px 8px 15px rgba(255,255,255,.55),
+        inset -8px -8px 15px ${gum.color}55,
+        0 10px 24px ${gum.color}55
+    `;
+
+    bubbleText.textContent =
+        messages[selectedGum] || "";
+}
+
+
+/* =========================================================
+   START BLOWING
+========================================================= */
+
+function startBlowing(event) {
+
+    if (
+        event.button !== undefined &&
+        event.button !== 0
+    ) {
+        return;
+    }
+
+    if (!bubbleAvailable || popping) {
+        return;
+    }
+
+    event.preventDefault();
+
+    blowing = true;
+    
+    blowSound.play();
+
+    bubble.style.display = "flex";
+    bubble.style.opacity = ".95";
+
+    if (bubbleSize <= 25) {
+        bubbleSize = 25;
+    }
+
+    updateBubble();
+
+    if (blowTimer) {
+        clearInterval(blowTimer);
+    }
+
+    blowTimer = setInterval(function() {
+
+        if (!blowing || !bubbleAvailable || popping) {
+            return;
+        }
+
+        const gum = gums[selectedGum];
+
+        bubbleSize += gum.speed;
+
+        if (bubbleSize >= gum.max) {
+
+            bubbleSize = gum.max;
+
+            updateBubble();
+
+            blowing = false;
+
+            if (blowTimer) {
+                clearInterval(blowTimer);
+                blowTimer = null;
+            }
+
+            setTimeout(function() {
+
+                if (bubbleAvailable) {
+                    popBubble();
+                }
+
+            }, 120);
+
+            return;
+        }
+
+        updateBubble();
+
+    }, 35);
+}
+
+
+/* =========================================================
+   STOP BLOWING
+========================================================= */
+
+function stopBlowing() {
+
+    blowing = false;
+    
+    blowSound.pause();
+    blowSound.currentTime = 0;
+
+    if (blowTimer) {
+
+        clearInterval(
+            blowTimer
+        );
+
+        blowTimer = null;
+    }
+
+}
+
+/* =========================================================
+   POP BUBBLE
+========================================================= */
+
+function popBubble() {
+
+    if (!bubbleAvailable || popping) return;
+    if (bubbleSize < 45) return;
+
+    popping = true;
+    blowing = false;
+
+    blowSound.pause();
+    blowSound.currentTime = 0;
+    popSound.currentTime = 0;
+    popSound.play();
+
+    if (blowTimer) {
+        clearInterval(blowTimer);
+        blowTimer = null;
+    }
+
+    bubble.getAnimations().forEach(animation => {
+        animation.cancel();
+    });
+
+    const currentScale =
+        Math.max(.25, bubbleSize / 140);
+
+    const gum = gums[selectedGum];
+
+    const splats = [];
+
+    for (let i = 0; i < 6; i++) {
+
+        const splat = document.createElement("div");
+
+        splat.className = "bubble-splat";
+
+        splat.style.background = gum.color;
+        splat.style.boxShadow = `
+            inset 2px 2px 4px rgba(255,255,255,.65),
+            0 3px 8px ${gum.color}66
+        `;
+
+        splat.style.left = bubble.style.left;
+        splat.style.top = bubble.style.top;
+
+        character.appendChild(splat);
+
+        splats.push(splat);
+    }
+
+    bubble.animate(
+        [
+            {
+                transform:
+                    `translateX(-50%) scale(${currentScale})`,
+                opacity: .95
+            },
+            {
+                transform:
+                    `translateX(-50%) scale(${currentScale * 1.08}, ${currentScale * .92})`,
+                opacity: 1,
+                offset: .25
+            },
+            {
+                transform:
+                    `translateX(-50%) scale(${currentScale * .94}, ${currentScale * 1.08})`,
+                opacity: 1,
+                offset: .45
+            },
+            {
+                transform:
+                    `translateX(-50%) scale(${currentScale * 1.16})`,
+                opacity: 1,
+                offset: .72
+            },
+            {
+                transform:
+                    `translateX(-50%) scale(${currentScale * 1.28})`,
+                opacity: .9,
+                offset: .86
+            },
+            {
+                transform:
+                    `translateX(-50%) scale(0)`,
+                opacity: 0,
+                offset: 1
+            }
+        ],
+        {
+            duration: 300,
+            easing: "cubic-bezier(.15,.9,.25,1)",
+            fill: "forwards"
+        }
+    );
+
+    const directions = [
+        [-48, -38],
+        [ 45, -35],
+        [-58,   2],
+        [ 55,  12],
+        [-32,  48],
+        [ 38,  52]
+    ];
+
+    splats.forEach((splat, index) => {
+
+        const [dx, dy] = directions[index];
+
+        splat.animate(
+            [
+                {
+                    transform:
+                        "translate(-50%, -50%) scale(.2) rotate(0deg)",
+                    opacity: 0
+                },
+                {
+                    transform:
+                        `translate(calc(-50% + ${dx * .45}px), calc(-50% + ${dy * .45}px))
+                         scale(1.15)
+                         rotate(${index % 2 ? 25 : -25}deg)`,
+                    opacity: 1,
+                    offset: .28
+                },
+                {
+                    transform:
+                        `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px))
+                         scale(.65)
+                         rotate(${index % 2 ? 70 : -70}deg)`,
+                    opacity: .8,
+                    offset: .7
+                },
+                {
+                    transform:
+                        `translate(calc(-50% + ${dx * 1.2}px), calc(-50% + ${dy * 1.2}px))
+                         scale(.15)
+                         rotate(${index % 2 ? 100 : -100}deg)`,
+                    opacity: 0
+                }
+            ],
+            {
+                duration: 420,
+                delay: 15 + index * 8,
+                easing: "cubic-bezier(.15,.7,.25,1)",
+                fill: "forwards"
+            }
+        );
+    });
+
+    setTimeout(() => {
+
+        bubbleAvailable = false;
+        popping = false;
+        bubbleSize = 25;
+
+        bubble.style.display = "none";
+        bubble.style.opacity = "0";
+
+        bubble.getAnimations().forEach(animation => {
+            animation.cancel();
+        });
+
+        splats.forEach(splat => {
+            splat.getAnimations().forEach(animation => {
+                animation.cancel();
+            });
+
+            splat.remove();
+        });
+
+    }, 450);
+}
+
+
+/* =========================================================
+   POINTER EVENTS
+========================================================= */
+
+character.addEventListener(
+    "pointerdown",
+    startBlowing
+);
+
+character.addEventListener(
+    "pointerup",
+    stopBlowing
+);
+
+character.addEventListener(
+    "pointercancel",
+    stopBlowing
+);
+
+character.addEventListener(
+    "pointerleave",
+    function() {
+
+        if (blowing) {
+
+            stopBlowing();
+
+        }
+
+    }
+);
+
+bubble.addEventListener(
+    "click",
+    function(event) {
+
+        event.stopPropagation();
+
+        popBubble();
+
+    }
+);
+
+
+/* =========================================================
+   MESSAGE PANEL
+========================================================= */
+
+messageFloatButton.addEventListener(
+    "click",
+    function() {
+
+        messagePanel.classList.toggle(
+            "hidden-panel"
+        );
+
+        messageInput.value =
+            messages[editingGum] || "";
+
+        messageInput.focus();
+
+    }
+);
+
+
+/* =========================================================
+   MESSAGE GUM SELECTORS
+========================================================= */
+
+document
+    .querySelectorAll(".message-gum")
+    .forEach(
+        function(button) {
+
+            button.addEventListener(
+                "click",
+                function() {
+
+                    editingGum =
+                        button.dataset.gum;
+
+                    document
+                        .querySelectorAll(
+                            ".message-gum"
+                        )
+                        .forEach(
+                            function(item) {
+
+                                item.classList.toggle(
+                                    "active",
+                                    item.dataset.gum ===
+                                    editingGum
+                                );
+
+                            }
+                        );
+
+                    messageInput.value =
+                        messages[editingGum] || "";
+
+                }
+            );
+
+        }
+    );
+
+
+/* =========================================================
+   SAVE MESSAGE
+========================================================= */
+
+saveMessage.addEventListener("click", () => {
+    messages[editingGum] = messageInput.value.trim();
+
+    if (selectedGum === editingGum) {
+        updateBubble();
+    }
+});
+
+
+/* =========================================================
+   SHARE
+========================================================= */
+
+shareButton.addEventListener(
+    "click",
+    function() {
+
+ const data = {
+
+    messages:
+        messages,
+
+    character:
+        currentCharacter,
+
+    selectedGum:
+        selectedGum
+
+};
+
+        const encoded =
+            btoa(
+                encodeURIComponent(
+                    JSON.stringify(
+                        data
+                    )
+                )
+            );
+
+        const url =
+            location.origin +
+            location.pathname +
+            "#" +
+            encoded;
+
+        shareURL.value =
+            url;
+
+        shareOverlay.classList.remove(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   COPY SHARE URL
+========================================================= */
+
+copyURL.addEventListener(
+    "click",
+    async function() {
+
+        try {
+
+            await navigator.clipboard.writeText(
+                shareURL.value
+            );
+
+            copyURL.textContent =
+                "copied ♡";
+
+            setTimeout(
+                function() {
+
+                    copyURL.textContent =
+                        "copy link";
+
+                },
+                1300
+            );
+
+        }
+        catch {
+
+            shareURL.select();
+
+            document.execCommand(
+                "copy"
+            );
+
+            copyURL.textContent =
+                "copied ♡";
+
+        }
+
+    }
+);
+
+
+/* =========================================================
+   CLOSE SHARE
+========================================================= */
+
+closeShare.addEventListener(
+    "click",
+    function() {
+
+        shareOverlay.classList.add(
+            "hidden"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   CLICK OUTSIDE MESSAGE PANEL
+========================================================= */
+
+document.addEventListener(
+    "pointerdown",
+    function(event) {
+
+        if (
+            messagePanel.classList.contains(
+                "hidden-panel"
+            )
+        ) {
+
+            return;
+
+        }
+
+        if (
+            messagePanel.contains(
+                event.target
+            )
+        ) {
+
+            return;
+
+        }
+
+        if (
+            messageFloatButton.contains(
+                event.target
+            )
+        ) {
+
+            return;
+
+        }
+
+        messagePanel.classList.add(
+            "hidden-panel"
+        );
+
+    }
+);
+
+
+/* =========================================================
+   SHARED VIEW
+========================================================= */
+
+function loadSharedView() {
+
+    if (
+        !location.hash ||
+        location.hash.length < 2
+    ) {
+
+        return;
+
+    }
+
+    try {
+
+        const encoded =
+            location.hash.substring(1);
+
+        const data =
+            JSON.parse(
+                decodeURIComponent(
+                    atob(encoded)
+                )
+            );
+
+        if (data.messages) {
+
+            messages = {
+                ...messages,
+                ...data.messages
+            };
+
+        }
+
+        if (
+            typeof data.character === "number"
+        ) {
+
+            currentCharacter =
+                Math.max(
+                    0,
+                    Math.min(
+                        characters.length - 1,
+                        data.character
+                    )
+                );
+
+        }
+
+        messagePanel.style.display =
+            "none";
+
+        messageFloatButton.style.display =
+            "none";
+
+        shareButton.style.display =
+            "none";
+
+        const shelfArea =
+            document.getElementById(
+                "shelfArea"
+            );
+
+        shelfArea.style.display =
+            "block";
+
+        if (data.selectedGum && gums[data.selectedGum]) {
+
+            selectedGum =
+                data.selectedGum;
+
+        }
+
+        bubbleAvailable = true;
+        popping = false;
+        blowing = false;
+        bubbleSize = 25;
+
+        renderCharacter();
+
+        document
+            .querySelectorAll(".gum")
+            .forEach(function(button) {
+
+                button.classList.toggle(
+                    "selected",
+                    button.dataset.gum === selectedGum
+                );
+
+            });
+
+        doorOpen = false;
+
+        gumCabinet.classList.remove(
+            "door-open"
+        );
+
+    }
+    catch (error) {
+
+        console.warn(
+            "Could not load shared bubblegum:",
+            error
+        );
+
+    }
+
+}
+
+/* =========================================================
+   INITIAL RENDER
+========================================================= */
+
+renderCharacter();
+
+loadSharedView();
+
+</script>
+
+</body>
+</html>

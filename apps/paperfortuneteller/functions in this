@@ -1,0 +1,629 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fortune Teller</title>
+
+<style>
+*{box-sizing:border-box}
+
+body{
+  margin:0;
+  background:#19151c;
+  color:#fff;
+  font-family:Arial,sans-serif;
+  height:100vh;
+  overflow:hidden
+}
+
+#stage{
+  position:relative;
+  width:100%;
+  height:100%;
+  background:#29232d;
+  overflow:hidden
+}
+
+#paper{
+  position:absolute;
+  max-width:82%;
+  max-height:82%;
+  width:auto;
+  height:auto;
+  left:50%;
+  top:50%;
+  transform:translate(-50%,-50%);
+  user-select:none;
+  pointer-events:none
+}
+
+#markers{
+  position:absolute;
+  pointer-events:none
+}
+
+.marker{
+  position:absolute;
+  transform:translate(-50%,-50%);
+  color:#111;
+  font-weight:bold;
+  text-align:center;
+  line-height:1.05;
+  white-space:normal;
+  overflow-wrap:break-word;
+  user-select:none
+}
+
+.marker.clickable{
+  pointer-events:auto;
+  cursor:pointer
+}
+
+.marker.clickable:hover{
+  filter:brightness(1.15)
+}
+
+#controls{
+  position:absolute;
+  left:50%;
+  bottom:25px;
+  transform:translateX(-50%);
+  display:flex;
+  gap:8px;
+  align-items:center;
+  z-index:20
+}
+
+button{
+  border:0;
+  border-radius:7px;
+  background:#ff6bbc;
+  color:#111;
+  font:inherit;
+  font-weight:bold;
+  cursor:pointer;
+  box-shadow:none
+}
+
+.arrow{
+  width:48px;
+  height:42px;
+  font-size:24px
+}
+
+#play{
+  width:90px;
+  height:42px;
+  font-size:14px
+}
+
+button:hover{
+  filter:brightness(1.05)
+}
+
+button:active{
+  transform:translateY(1px)
+}
+
+button:disabled{
+  opacity:.4;
+  cursor:default
+}
+
+#frameIndicator{
+  position:absolute;
+  top:18px;
+  left:50%;
+  transform:translateX(-50%);
+  font-size:11px;
+  color:#a99fac;
+  z-index:20
+}
+</style>
+</head>
+
+<body>
+
+<div id="stage">
+
+  <img id="paper" src="paper.png" draggable="false">
+
+  <div id="markers"></div>
+
+  <div id="frameIndicator">1 / 10</div>
+
+  <div id="controls">
+    <button class="arrow" id="prev">‹</button>
+    <button id="play">▶ Play</button>
+    <button class="arrow" id="next">›</button>
+  </div>
+
+</div>
+
+<script>
+
+const textValues={
+  "1":"Your wish will come true",
+  "2":"You will be rich",
+  "3":"A surprise is on the way",
+  "4":"Someone will visit you this week",
+  "5":"5",
+  "6":"6",
+  "7":"7",
+  "8":"8",
+  "9":"Orange",
+  "10":"Blue",
+  "11":"Yellow",
+  "12":"Green",
+
+  "NEW_1791129614687":"Orange",
+  "NEW_1791129660276":"Blue",
+  "NEW_1791129741706":"Yellow",
+  "NEW_1791129771858":"Green",
+  "NEW_1791129819004":"NEW TEXT",
+  "NEW_1791130082609":"7",
+  "NEW_1791130112239":"8",
+  "NEW_1791130130428":"8",
+  "NEW_1791130172510":"8",
+  "NEW_1791130207268":"7",
+  "NEW_1791130268012":"6",
+  "NEW_1791134715090":"Green"
+};
+
+
+const textMarkers={
+
+  "paper.png":[
+    {x:50.6,y:28,text:"1",size:12,rotate:0},
+    {x:50,y:61,text:"3",size:12,rotate:0},
+    {x:33.4,y:44.6,text:"4",size:12,rotate:-90},
+    {x:66.7,y:44.6,text:"2",size:12,rotate:90}
+  ],
+
+  "firstfold.png":[
+    {x:50.6,y:28,text:"1",size:12,rotate:0},
+    {x:66.7,y:44.6,text:"2",size:12,rotate:90},
+    {x:50.2,y:60.9,text:"3",size:12,rotate:0},
+    {x:41,y:44.5,text:"NEW_1791130112239",size:12,rotate:-90}
+  ],
+
+  "secondfold.png":[
+    {x:50.6,y:28,text:"1",size:12,rotate:0},
+    {x:66.7,y:44.6,text:"2",size:12,rotate:90},
+    {x:49.9,y:53.7,text:"NEW_1791130082609",size:12,rotate:0},
+    {x:41,y:44.5,text:"NEW_1791130130428",size:12,rotate:-90}
+  ],
+
+  "thirdfold.png":[
+    {x:50.6,y:28,text:"1",size:12,rotate:0},
+    {x:41,y:44.5,text:"NEW_1791130172510",size:12,rotate:-90},
+    {x:49.9,y:53.7,text:"NEW_1791130207268",size:12,rotate:0},
+    {x:59.4,y:44.5,text:"NEW_1791130268012",size:12,rotate:90}
+  ],
+
+  "fourthfold.png":[
+    {x:50,y:35,text:"5",size:12,rotate:0},
+    {x:59.4,y:44.5,text:"6",size:12,rotate:90},
+    {x:49.9,y:53.7,text:"7",size:12,rotate:0},
+    {x:41,y:44.5,text:"8",size:12,rotate:-90}
+  ],
+
+  /*
+    FRAME 5
+    These are the ONLY clickable numbers after choosing a color.
+  */
+  "fifthfold.png":[
+    {x:49.9,y:53.7,text:"7",size:12,rotate:0},
+    {x:41,y:44.5,text:"8",size:12,rotate:-90},
+    {x:54.4,y:40.8,text:"9",size:10,rotate:45},
+    {x:45.6,y:40.8,text:"10",size:10,rotate:-45}
+  ],
+
+  "sixthfold.png":[
+    {x:54.4,y:40.8,text:"9",size:10,rotate:45},
+    {x:45.4,y:40.8,text:"10",size:10,rotate:-45},
+    {x:49.9,y:53.7,text:"7",size:12,rotate:0}
+  ],
+
+  "seventhfold.png":[
+    {x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+    {x:45.4,y:40.8,text:"NEW_1791129660276",size:10,rotate:-45},
+    {x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45}
+  ],
+
+  "eighthfold.png":[
+    {x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+    {x:45.4,y:40.8,text:"NEW_1791129660276",size:10,rotate:-45},
+    {x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45},
+    {x:54.40194300809753,y:48.785671473355166,text:"NEW_1791134715090",size:10,rotate:136}
+  ],
+
+  "ninthfold.png":[],
+
+  "verticalfold.png":[
+    {x:48.026715203066626,y:38.31208293684723,text:"5",size:12,rotate:-52},
+    {x:55.009107560938574,y:38.46387407505749,text:"6",size:12,rotate:60},
+    {x:53.7947784552565,y:48.48208919693464,text:"7",size:12,rotate:125},
+    {x:47.57134178863584,y:49.3928360261962,text:"8",size:12,rotate:-117}
+  ],
+
+  "topfold.png":[
+    {x:56.37522780483091,y:38.615665213267754,text:"NEW_1791129614687",size:10,rotate:45},
+    {x:44.83910130085116,y:39.22282976610879,text:"10",size:10,rotate:-45},
+    {x:44.687310162640905,y:49.69641830261672,text:"NEW_1791129741706",size:10,rotate:45},
+    {x:55.61627211377961,y:49.84820944082698,text:"NEW_1791134715090",size:10,rotate:136}
+  ],
+
+  "horizontalfold.png":[
+    {x:45.14268357727168,y:41.196114562842176,text:"5",size:12,rotate:-30},
+    {x:55.91985439020013,y:41.80327911568321,text:"6",size:12,rotate:40},
+    {x:55.76806325198987,y:48.33029805872438,text:"7",size:12,rotate:149},
+    {x:44.83910130085116,y:47.8749246440936,text:"8",size:12,rotate:-145}
+  ]
+};
+
+
+const foldFrames=[
+  "paper.png",
+  "firstfold.png",
+  "secondfold.png",
+  "thirdfold.png",
+  "fourthfold.png",
+  "fifthfold.png",
+  "sixthfold.png",
+  "seventhfold.png",
+  "eighthfold.png",
+  "ninthfold.png"
+];
+
+
+/* ONE CYCLE = TOP → VERTICAL → TOP → HORIZONTAL → TOP */
+
+const playCycle=[
+  "topfold.png",
+  "verticalfold.png",
+  "topfold.png",
+  "horizontalfold.png",
+  "topfold.png"
+];
+
+
+const stage=document.getElementById("stage");
+const paper=document.getElementById("paper");
+const markers=document.getElementById("markers");
+const prev=document.getElementById("prev");
+const next=document.getElementById("next");
+const play=document.getElementById("play");
+const indicator=document.getElementById("frameIndicator");
+
+
+let currentIndex=0;
+let currentFrame="paper.png";
+let playing=false;
+
+
+/*
+  COLOR → FRAME 5
+
+  All four colors now go directly to fifthfold.png.
+*/
+const colorFrame="fifthfold.png";
+
+
+/*
+  FRAME 5 NUMBER → DESTINATION
+
+  5 → Frame 4
+  6 → Frame 6
+  7 → Frame 2
+  8 → Frame 1
+*/
+const numberFrames={
+  "5":"fourthfold.png",
+  "6":"sixthfold.png",
+  "7":"secondfold.png",
+  "8":"firstfold.png"
+};
+
+
+function syncLayer(){
+
+  const r=paper.getBoundingClientRect();
+  const s=stage.getBoundingClientRect();
+
+  markers.style.left=(r.left-s.left)+"px";
+  markers.style.top=(r.top-s.top)+"px";
+  markers.style.width=r.width+"px";
+  markers.style.height=r.height+"px";
+}
+
+
+function renderMarkers(frame){
+
+  markers.innerHTML="";
+
+  const list=textMarkers[frame]||[];
+
+  const scale=
+    paper.getBoundingClientRect().width/500;
+
+
+  list.forEach((d)=>{
+
+    const el=document.createElement("div");
+
+    el.className="marker";
+
+    el.textContent=
+      textValues[d.text]??d.text;
+
+    el.style.left=d.x+"%";
+    el.style.top=d.y+"%";
+
+    el.style.fontSize=
+      Math.max(.1,d.size*scale)+"px";
+
+    el.style.transform=
+      `translate(-50%,-50%) rotate(${d.rotate}deg)`;
+
+
+    /*
+      COLOR SELECTION
+
+      Clicking ANY color immediately goes to Frame 5.
+      No popup appears.
+    */
+
+    if(frame==="topfold.png"){
+
+      const value=textValues[d.text];
+
+      if(
+        ["Orange","Blue","Yellow","Green"]
+        .includes(value)
+      ){
+
+        el.classList.add("clickable");
+
+        el.addEventListener("click",(e)=>{
+
+          e.stopPropagation();
+
+          /*
+            Go directly to Frame 5.
+          */
+          showFrame(
+            colorFrame,
+            foldFrames.indexOf(colorFrame)
+          );
+
+          updateButtons();
+
+        });
+      }
+    }
+
+
+    /*
+      FRAME 5 NUMBER SELECTION
+
+      Only 5, 6, 7 and 8 are clickable.
+    */
+
+    if(frame==="fifthfold.png"){
+
+      const value=
+        textValues[d.text]??d.text;
+
+      if(numberFrames[value]){
+
+        el.classList.add("clickable");
+
+        el.addEventListener("click",(e)=>{
+
+          e.stopPropagation();
+
+          const destination=
+            numberFrames[value];
+
+          const index=
+            foldFrames.indexOf(destination);
+
+          showFrame(
+            destination,
+            index
+          );
+
+          updateButtons();
+
+        });
+      }
+    }
+
+
+    markers.appendChild(el);
+
+  });
+}
+
+
+function showFrame(frame,index=null){
+
+  currentFrame=frame;
+
+  markers.innerHTML="";
+
+  paper.src=frame;
+
+
+  if(index!==null){
+
+    currentIndex=index;
+
+    indicator.textContent=
+      `${index+1} / ${foldFrames.length}`;
+  }
+
+
+  if(paper.complete){
+
+    requestAnimationFrame(()=>{
+
+      syncLayer();
+
+      renderMarkers(frame);
+
+    });
+  }
+}
+
+
+paper.onload=()=>{
+
+  syncLayer();
+
+  renderMarkers(currentFrame);
+
+};
+
+
+function updateButtons(){
+
+  prev.disabled=
+    playing ||
+    currentIndex<=0;
+
+  next.disabled=
+    playing ||
+    currentIndex>=foldFrames.length-1;
+
+  play.disabled=playing;
+}
+
+
+next.onclick=()=>{
+
+  if(playing)return;
+
+  if(currentIndex<foldFrames.length-1){
+
+    currentIndex++;
+
+    showFrame(
+      foldFrames[currentIndex],
+      currentIndex
+    );
+
+    updateButtons();
+  }
+
+};
+
+
+prev.onclick=()=>{
+
+  if(playing)return;
+
+  if(currentIndex>0){
+
+    currentIndex--;
+
+    showFrame(
+      foldFrames[currentIndex],
+      currentIndex
+    );
+
+    updateButtons();
+  }
+
+};
+
+
+function wait(ms){
+
+  return new Promise(
+    r=>setTimeout(r,ms)
+  );
+
+}
+
+
+async function playAnimation(){
+
+  if(playing)return;
+
+  playing=true;
+
+  updateButtons();
+
+
+  /*
+    FOUR COMPLETE CYCLES.
+    Every cycle finishes on TOPFOLD.
+  */
+
+  for(let cycle=0;cycle<4;cycle++){
+
+    for(const frame of playCycle){
+
+      showFrame(frame);
+
+      await wait(400);
+
+    }
+  }
+
+
+  /*
+    Finish and stay on TOPFOLD.
+  */
+
+  currentFrame="topfold.png";
+
+  showFrame("topfold.png");
+
+
+  playing=false;
+
+  updateButtons();
+
+}
+
+
+play.onclick=playAnimation;
+
+
+window.addEventListener("resize",()=>{
+
+  syncLayer();
+
+  renderMarkers(currentFrame);
+
+});
+
+
+/*
+  START
+*/
+
+showFrame("paper.png",0);
+
+updateButtons();
+
+
+window.addEventListener("load",()=>{
+
+  setTimeout(
+    playAnimation,
+    500
+  );
+
+});
+
+</script>
+
+</body>
+</html>
+

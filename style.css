@@ -1,3691 +1,2902 @@
-
-/* =========================================================
-   CYBEROS — CUTE RETRO DESKTOP
-   RESPONSIVE / IPAD SAFE VERSION
-   FIXED STACKING + DRAGGABLE WIDGET SYSTEM
-========================================================= */
-
-
-/* =========================================================
-   FONTS
-========================================================= */
-
 @import url("https://fonts.googleapis.com/css2?family=Offside&display=swap");
 
+:root{
+  --desktop-icon-size:72px;
+  --desktop-icon-item-width:120px;
+  --desktop-icon-item-height:112px;
+  --cyber-rail-top:82px;
+  --cyber-rail-width:400px;
+  --cyber-rail-side-margin:28px;
+  --cyber-rail-column-gap:4px;
+  --cyber-rail-row-gap:22px;
 
-/* =========================================================
-   ROOT VARIABLES
-========================================================= */
+  --cyber-bg:#ddc9be;
+  --cyber-pink:#d07e96;
+  --cyber-pink-dark:#b86c87;
+  --cyber-purple:#C897B9;
+  --cyber-purple-dark:#5954c3;
+  --cyber-lime:#c5dfa9;
+  --cyber-cream:#e8dfd2;
+  --cyber-white:#f4eee8;
+  --cyber-black:#242124;
+  --cyber-coral:#F87670;
+  --cyber-pink-bright:#FF6BBC;
+  --cyber-dusty-pink:#F88B88;
+  --cyber-rose:#D880B0;
+  --cyber-green:#6D8578;
+  --cyber-beige:#F0D1A9;
+  --cyber-soft-pink:#D39DB6;
+  --cyber-soft-beige:#DECABF;
+  --cyber-soft-purple:#A18EC8;
 
-:root {
+  --cyber-font:"Offside",sans-serif;
 
-    --cyber-bg: #ddc9be;
-    --cyber-pink: #d07e96;
-    --cyber-pink-dark: #b86c87;
-    --cyber-purple: #a88ab2;
-    --cyber-purple-dark: #5954c3;
-    --cyber-lime: #c5dfa9;
-    --cyber-cream: #e8dfd2;
-    --cyber-white: #f4eee8;
-    --cyber-black: #242124;
+  --cyber-icon-size:64px;
+  --cyber-icon-width:110px;
+  --cyber-icon-height:125px;
+  --cyber-icon-gap:12px;
 
-    --cyber-font: "Offside", sans-serif;
+  --viewport-height:100dvh;
+  --taskbar-height:46px;
 
-    /*
-       Responsive viewport variables.
-       100dvh = actual visible browser viewport.
-    */
+  --safe-top:env(safe-area-inset-top,0px);
+  --safe-right:env(safe-area-inset-right,0px);
+  --safe-bottom:env(safe-area-inset-bottom,0px);
+  --safe-left:env(safe-area-inset-left,0px);
 
-    --viewport-height: 100dvh;
-
-    --taskbar-height: 46px;
-
-    /*
-       Safe areas for iPad / iPhone.
-    */
-
-    --safe-top: env(safe-area-inset-top, 0px);
-    --safe-right: env(safe-area-inset-right, 0px);
-    --safe-bottom: env(safe-area-inset-bottom, 0px);
-    --safe-left: env(safe-area-inset-left, 0px);
-
-
-    /* =====================================================
-       Z INDEX
-    ===================================================== */
-
-    --z-desktop: 1;
-    --z-icons: 100;
-    --z-apps: 1000;
-    --z-widgets: 5000;
-    --z-taskbar: 9000;
-    --z-start: 10000;
-    --z-overlay: 100000;
-    --z-login: 1000000;
+  --z-desktop:1;
+  --z-icons:100;
+  --z-apps:1000;
+  --z-widgets:5000;
+  --z-taskbar:9000;
+  --z-start:10000;
+  --z-overlay:100000;
+  --z-login:1000000;
 }
 
+*{box-sizing:border-box}
 
-/* =========================================================
-   GLOBAL RESET
-========================================================= */
-
-* {
-    box-sizing: border-box;
+html,body{
+  width:100%;
+  height:100%;
+  margin:0;
+  padding:0;
+  min-height:100%;
+  overflow:hidden;
+  background:var(--cyber-bg);
+  font-family:var(--cyber-font);
+  font-size:16px;
+  color:var(--cyber-purple-dark);
+  -webkit-text-size-adjust:100%;
 }
 
-
-html,
-body {
-
-    width: 100%;
-    height: 100%;
-
-    margin: 0;
-    padding: 0;
-
-    /*
-       IMPORTANT FOR IPAD
-    */
-
-    min-height: 100%;
-
-    overflow: hidden;
-
-    background: var(--cyber-bg);
-
-    font-family: var(--cyber-font);
-
-    font-size: 16px;
-
-    color: var(--cyber-purple-dark);
-
-    /*
-       Prevent Safari from resizing text.
-    */
-
-    -webkit-text-size-adjust: 100%;
+body{
+  user-select:none;
+  overscroll-behavior:none;
 }
 
-
-body {
-
-    user-select: none;
-
-    /*
-       Prevent browser gesture interference
-       while dragging desktop windows.
-    */
-
-    overscroll-behavior: none;
-}
-
-
-button,
-input,
-textarea,
-select {
-
-    font-family: var(--cyber-font);
-
-    -webkit-tap-highlight-color: transparent;
+button,input,textarea,select{
+  font-family:var(--cyber-font);
+  -webkit-tap-highlight-color:transparent;
 }
 
 
 /* =========================================================
    DESKTOP
-========================================================= */
+   ========================================================= */
 
-#desktop {
-
-    position: fixed;
-
-    left: 0;
-    top: 0;
-    right: 0;
-    bottom: 0;
-
-    width: 100%;
-
-    /*
-       IMPORTANT:
-       Use dynamic viewport height.
-    */
-
-    height: 100dvh;
-
-    min-height: 0;
-
-    overflow: hidden;
-
-    background: var(--cyber-bg);
-
-    z-index: var(--z-desktop);
+#desktop{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  min-height:0;
+  overflow:hidden;
+  background:var(--cyber-bg);
+  z-index:var(--z-desktop);
 }
 
-
-/* =========================================================
-   TOP BAR
-========================================================= */
-
-.topbar {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-
-    /*
-       Keep top bar inside safe area.
-    */
-
-    height: calc(44px + var(--safe-top));
-
-    padding:
-
-        var(--safe-top)
-
-        max(20px, var(--safe-right))
-
-        0
-
-        max(20px, var(--safe-left));
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    background: transparent;
-
-    color: var(--cyber-purple-dark);
-
-    z-index: 20;
-
-    pointer-events: none;
+#desktopArea{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  background:var(--cyber-bg);
+  z-index:var(--z-desktop);
 }
 
+.topbar{
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:calc(44px + var(--safe-top));
+  padding:var(--safe-top) max(20px,var(--safe-right)) 0 max(20px,var(--safe-left));
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  background:transparent;
+  color:var(--cyber-purple-dark);
+  z-index:20;
+  pointer-events:none;
+}
 
 .system-name,
-.system-status {
-
-    display: none;
+.system-status{
+  display:none;
 }
-
-
-/* =========================================================
-   DESKTOP AREA
-========================================================= */
-
-#desktopArea {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    /*
-       Do NOT use 100vh here.
-    */
-
-    min-height: 0;
-
-    overflow: hidden;
-
-    background: var(--cyber-bg);
-
-    z-index: var(--z-desktop);
-}
-
-
-/* =========================================================
-   DESKTOP ICON GRID
-========================================================= */
 
 .desktop-icons,
-#desktopIcons {
-
-    position: absolute;
-
-    left: 34px;
-    top: 78px;
-
-    width: 300px;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(3, 88px);
-
-    grid-auto-rows: 112px;
-
-    column-gap: 12px;
-    row-gap: 10px;
-
-    align-items: start;
-
-    justify-items: center;
-
-    padding: 0;
-    margin: 0;
-
-    z-index: var(--z-icons);
-
-    pointer-events: auto;
+#desktopIcons{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  padding:0;
+  margin:0;
+  overflow:visible;
+  z-index:var(--z-icons);
+  pointer-events:none;
 }
 
 
 /* =========================================================
-   DESKTOP ICON
-========================================================= */
+   DESKTOP ICON RAILS
+   ========================================================= */
 
-.desktop-icon {
-
-    position: relative;
-
-    width: 88px;
-    height: 102px;
-
-    min-width: 88px;
-    min-height: 102px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: flex-start;
-
-    gap: 5px;
-
-    padding: 0;
-    margin: 0;
-
-    border: none;
-    outline: none;
-
-    background: transparent;
-
-    color: var(--cyber-purple-dark);
-
-    cursor: pointer;
-
-    border-radius: 7px;
-
-    pointer-events: auto;
-
-    z-index: var(--z-icons);
-
-    touch-action: manipulation;
-
-    transition:
-        transform 0.12s ease,
-        background 0.12s ease;
+.cyberos-desktop-rail{
+  position:absolute;
+  top:var(--cyber-rail-top);
+  width:var(--cyber-rail-width);
+  display:grid;
+  grid-template-columns:repeat(3,var(--desktop-icon-item-width));
+  grid-auto-flow:row;
+  grid-auto-rows:var(--desktop-icon-item-height);
+  column-gap:var(--cyber-rail-column-gap);
+  row-gap:var(--cyber-rail-row-gap);
+  align-items:start;
+  justify-content:start;
+  padding:0;
+  margin:0;
+  pointer-events:none;
+  z-index:var(--z-icons);
+  overflow:visible;
 }
 
-
-.desktop-icon:hover {
-
-    background:
-        rgba(168, 138, 178, 0.12);
-
-    transform:
-        translateY(-2px);
+.cyberos-left-rail{
+  left:max(var(--cyber-rail-side-margin),var(--safe-left));
+  right:auto;
 }
 
+.cyberos-right-rail{
+  right:max(var(--cyber-rail-side-margin),var(--safe-right));
+  left:auto;
+  justify-content:end;
+}
 
-.desktop-icon:active {
-
-    transform:
-        scale(0.96);
+.cyberos-desktop-rail>.desktop-icon{
+  position:relative!important;
+  left:auto!important;
+  top:auto!important;
+  right:auto!important;
+  bottom:auto!important;
+  width:var(--desktop-icon-item-width);
+  min-width:var(--desktop-icon-item-width);
+  height:var(--desktop-icon-item-height);
+  min-height:var(--desktop-icon-item-height);
+  margin:0;
+  padding:2px 4px;
+  pointer-events:auto;
+  justify-self:center;
+  align-self:start;
+  overflow:visible;
 }
 
 
 /* =========================================================
-   DESKTOP ICON IMAGE
-========================================================= */
+   DESKTOP ICONS
+   ========================================================= */
 
-.desktop-icon-image {
+.desktop-icon{
+  position:relative;
+  width:var(--desktop-icon-item-width);
+  min-width:var(--desktop-icon-item-width);
+  height:var(--desktop-icon-item-height);
+  min-height:var(--desktop-icon-item-height);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:flex-start;
+  gap:0;
+  padding:2px 4px;
+  margin:0;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:var(--cyber-purple-dark);
+  cursor:grab;
+  border-radius:7px;
+  pointer-events:auto;
+  z-index:var(--z-icons);
+  user-select:none;
+  touch-action:none;
+  -webkit-user-select:none;
+  transition:background .12s ease,transform .12s ease;
+}
 
-    width: 66px;
-    height: 66px;
+.desktop-icon-image{
+  width:var(--desktop-icon-size);
+  height:var(--desktop-icon-size);
+  max-width:var(--desktop-icon-size);
+  max-height:var(--desktop-icon-size);
+  object-fit:contain;
+  flex-shrink:0;
+  margin:0 0 8px;
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-drag:none;
+  display:block;
+}
 
-    min-width: 66px;
-    min-height: 66px;
-
-    max-width: 66px;
-    max-height: 66px;
-
-    object-fit: contain;
-
-    display: block;
-
-    flex-shrink: 0;
-
-    pointer-events: none;
+.desktop-icon-label{
+  position:absolute;
+  left:4px;
+  right:4px;
+  bottom:2px;
+  width:calc(100% - 8px);
+  max-width:none;
+  height:24px;
+  margin:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-family:var(--cyber-font);
+  font-size:13px;
+  line-height:17px;
+  letter-spacing:.2px;
+  text-align:center;
+  color:var(--cyber-purple-dark);
+  pointer-events:none;
+  user-select:none;
+  -webkit-user-select:none;
 }
 
 
 /* =========================================================
-   DESKTOP PLACEHOLDER
-========================================================= */
+   SPECIAL DESKTOP ICONS
+   Add any oversized / repositioned icons here.
+   
+   Example:
+   
+   .desktop-icon-image[src*="piano.png"]{
+     width:125px!important;
+     height:125px!important;
+     max-width:125px!important;
+     max-height:125px!important;
+     margin:0!important;
+     transform:translateY(-22px)!important;
+     transform-origin:center top;
+   }
+   ========================================================= */
 
-.desktop-icon-placeholder {
 
-    width: 66px;
-    height: 66px;
+/* CLAW MACHINE */
+.desktop-icon-image[src*="clawmachine/logo.png"]{
+  width:145px!important;
+  height:145px!important;
+  max-width:145px!important;
+  max-height:145px!important;
+  margin:0!important;
+  transform:translateY(-32px)!important;
+  transform-origin:center top;
+}
 
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    font-size: 32px;
-
-    flex-shrink: 0;
-
-    pointer-events: none;
+/* PAPERFORTUNETELLER */
+.desktop-icon-image[src*="paperfortuneteller/logo.png"]{
+  width:100px!important;
+  height:100px!important;
+  max-width:100px!important;
+  max-height:100px!important;
+  margin:0!important;
+  transform:translateY(-10px)!important;
+  transform-origin:center top;
 }
 
 
 /* =========================================================
-   DESKTOP LABEL
-========================================================= */
+   DESKTOP ICON STATES
+   ========================================================= */
 
-.desktop-icon-label {
+.desktop-icon:hover{
+  background:rgba(168,138,178,.12);
+  transform:translateY(-2px);
+}
 
-    width: 88px;
-    max-width: 88px;
+.desktop-icon.is-dragging:hover{
+  transform:none!important;
+}
 
-    height: 24px;
+.desktop-icon:active{
+  transform:scale(.96);
+}
 
-    overflow: hidden;
+.desktop-icon.is-dragging{
+  cursor:grabbing;
+  transform:none!important;
+  transition:none!important;
+  z-index:calc(var(--z-icons) + 50);
+  background:rgba(168,138,178,.16);
+  opacity:.92;
+}
 
-    white-space: nowrap;
 
-    text-overflow: ellipsis;
+/* =========================================================
+   FOLDER WINDOW
+   ========================================================= */
 
-    font-family: var(--cyber-font);
+.cyber-folder-window{
+  position:absolute;
+  width:920px;
+  height:680px;
+  min-width:680px;
+  min-height:460px;
+  max-width:94vw;
+  max-height:88vh;
+  display:flex;
+  flex-direction:column;
+  background:#F0D1A9;
+  border:2px solid var(--cyber-purple);
+  border-radius:8px;
+  overflow:hidden;
+  z-index:calc(var(--z-apps) + 20);
+  color:var(--cyber-purple-dark);
+}
 
-    font-size: 13px;
+.folder-window-header{
+  width:100%;
+  height:42px;
+  min-height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 7px 0 13px;
+  background:var(--cyber-pink);
+  border-bottom:2px solid var(--cyber-purple);
+  color:var(--cyber-lime);
+  cursor:grab;
+  user-select:none;
+  flex-shrink:0;
+  touch-action:none;
+}
 
-    line-height: 17px;
+.folder-window-header:active{
+  cursor:grabbing;
+}
 
-    letter-spacing: 0.2px;
+.folder-window-title{
+  min-width:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-family:var(--cyber-font);
+  font-size:13px;
+  letter-spacing:.3px;
+  color:#FEFCE8;
+}
 
-    text-align: center;
+.folder-window-close{
+  width:29px;
+  height:27px;
+  flex-shrink:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:0;
+  border:1px solid #6D8578;
+  border-radius:4px;
+  background:#6D8578;
+  color:#F0D1A9;
+  font-family:var(--cyber-font);
+  font-size:13px;
+  line-height:1;
+  cursor:pointer;
+  transition:background .12s ease,color .12s ease,transform .12s ease;
+}
 
-    color: var(--cyber-purple-dark);
+.folder-window-close:hover{
+  background:#F88B88;
+  border-color:#F88B88;
+  color:#6D8578;
+}
 
-    pointer-events: none;
+.folder-window-close:active{
+  transform:scale(.94);
+}
+
+.folder-window-toolbar{
+  width:100%;
+  min-height:44px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:8px;
+  padding:6px 9px;
+  background:#DECABF;
+  border-bottom:1px solid var(--cyber-purple);
+  flex-shrink:0;
+}
+
+.folder-toolbar-left,
+.folder-toolbar-right{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  min-width:0;
+}
+
+.folder-toolbar-button{
+  height:29px;
+  min-width:29px;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:5px;
+  padding:0 8px;
+  border:1px solid var(--cyber-purple);
+  border-radius:4px;
+  background:#F0D1A9;
+  color:var(--cyber-purple-dark);
+  font-family:var(--cyber-font);
+  font-size:10px;
+  line-height:1;
+  cursor:pointer;
+  user-select:none;
+  transition:background .12s ease,color .12s ease,transform .12s ease;
+}
+
+.folder-toolbar-button:hover{
+  background:#D880B0;
+  color:#F0D1A9;
+}
+
+.folder-toolbar-button:active{
+  transform:scale(.95);
+}
+
+.folder-toolbar-button.active{
+  background:var(--cyber-purple);
+  color:#F0D1A9;
+  border-color:var(--cyber-purple);
+}
+
+.folder-view-toggle{
+  display:flex;
+  align-items:center;
+  border:1px solid var(--cyber-purple);
+  border-radius:4px;
+  overflow:hidden;
+  background:#E8DFD2;
+}
+
+.folder-view-toggle .folder-toolbar-button{
+  border:0;
+  border-radius:0;
+  min-width:31px;
+  padding:0 7px;
+}
+
+.folder-view-toggle .folder-toolbar-button+.folder-toolbar-button{
+  border-left:1px solid var(--cyber-purple);
+}
+
+.folder-sort-wrapper{
+  display:flex;
+  align-items:center;
+  gap:5px;
+}
+
+.folder-sort-label{
+  font-family:var(--cyber-font);
+  font-size:12px;
+  color:var(--cyber-purple-dark);
+  white-space:nowrap;
+}
+
+.folder-sort-select{
+  height:29px;
+  max-width:125px;
+  padding:0 7px;
+  border:1px solid var(--cyber-purple);
+  border-radius:4px;
+  background:#E8DFD2;
+  color:var(--cyber-purple-dark);
+  font-family:var(--cyber-font);
+  font-size:12px;
+  outline:none;
+  cursor:pointer;
+}
+
+.folder-sort-select:focus{
+  border-color:#FF6BBC;
+  box-shadow:0 0 0 2px rgba(255,107,188,.15);
+}
+
+.folder-window-content{
+  position:relative;
+  flex:1 1 auto;
+  min-width:0;
+  min-height:0;
+  width:100%;
+  height:auto;
+  padding:13px;
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  grid-auto-rows:135px;
+  gap:10px;
+  background:#E8DFD2;
+  overflow-y:auto;
+  overflow-x:hidden;
+  -webkit-overflow-scrolling:touch;
+}
+
+.cyber-folder-window[data-view="grid"] .folder-window-content{
+  display:grid;
+  grid-template-columns:repeat(auto-fill,minmax(130px,1fr));
+  grid-auto-rows:135px;
+  gap:10px;
+}
+
+.folder-app{
+  width:100%;
+  min-width:0;
+  height:100%;
+  min-height:130px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:space-between;
+  gap:0;
+  padding:10px 8px;
+  border:1px solid rgba(117,80,120,.35);
+  border-radius:8px;
+  background:rgba(255,255,255,.28);
+  box-shadow:0 2px 5px rgba(117,80,120,.1);
+  color:var(--cyber-purple-dark);
+  cursor:pointer;
+  font-family:var(--cyber-font);
+  transition:background .12s ease,border-color .12s ease,box-shadow .12s ease,transform .12s ease;
+}
+
+.folder-app:hover{
+  background:rgba(255,255,255,.55);
+  border-color:var(--cyber-purple);
+  box-shadow:0 3px 8px rgba(117,80,120,.16);
+  transform:translateY(-2px);
+}
+
+.folder-app img{
+  width:64px;
+  height:64px;
+  min-width:64px;
+  min-height:64px;
+  max-width:64px;
+  max-height:64px;
+  object-fit:contain;
+  display:block;
+  pointer-events:none;
+  flex-shrink:0;
+  margin:auto 0;
+}
+
+.folder-app-placeholder{
+  width:64px;
+  height:64px;
+  min-width:64px;
+  min-height:64px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:32px;
+  flex-shrink:0;
+  pointer-events:none;
+  margin:auto 0;
+}
+
+.folder-app span{
+  display:block;
+  width:100%;
+  margin:0;
+  padding:0;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  text-align:center;
+  font-family:var(--cyber-font);
+  font-size:12px;
+  line-height:1.3;
+  letter-spacing:.5px;
+  color:var(--cyber-purple-dark);
+  text-shadow:0 0 6px rgba(160,32,240,.35);
+  pointer-events:none;
+  flex-shrink:0;
+}
+
+
+/* =========================================================
+   FOLDER LIST VIEW
+   ========================================================= */
+
+.cyber-folder-window[data-view="list"] .folder-window-content{
+  --folder-list-columns:minmax(220px,2fr) minmax(110px,1fr) minmax(80px,.75fr) minmax(145px,1.25fr);
+  display:flex;
+  flex-direction:column;
+  gap:0;
+  padding:0;
+  overflow-x:auto;
+  overflow-y:auto;
+  width:100%;
+}
+
+.cyber-folder-window[data-view="list"] .folder-list-header{
+  width:100%;
+  min-width:555px;
+  height:34px;
+  min-height:34px;
+  display:grid;
+  grid-template-columns:var(--folder-list-columns);
+  align-items:center;
+  padding:0 10px;
+  margin:0;
+  background:#DECABF;
+  border-bottom:1px solid var(--cyber-purple);
+  color:var(--cyber-purple-dark);
+  font-family:var(--cyber-font);
+  font-size:9px;
+  font-weight:normal;
+  line-height:1;
+  flex-shrink:0;
+  user-select:none;
+}
+
+.cyber-folder-window[data-view="list"] .folder-list-header>span{
+  min-width:0;
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  padding:0 8px;
+  margin:0;
+  text-align:left;
+  line-height:1;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app{
+  width:100%;
+  min-width:555px;
+  height:48px;
+  min-height:48px;
+  max-height:48px;
+  display:grid;
+  grid-template-columns:var(--folder-list-columns);
+  align-items:center;
+  justify-items:stretch;
+  padding:0 10px;
+  margin:0;
+  border:0;
+  border-bottom:1px solid rgba(89,84,195,.16);
+  border-radius:0;
+  background:transparent;
+  transform:none;
+  text-align:left;
+  flex-shrink:0;
+  overflow:hidden;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app:hover{
+  background:rgba(255,255,255,.42);
+  border-color:rgba(89,84,195,.16);
+  transform:none;
+}
+
+.cyber-folder-window[data-view="list"] .folder-list-name-wrapper{
+  min-width:0;
+  width:100%;
+  height:100%;
+  display:flex;
+  align-items:center;
+  justify-content:flex-start;
+  gap:10px;
+  padding:0 8px;
+  margin:0;
+  overflow:hidden;
+  pointer-events:none;
+}
+
+.cyber-folder-window[data-view="list"] .folder-list-name-wrapper img{
+  width:28px;
+  height:28px;
+  min-width:28px;
+  min-height:28px;
+  max-width:28px;
+  max-height:28px;
+  display:block;
+  object-fit:contain;
+  flex:0 0 28px;
+  margin:0;
+  padding:0;
+}
+
+.cyber-folder-window[data-view="list"] .folder-list-name-wrapper .folder-app-name{
+  min-width:0;
+  width:auto;
+  flex:1 1 auto;
+  display:block;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  padding:0;
+  margin:0;
+  color:var(--cyber-purple-dark);
+  font-family:var(--cyber-font);
+  font-size:12px;
+  line-height:1.2;
+  text-align:left;
+}
+
+.cyber-folder-window[data-view="list"] .folder-list-type,
+.cyber-folder-window[data-view="list"] .folder-list-size,
+.cyber-folder-window[data-view="list"] .folder-list-date{
+  min-width:0;
+  width:100%;
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  padding:0 8px;
+  margin:0;
+  font-family:var(--cyber-font);
+  font-size:12px;
+  line-height:1.2;
+  color:var(--cyber-purple-dark);
+  text-align:left;
+  align-self:center;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app{
+  font-family:var(--cyber-font);
+  font-weight:normal;
+  line-height:normal;
+  appearance:none;
+  -webkit-appearance:none;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app-placeholder{
+  width:28px;
+  height:28px;
+  min-width:28px;
+  min-height:28px;
+  font-size:19px;
+  flex-shrink:0;
+}
+
+.cyber-folder-window[data-view="list"] .folder-empty{
+  min-height:160px;
+  grid-column:auto;
+}
+
+.folder-empty{
+  grid-column:1/-1;
+  width:100%;
+  min-height:120px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  text-align:center;
+  padding:20px;
+  color:var(--cyber-purple);
+  font-family:var(--cyber-font);
+  font-size:11px;
+  opacity:.75;
+}
+
+.cyber-folder-window[data-view="list"] .folder-empty{
+  width:100%;
+  padding:30px;
+  text-align:center;
+}
+
+.folder-window-content::-webkit-scrollbar{
+  width:9px;
+  height:9px;
+}
+
+.folder-window-content::-webkit-scrollbar-track{
+  background:#DECABF;
+}
+
+.folder-window-content::-webkit-scrollbar-thumb{
+  background:var(--cyber-purple);
+  border:2px solid #DECABF;
+  border-radius:5px;
+}
+
+.folder-window-content::-webkit-scrollbar-thumb:hover{
+  background:#D880B0;
 }
 
 
 /* =========================================================
    APP LAYER
-========================================================= */
+   ========================================================= */
 
-#appLayer {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    min-height: 0;
-
-    overflow: hidden;
-
-    pointer-events: none;
-
-    z-index: var(--z-apps);
+#appLayer{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:var(--z-apps);
 }
 
-
-#appLayer > .cyber-window {
-
-    pointer-events: auto;
+#appLayer>.cyber-window{
+  pointer-events:auto;
 }
 
-
-/* =========================================================
-   WIDGET LAYER
-========================================================= */
-
-#widgetLayer {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    min-height: 0;
-
-    overflow: hidden;
-
-    pointer-events: none;
-
-    z-index: var(--z-widgets);
+#widgetLayer{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  min-height:0;
+  overflow:hidden;
+  pointer-events:none;
+  z-index:var(--z-widgets);
 }
 
-
-#widgetLayer > .cyber-window {
-
-    pointer-events: auto;
+#widgetLayer>.cyber-window{
+  pointer-events:auto;
 }
 
-
-/* =========================================================
-   WINDOWS
-========================================================= */
-
-.cyber-window {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 800px;
-    height: 450px;
-
-    min-width: 400px;
-    min-height: 280px;
-
-    /*
-       RESPONSIVE LIMITS
-    */
-
-    max-width:
-        calc(100vw - 20px);
-
-    max-height:
-        calc(100dvh - var(--taskbar-height) - 20px);
-
-    display: flex;
-
-    flex-direction: column;
-
-    background: var(--cyber-cream);
-
-    border:
-        2px solid var(--cyber-purple);
-
-    border-radius: 6px;
-
-    overflow: hidden;
-
-    box-shadow:
-        6px 6px 0
-        rgba(89, 84, 195, 0.18);
-
-    pointer-events: auto;
-
-    resize: both;
-
-    z-index: var(--z-apps);
+.cyber-window{
+  position:absolute;
+  left:0;
+  top:0;
+  width:800px;
+  height:450px;
+  min-width:400px;
+  min-height:280px;
+  max-width:calc(100vw - 20px);
+  max-height:calc(100dvh - var(--taskbar-height) - 20px);
+  display:flex;
+  flex-direction:column;
+  background:var(--cyber-cream);
+  border:2px solid var(--cyber-purple);
+  border-radius:6px;
+  overflow:hidden;
+  pointer-events:auto;
+  resize:both;
+  z-index:var(--z-apps);
 }
 
-
-/* =========================================================
-   NORMAL APP WINDOWS
-========================================================= */
-
-#appLayer > .cyber-window {
-
-    z-index:
-        var(--z-apps);
+#appLayer>.cyber-window{
+  z-index:var(--z-apps);
 }
 
-
-/* =========================================================
-   WINDOW HEADER
-========================================================= */
-
-.window-header {
-
-    flex:
-        0 0 40px;
-
-    width: 100%;
-    height: 40px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding:
-        0 7px 0 14px;
-
-    background:
-        var(--cyber-pink);
-
-    border-bottom:
-        2px solid var(--cyber-purple);
-
-    cursor: grab;
-
-    user-select: none;
-
-    touch-action: none;
-
-    flex-shrink: 0;
+.window-header{
+  flex:0 0 40px;
+  width:100%;
+  height:40px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 7px 0 14px;
+  background:var(--cyber-pink);
+  border-bottom:2px solid var(--cyber-purple);
+  cursor:grab;
+  user-select:none;
+  touch-action:none;
+  flex-shrink:0;
 }
 
-
-.window-header:active {
-
-    cursor: grabbing;
+.window-header:active{
+  cursor:grabbing;
 }
 
-
-/* =========================================================
-   WINDOW TITLE
-========================================================= */
-
-.window-title {
-
-    min-width: 0;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 13px;
-
-    letter-spacing: 0.3px;
-
-    color:
-        var(--cyber-lime);
-
-    white-space: nowrap;
-
-    overflow: hidden;
-
-    text-overflow: ellipsis;
+.window-title{
+  min-width:0;
+  font-family:var(--cyber-font);
+  font-size:13px;
+  letter-spacing:.3px;
+  color:#FEFCE8;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
 }
 
-
-/* =========================================================
-   WINDOW CONTROLS
-========================================================= */
-
-.window-controls {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 5px;
-
-    flex-shrink: 0;
+.window-controls{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  flex-shrink:0;
 }
 
-
-.window-controls button {
-
-    width: 29px;
-    height: 27px;
-
-    padding: 0;
-
-    border:
-        1px solid var(--cyber-purple);
-
-    border-radius: 4px;
-
-    background:
-        var(--cyber-purple);
-
-    color:
-        var(--cyber-cream);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 13px;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    pointer-events: auto;
-
-    transition:
-        background 0.12s ease,
-        transform 0.12s ease;
+.window-controls button{
+  width:29px;
+  height:27px;
+  padding:0;
+  border:1px solid var(--cyber-purple);
+  border-radius:4px;
+  background:var(--cyber-purple);
+  color:#FEFCE8;
+  font-family:var(--cyber-font);
+  font-size:13px;
+  line-height:1;
+  cursor:pointer;
+  pointer-events:auto;
+  transition:background .12s ease,transform .12s ease;
 }
 
-
-.window-controls button:hover {
-
-    background:
-        var(--cyber-purple-dark);
-
-    color:
-        var(--cyber-lime);
+.window-controls button:hover{
+  background:var(--cyber-purple-dark);
+  color:var(--cyber-lime);
 }
 
-
-.window-controls button:active {
-
-    transform:
-        scale(0.94);
+.window-controls button:active{
+  transform:scale(.94);
 }
 
-
-.window-controls .close:hover {
-
-    background:
-        var(--cyber-pink-dark);
-
-    color:
-        var(--cyber-lime);
+.window-controls .close:hover{
+  background:#F7746E;
+  color:var(--cyber-lime);
 }
 
-
-/* =========================================================
-   WINDOW CONTENT
-========================================================= */
-
-.window-content {
-
-    position: relative;
-
-    flex:
-        1 1 auto;
-
-    width: 100%;
-    height: auto;
-
-    min-width: 0;
-    min-height: 0;
-
-    background:
-        var(--cyber-cream);
-
-    overflow: hidden;
+.window-content{
+  position:relative;
+  flex:1 1 auto;
+  width:100%;
+  height:auto;
+  min-width:0;
+  min-height:0;
+  background:var(--cyber-cream);
+  overflow:hidden;
 }
 
-
-/* =========================================================
-   IFRAME
-========================================================= */
-
-.window-content iframe {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100%;
-    height: 100%;
-
-    display: block;
-
-    border: none;
-
-    margin: 0;
-    padding: 0;
-
-    background:
-        var(--cyber-cream);
-
-    overflow: hidden;
+.window-content iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  display:block;
+  border:none;
+  margin:0;
+  padding:0;
+  background:var(--cyber-cream);
+  overflow:hidden;
 }
 
-
-/* =========================================================
-   MAXIMIZED WINDOW
-========================================================= */
-
-.cyber-window.maximized {
-
-    position: fixed !important;
-
-    left: 0 !important;
-    top: 0 !important;
-
-    right: 0 !important;
-    bottom: 0 !important;
-
-    width: 100vw !important;
-
-    /*
-       IMPORTANT:
-       dynamic viewport.
-    */
-
-    width: 100dvw !important;
-
-    height: 100dvh !important;
-
-    min-width: 0 !important;
-    min-height: 0 !important;
-
-    max-width: none !important;
-    max-height: none !important;
-
-    margin: 0 !important;
-    padding: 0 !important;
-
-    border: none !important;
-
-    border-radius: 0 !important;
-
-    resize: none !important;
-
-    box-shadow: none !important;
-
-    z-index:
-        var(--z-apps) !important;
-
-    pointer-events:
-        auto !important;
+.cyber-window.maximized{
+  position:fixed!important;
+  inset:0!important;
+  width:100dvw!important;
+  height:100dvh!important;
+  min-width:0!important;
+  min-height:0!important;
+  max-width:none!important;
+  max-height:none!important;
+  margin:0!important;
+  padding:0!important;
+  border:none!important;
+  border-radius:0!important;
+  resize:none!important;
+  box-shadow:none!important;
+  z-index:var(--z-apps)!important;
+  pointer-events:auto!important;
 }
 
-
-/* =========================================================
-   MAXIMIZED HEADER
-========================================================= */
-
-.cyber-window.maximized .window-header {
-
-    display: none;
+.cyber-window.maximized .window-header{
+  display:none;
 }
 
-
-/* =========================================================
-   MAXIMIZED CONTENT
-========================================================= */
-
-.cyber-window.maximized .window-content {
-
-    position: absolute;
-
-    left: 0;
-    top: 0;
-
-    width: 100vw;
-    height: 100dvh;
-
-    min-width: 0;
-    min-height: 0;
-
-    flex: none;
+.cyber-window.maximized .window-content{
+  position:absolute;
+  inset:0;
+  width:100dvw;
+  height:100dvh;
+  min-width:0;
+  min-height:0;
+  flex:none;
 }
 
 
 /* =========================================================
    START MENU
-========================================================= */
+   ========================================================= */
 
-.start-menu {
-
-    position: absolute;
-
-    left:
-        max(10px, var(--safe-left));
-
-    /*
-       Leave room for taskbar AND iPad safe area.
-    */
-
-    bottom:
-        calc(
-            var(--taskbar-height)
-            + max(5px, var(--safe-bottom))
-        );
-
-    width: 330px;
-
-    height: 420px;
-
-    max-width:
-        calc(100vw - 20px);
-
-    max-height:
-        calc(
-            100dvh
-            - var(--taskbar-height)
-            - 20px
-            - var(--safe-top)
-            - var(--safe-bottom)
-        );
-
-    display: flex;
-
-    flex-direction: column;
-
-    background:
-        var(--cyber-cream);
-
-    border:
-        2px solid var(--cyber-purple);
-
-    border-radius: 7px;
-
-    box-shadow:
-        6px 6px 0
-        rgba(89, 84, 195, 0.2);
-
-    overflow: hidden;
-
-    z-index:
-        var(--z-start);
-
-    opacity: 0;
-
-    transform:
-        translateY(10px);
-
-    transform-origin:
-        bottom left;
-
-    pointer-events: none;
-
-    transition:
-        opacity 0.14s ease,
-        transform 0.14s ease;
+.start-menu{
+  position:absolute;
+  left:max(14px,var(--safe-left));
+  bottom:calc(var(--taskbar-height) + max(5px,var(--safe-bottom)));
+  width:330px;
+  height:420px;
+  max-width:calc(100vw - 28px);
+  max-height:calc(100dvh - var(--taskbar-height) - 20px - var(--safe-top) - var(--safe-bottom));
+  display:flex;
+  flex-direction:column;
+  background:var(--cyber-cream);
+  border:2px solid var(--cyber-purple);
+  border-radius:7px;
+  box-shadow:6px 6px 0 rgba(89,84,195,.2);
+  overflow:hidden;
+  z-index:var(--z-start);
+  opacity:0;
+  transform:translateY(10px);
+  transform-origin:bottom left;
+  pointer-events:none;
+  transition:opacity .14s ease,transform .14s ease;
 }
 
-
-.start-menu.open {
-
-    opacity: 1;
-
-    transform:
-        translateY(0);
-
-    pointer-events: auto;
+.start-menu.open{
+  opacity:1;
+  transform:translateY(0);
+  pointer-events:auto;
+  visibility:visible;
 }
 
-
-/* =========================================================
-   START HEADER
-========================================================= */
-
-.start-menu-header {
-
-    padding: 18px;
-
-    background:
-        var(--cyber-pink);
-
-    color:
-        var(--cyber-lime);
-
-    flex-shrink: 0;
+.start-menu:not(.open){
+  visibility:hidden;
 }
 
-
-.start-menu-title {
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 19px;
-
-    letter-spacing: 0.5px;
+.start-menu-header{
+  padding:18px;
+  background:var(--cyber-pink);
+  color:#FEFCE8;
+  flex-shrink:0;
 }
 
-
-.start-menu-subtitle {
-
-    margin-top: 7px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
-
-    opacity: 0.8;
+.start-menu-title{
+  font-family:var(--cyber-font);
+  font-size:19px;
+  letter-spacing:.5px;
 }
 
-
-/* =========================================================
-   START APPS
-========================================================= */
-
-.start-menu-apps {
-
-    flex: 1;
-
-    min-height: 0;
-
-    padding: 12px;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(2, 1fr);
-
-    gap: 7px;
-
-    overflow-y: auto;
-
-    pointer-events: auto;
-
-    -webkit-overflow-scrolling: touch;
+.start-menu-subtitle{
+  margin-top:7px;
+  font-family:var(--cyber-font);
+  font-size:11px;
+  opacity:.8;
 }
 
-
-/* =========================================================
-   START APP
-========================================================= */
-
-.start-menu-app {
-
-    min-height: 90px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 7px;
-
-    border:
-        1px solid transparent;
-
-    border-radius: 7px;
-
-    background: transparent;
-
-    cursor: pointer;
-
-    color:
-        var(--cyber-purple-dark);
-
-    pointer-events: auto;
-
-    transition:
-        background 0.12s ease,
-        border-color 0.12s ease,
-        transform 0.12s ease;
+.start-menu-apps{
+  flex:1;
+  min-height:0;
+  padding:12px;
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
-
-.start-menu-app:hover {
-
-    background:
-        rgba(168, 138, 178, 0.18);
-
-    border-color:
-        var(--cyber-purple);
+.start-menu-app{
+  min-height:90px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  border:1px solid transparent;
+  border-radius:7px;
+  background:transparent;
+  cursor:pointer;
+  color:var(--cyber-purple-dark);
+  pointer-events:auto;
+  transition:background .12s ease,border-color .12s ease,transform .12s ease;
 }
 
-
-.start-menu-app:active {
-
-    transform:
-        scale(0.97);
+.start-menu-app:hover{
+  background:rgba(168,138,178,.18);
+  border-color:var(--cyber-purple);
 }
 
-
-/* =========================================================
-   START APP ICON
-========================================================= */
-
-.start-menu-app-icon {
-
-    width: 50px;
-    height: 50px;
-
-    min-width: 50px;
-    min-height: 50px;
-
-    max-width: 50px;
-    max-height: 50px;
-
-    object-fit: contain;
-
-    display: block;
-
-    pointer-events: none;
+.start-menu-app:active{
+  transform:scale(.97);
 }
 
-
-.start-menu-placeholder {
-
-    width: 50px;
-    height: 50px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    font-size: 27px;
-
-    pointer-events: none;
+.start-menu-app-icon{
+  width:50px;
+  height:50px;
+  min-width:50px;
+  min-height:50px;
+  max-width:50px;
+  max-height:50px;
+  object-fit:contain;
+  display:block;
+  pointer-events:none;
 }
 
-
-.start-menu-app-name {
-
-    max-width: 135px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
-
-    line-height: 15px;
-
-    text-align: center;
-
-    color:
-        var(--cyber-purple-dark);
+.start-menu-placeholder{
+  width:50px;
+  height:50px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:27px;
+  pointer-events:none;
 }
 
+.start-menu-app-name{
+  max-width:135px;
+  font-family:var(--cyber-font);
+  font-size:13px;
+  line-height:15px;
+  text-align:center;
+  color:#000000;
+}
 
-/* =========================================================
-   START FOOTER
-========================================================= */
-
-.start-menu-footer {
-
-    display: flex;
-
-    flex-direction: column;
-
-    align-items: stretch;
-
-    padding:
-        9px 11px 11px;
-
-    gap: 6px;
-
-    border-top:
-        2px solid var(--cyber-purple);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 10px;
-
-    color:
-        var(--cyber-purple);
-
-    flex-shrink: 0;
+.start-menu-footer{
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  padding:9px 11px 11px;
+  gap:6px;
+  border-top:2px solid var(--cyber-purple);
+  font-family:var(--cyber-font);
+  font-size:10px;
+  color:#FEFCE8;
+  flex-shrink:0;
 }
 
 
 /* =========================================================
    TASKBAR
-========================================================= */
+   ========================================================= */
 
-.taskbar {
-
-    position: absolute;
-
-    left: 0;
-    right: 0;
-
-    /*
-       IMPORTANT:
-       Stay above iPad safe area.
-    */
-
-    bottom: 0;
-
-    width: 100%;
-
-    min-height:
-        var(--taskbar-height);
-
-    height:
-        calc(
-            var(--taskbar-height)
-            + var(--safe-bottom)
-        );
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 9px;
-
-    padding:
-
-        5px
-
-        max(10px, var(--safe-right))
-
-        max(5px, var(--safe-bottom))
-
-        max(10px, var(--safe-left));
-
-    background:
-        var(--cyber-pink);
-
-    border: none;
-
-    border-radius: 0;
-
-    box-shadow: none;
-
-    z-index:
-        var(--z-taskbar);
-
-    flex-shrink: 0;
-
-    overflow: hidden;
+.taskbar{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  width:100%;
+  min-height:var(--taskbar-height);
+  height:calc(var(--taskbar-height) + var(--safe-bottom));
+  display:flex;
+  align-items:center;
+  gap:9px;
+  padding:5px max(10px,var(--safe-right)) max(5px,var(--safe-bottom)) max(10px,var(--safe-left));
+  background:var(--cyber-pink);
+  border:none;
+  border-radius:0;
+  box-shadow:none;
+  z-index:var(--z-taskbar);
+  flex-shrink:0;
+  overflow:hidden;
 }
 
-
-/* =========================================================
-   START BUTTON
-========================================================= */
-
-.start-button {
-
-    height: 36px;
-
-    min-width: 92px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 7px;
-
-    padding:
-        0 12px;
-
-    border:
-        2px solid var(--cyber-lime);
-
-    border-radius: 9px;
-
-    background: transparent;
-
-    color:
-        var(--cyber-lime);
-
-    cursor: pointer;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 20px;
-
-    letter-spacing: 0.5px;
-
-    flex-shrink: 0;
-
-    transition:
-        background 0.12s ease,
-        transform 0.12s ease;
+.start-button{
+  height:36px;
+  min-width:92px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:7px;
+  padding:0 12px;
+  border:2px solid #FEFCE8;
+  border-radius:9px;
+  background:#FEFCE8;
+  color:#000000;
+  cursor:pointer;
+  font-family:var(--cyber-font);
+  font-size:20px;
+  letter-spacing:.5px;
+  flex-shrink:0;
+  transition:background .12s ease,transform .12s ease;
 }
 
-
-.start-button:hover {
-
-    background:
-        rgba(197, 223, 169, 0.15);
+.start-button:hover{
+  background:#DECABF;
 }
 
-
-.start-button:active {
-
-    transform:
-        scale(0.96);
+.start-button:active{
+  transform:scale(.96);
 }
 
-
-.start-icon {
-
-    display: none !important;
+.start-icon{
+  display:none!important;
 }
 
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-.taskbar-search {
-
-    width: 320px;
-
-    max-width: 32vw;
-
-    height: 36px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding:
-        0 12px;
-
-    background:
-        var(--cyber-purple);
-
-    border:
-        2px solid var(--cyber-lime);
-
-    border-radius: 9px;
-
-    flex-shrink: 1;
-
-    min-width: 100px;
+.taskbar-search{
+  width:320px;
+  max-width:32vw;
+  height:36px;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:0 12px;
+  background:var(--cyber-purple);
+  border:2px solid var(--cyber-lime);
+  border-radius:9px;
+  flex-shrink:1;
+  min-width:100px;
 }
 
-
-.search-icon {
-
-    font-size: 14px;
-
-    color:
-        var(--cyber-lime);
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    flex-shrink: 0;
+.search-icon{
+  font-size:14px;
+  color:var(--cyber-lime);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
 }
 
-
-.taskbar-search input {
-
-    width: 100%;
-
-    min-width: 0;
-
-    height: 100%;
-
-    border: none;
-
-    outline: none;
-
-    background: transparent;
-
-    color:
-        var(--cyber-lime);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 13px;
+.taskbar-search input{
+  width:100%;
+  min-width:0;
+  height:100%;
+  border:none;
+  outline:none;
+  background:transparent;
+  color:var(--cyber-lime);
+  font-family:var(--cyber-font);
+  font-size:13px;
 }
 
-
-.taskbar-search input::placeholder {
-
-    color:
-        rgba(197, 223, 169, 0.75);
+.taskbar-search input::placeholder{
+  color:#000000;
 }
 
-
-/* =========================================================
-   TASKBAR APPS
-========================================================= */
-
-.taskbar-apps {
-
-    height: 36px;
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 5px;
-
-    overflow-x: auto;
-
-    overflow-y: hidden;
-
-    min-width: 0;
-
-    flex: 1 1 auto;
-
-    scrollbar-width: none;
-
-    -webkit-overflow-scrolling: touch;
+.taskbar-apps{
+  height:36px;
+  display:flex;
+  align-items:center;
+  gap:5px;
+  overflow-x:auto;
+  overflow-y:hidden;
+  min-width:0;
+  flex:1 1 auto;
+  scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
 }
 
-
-.taskbar-apps::-webkit-scrollbar {
-
-    display: none;
+.taskbar-apps::-webkit-scrollbar{
+  display:none;
 }
 
-
-.taskbar-app {
-
-    height: 36px;
-
-    min-width: 50px;
-
-    max-width: 155px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 6px;
-
-    padding:
-        0 10px;
-
-    border: none;
-
-    border-radius: 7px;
-
-    background:
-        var(--cyber-purple);
-
-    color:
-        var(--cyber-lime);
-
-    cursor: pointer;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 12px;
-
-    flex-shrink: 0;
-
-    transition:
-        background 0.12s ease;
+.taskbar-app{
+  height:36px;
+  min-width:50px;
+  max-width:155px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:6px;
+  padding:0 10px;
+  border:none;
+  border-radius:7px;
+  background:var(--cyber-purple);
+  color:var(--cyber-lime);
+  cursor:pointer;
+  font-family:var(--cyber-font);
+  font-size:12px;
+  flex-shrink:0;
+  transition:background .12s ease;
 }
-
 
 .taskbar-app:hover,
-.taskbar-app.active {
-
-    background:
-        var(--cyber-purple-dark);
+.taskbar-app.active{
+  background:var(--cyber-purple-dark);
 }
 
-
-.taskbar-app-icon {
-
-    width: 22px;
-    height: 22px;
-
-    object-fit: contain;
-
-    flex-shrink: 0;
-
-    pointer-events: none;
+.taskbar-app-icon{
+  width:22px;
+  height:22px;
+  object-fit:contain;
+  flex-shrink:0;
+  pointer-events:none;
 }
 
-
-.taskbar-app-name {
-
-    overflow: hidden;
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-
-    font-size: 12px;
+.taskbar-app-name{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:12px;
 }
 
-
-/* =========================================================
-   SPACER
-========================================================= */
-
-.taskbar-spacer {
-
-    flex: 0 1 30px;
-
-    min-width: 0;
+.taskbar-spacer{
+  flex:0 1 30px;
+  min-width:0;
 }
 
-
-/* =========================================================
-   BATTERY
-========================================================= */
-
-.battery-area {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    flex-shrink: 0;
-
-    white-space: nowrap;
+.battery-area{
+  display:flex;
+  align-items:center;
+  gap:7px;
+  flex-shrink:0;
+  white-space:nowrap;
 }
 
-
-.battery-bar {
-
-    width: 40px;
-    height: 17px;
-
-    padding: 2px;
-
-    border:
-        1px solid var(--cyber-lime);
-
-    border-radius: 3px;
+.battery-bar{
+  width:40px;
+  height:17px;
+  padding:2px;
+  border:1px solid #FEFCE8;
+  border-radius:3px;
 }
 
-
-.battery-fill {
-
-    width: 100%;
-    height: 100%;
-
-    border-radius: 1px;
-
-    background:
-        var(--cyber-lime);
+.battery-fill{
+  width:100%;
+  height:100%;
+  border-radius:1px;
+  background:#FEFCE8;
 }
 
-
-#batteryText {
-
-    min-width: 40px;
-
-    color:
-        var(--cyber-lime);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 15px;
+#batteryText{
+  min-width:40px;
+  color:#FEFCE8;
+  font-family:var(--cyber-font);
+  font-size:15px;
 }
 
-
-.charge-button {
-
-    height: 32px;
-
-    border: none;
-
-    border-radius: 6px;
-
-    padding:
-        0 10px;
-
-    background:
-        var(--cyber-purple);
-
-    color:
-        var(--cyber-lime);
-
-    cursor: pointer;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 18px;
+.charge-button{
+  height:32px;
+  border:none;
+  border-radius:6px;
+  padding:0 10px;
+  background:var(--cyber-purple);
+  color:#FEFCE8;
+  cursor:pointer;
+  font-family:var(--cyber-font);
+  font-size:18px;
 }
 
-
-.charge-button:hover {
-
-    background:
-        var(--cyber-purple-dark);
+.charge-button:hover{
+  background:var(--cyber-purple-dark);
 }
 
-
-/* =========================================================
-   CLOCK
-========================================================= */
-
-.clock {
-
-    min-width: 120px;
-
-    text-align: right;
-
-    color: #ffffff;
-
-    font-family:
-        var(--cyber-font);
-
-    font-weight: 300;
-
-    line-height: 1.1;
-
-    flex-shrink: 0;
-
-    white-space: nowrap;
+.clock{
+  min-width:120px;
+  text-align:right;
+  color:#fff;
+  font-family:var(--cyber-font);
+  font-weight:300;
+  line-height:1.1;
+  flex-shrink:0;
+  white-space:nowrap;
 }
 
-
-#clockTime {
-
-    font-size: 13px;
-
-    font-weight: 300;
-
-    color: #ffffff;
+#clockTime{
+  font-size:13px;
+  font-weight:300;
+  color:#fff;
 }
 
-
-#clockDate {
-
-    margin-top: 3px;
-
-    font-size: 11px;
-
-    font-weight: 300;
-
-    color: #ffffff;
-
-    opacity: 1;
+#clockDate{
+  margin-top:3px;
+  font-size:11px;
+  font-weight:300;
+  color:#fff;
+  opacity:1;
 }
 
 
 /* =========================================================
    AUTH
-========================================================= */
+   ========================================================= */
 
-.auth-area {
-
-    position: static !important;
-
-    display: none !important;
+.auth-area{
+  position:static!important;
+  display:none!important;
 }
 
-
-/* =========================================================
-   AUTH INSIDE START MENU
-========================================================= */
-
-.start-menu #authUser {
-
-    display: block;
-
-    padding:
-        7px 11px 5px;
-
-    text-align: center;
-
-    color:
-        var(--cyber-purple-dark);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
+.start-menu #authUser{
+  display:block;
+  padding:7px 11px 5px;
+  text-align:center;
+  color:var(--cyber-purple-dark);
+  font-family:var(--cyber-font);
+  font-size:11px;
 }
 
-
-.start-menu .auth-role {
-
-    padding:
-        5px 7px;
-
-    border-radius: 5px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 9px;
-
-    font-weight: 400;
+.start-menu .auth-role{
+  padding:5px 7px;
+  border-radius:5px;
+  font-family:var(--cyber-font);
+  font-size:9px;
+  font-weight:400;
 }
-
 
 .start-menu .auth-role.admin,
-.start-menu .auth-role.member {
+.start-menu .auth-role.member{
+  background:var(--cyber-lime);
+  color:var(--cyber-purple-dark);
+}
 
-    background:
-        var(--cyber-lime);
+.start-menu #logoutButton{
+  display:flex;
+  width:calc(100% - 22px);
+  height:35px;
+  margin:0 11px 11px;
+  align-items:center;
+  justify-content:center;
+  border:2px solid var(--cyber-purple);
+  border-radius:7px;
+  background:#4EC7B1;
+  color:#000000;
+  padding:0;
+  cursor:pointer;
+  font-family:var(--cyber-font);
+  font-size:15px;
+  letter-spacing:.5px;
+  transition:background .12s ease,transform .12s ease;
+}
 
-    color:
-        var(--cyber-purple-dark);
+.start-menu #logoutButton:hover{
+  background:var(--cyber-purple-dark);
+  color:var(--cyber-lime);
+}
+
+.start-menu #logoutButton:active{
+  transform:scale(.97);
 }
 
 
 /* =========================================================
-   LOGOUT BUTTON
-========================================================= */
+   SHUTDOWN
+   ========================================================= */
 
-.start-menu #logoutButton {
-
-    display: flex;
-
-    width:
-        calc(100% - 22px);
-
-    height: 35px;
-
-    margin:
-        0 11px 11px;
-
-    align-items: center;
-
-    justify-content: center;
-
-    border:
-        2px solid var(--cyber-purple);
-
-    border-radius: 7px;
-
-    background:
-        var(--cyber-purple);
-
-    color:
-        var(--cyber-lime);
-
-    padding: 0;
-
-    cursor: pointer;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
-
-    letter-spacing: 0.5px;
-
-    transition:
-        background 0.12s ease,
-        transform 0.12s ease;
+.shutdown-overlay{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:20px max(20px,var(--safe-right)) max(20px,var(--safe-bottom)) max(20px,var(--safe-left));
+  background:rgba(89,84,195,.25);
+  z-index:var(--z-overlay);
+  overflow-y:auto;
 }
 
-
-.start-menu #logoutButton:hover {
-
-    background:
-        var(--cyber-purple-dark);
-
-    color:
-        var(--cyber-lime);
+.shutdown-popup{
+  width:350px;
+  max-width:calc(100vw - 40px);
+  max-height:calc(100dvh - 40px);
+  overflow-y:auto;
+  padding:27px;
+  text-align:center;
+  background:var(--cyber-cream);
+  color:var(--cyber-purple-dark);
+  border:2px solid var(--cyber-purple);
+  border-radius:7px;
+  box-shadow:6px 6px 0 rgba(89,84,195,.2);
 }
 
+.shutdown-popup h2{
+  margin:0 0 11px;
+  font-family:var(--cyber-font);
+  font-size:19px;
+}
 
-.start-menu #logoutButton:active {
+.shutdown-popup p{
+  margin:0 0 21px;
+  color:var(--cyber-purple);
+  font-family:var(--cyber-font);
+  font-size:11px;
+}
 
-    transform:
-        scale(0.97);
+.shutdown-popup button{
+  border:2px solid var(--cyber-purple);
+  border-radius:7px;
+  padding:9px 16px;
+  background:var(--cyber-purple);
+  color:var(--cyber-lime);
+  cursor:pointer;
+  font-family:var(--cyber-font);
+  font-size:11px;
 }
 
 
 /* =========================================================
-   SHUTDOWN OVERLAY
-========================================================= */
+   LOGIN
+   ========================================================= */
 
-.shutdown-overlay {
-
-    position: fixed;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100dvh;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding:
-        20px
-        max(20px, var(--safe-right))
-        max(20px, var(--safe-bottom))
-        max(20px, var(--safe-left));
-
-    background:
-        rgba(89, 84, 195, 0.25);
-
-    z-index:
-        var(--z-overlay);
-
-    overflow-y: auto;
+.login-overlay{
+  position:fixed;
+  inset:0;
+  width:100%;
+  height:100dvh;
+  z-index:var(--z-login);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:max(12px,var(--safe-top)) max(12px,var(--safe-right)) max(12px,var(--safe-bottom)) max(12px,var(--safe-left));
+  background:rgba(36,33,36,.28);
+  backdrop-filter:blur(3px);
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
-
-.shutdown-popup {
-
-    width: 350px;
-
-    max-width:
-        calc(100vw - 40px);
-
-    max-height:
-        calc(100dvh - 40px);
-
-    overflow-y: auto;
-
-    padding: 27px;
-
-    text-align: center;
-
-    background:
-        var(--cyber-cream);
-
-    color:
-        var(--cyber-purple-dark);
-
-    border:
-        2px solid var(--cyber-purple);
-
-    border-radius: 7px;
-
-    box-shadow:
-        6px 6px 0
-        rgba(89, 84, 195, 0.2);
+.login-window{
+  width:min(460px,100%);
+  max-height:calc(100dvh - var(--safe-top) - var(--safe-bottom) - 24px);
+  display:flex;
+  flex-direction:column;
+  background:var(--cyber-cream);
+  color:var(--cyber-black);
+  border:1.5px solid var(--cyber-black);
+  border-radius:7px;
+  box-shadow:none!important;
+  overflow:hidden;
+  animation:loginAppear .25s ease-out;
 }
 
-
-.shutdown-popup h2 {
-
-    margin:
-        0 0 11px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 19px;
+@keyframes loginAppear{
+  from{
+    opacity:0;
+    transform:translateY(12px) scale(.97);
+  }
+  to{
+    opacity:1;
+    transform:translateY(0) scale(1);
+  }
 }
 
-
-.shutdown-popup p {
-
-    margin:
-        0 0 21px;
-
-    color:
-        var(--cyber-purple);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
+.login-header{
+  position:relative;
+  width:100%;
+  min-height:76px;
+  display:flex;
+  align-items:center;
+  padding:16px 18px;
+  background:#D07E96;
+  color:#000000;
+  border-bottom:1.5px solid var(--cyber-black);
+  flex-shrink:0;
+  box-shadow:none;
 }
 
-
-.shutdown-popup button {
-
-    border:
-        2px solid var(--cyber-purple);
-
-    border-radius: 7px;
-
-    padding:
-        9px 16px;
-
-    background:
-        var(--cyber-purple);
-
-    color:
-        var(--cyber-lime);
-
-    cursor: pointer;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
+.login-header-left{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  min-width:0;
+  position:relative;
+  z-index:2;
 }
 
-
-/* =========================================================
-   SCROLLBAR
-========================================================= */
-
-.start-menu-apps::-webkit-scrollbar {
-
-    width: 6px;
+.login-icon{
+  width:42px;
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  flex-shrink:0;
+  background:var(--cyber-lime);
+  color:var(--cyber-purple-dark);
+  border:1.5px solid var(--cyber-black);
+  border-radius:6px;
+  font-size:22px;
+  box-shadow:none;
 }
 
-
-.start-menu-apps::-webkit-scrollbar-thumb {
-
-    background:
-        var(--cyber-purple);
-
-    border-radius: 5px;
+.login-title{
+  font-family:var(--cyber-font);
+  font-size:23px;
+  letter-spacing:2px;
+  color:#FEFCE8;
+  white-space:nowrap;
+  display:inline-block;
+  transform-origin:center;
+  animation:loginClubFloat 5s ease-in-out infinite;
 }
 
-
-.start-menu-apps::-webkit-scrollbar-track {
-
-    background:
-        transparent;
+@keyframes loginClubFloat{
+  0%,100%{transform:translate3d(0,0,0) rotate(0deg)}
+  25%{transform:translate3d(1px,-1px,0) rotate(-.25deg)}
+  50%{transform:translate3d(2px,-2px,0) rotate(.25deg)}
+  75%{transform:translate3d(1px,0,0) rotate(-.15deg)}
 }
 
-
-/* =========================================================
-   CYBEROS LOGIN
-========================================================= */
-
-.login-overlay {
-
-    position: fixed;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100dvh;
-
-    z-index:
-        var(--z-login);
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    /*
-       iPad safe areas.
-    */
-
-    padding:
-
-        max(12px, var(--safe-top))
-
-        max(12px, var(--safe-right))
-
-        max(12px, var(--safe-bottom))
-
-        max(12px, var(--safe-left));
-
-    background:
-        rgba(36, 33, 36, 0.28);
-
-    backdrop-filter:
-        blur(3px);
-
-    overflow-y: auto;
-
-    -webkit-overflow-scrolling: touch;
+.login-subtitle{
+  margin-top:4px;
+  font-family:var(--cyber-font);
+  font-size:10px;
+  letter-spacing:1.5px;
+  opacity:.85;
+  color:#FEFCE8;
 }
 
-
-/* =========================================================
-   LOGIN WINDOW
-========================================================= */
-
-.login-window {
-
-    width:
-        min(460px, 100%);
-
-    /*
-       Critical fix for short iPad screens.
-    */
-
-    max-height:
-        calc(
-            100dvh
-            - var(--safe-top)
-            - var(--safe-bottom)
-            - 24px
-        );
-
-    display: flex;
-
-    flex-direction: column;
-
-    background:
-        var(--cyber-cream);
-
-    color:
-        var(--cyber-black);
-
-    border:
-        3px solid var(--cyber-black);
-
-    border-radius: 7px;
-
-    box-shadow:
-        8px 8px 0
-        var(--cyber-black);
-
-    overflow: hidden;
-
-    animation:
-        loginAppear 0.25s ease-out;
+.login-status{
+  position:absolute;
+  right:18px;
+  top:50%;
+  transform:translateY(-50%);
+  display:flex;
+  align-items:center;
+  justify-content:flex-end;
+  gap:6px;
+  font-family:var(--cyber-font);
+  font-size:9px;
+  letter-spacing:1px;
+  color:var(--cyber-lime);
+  white-space:nowrap;
+  z-index:3;
 }
 
-
-@keyframes loginAppear {
-
-    from {
-
-        opacity: 0;
-
-        transform:
-            translateY(12px)
-            scale(0.97);
-    }
-
-    to {
-
-        opacity: 1;
-
-        transform:
-            translateY(0)
-            scale(1);
-    }
+.status-dot{
+  width:8px;
+  height:8px;
+  flex-shrink:0;
+  border-radius:50%;
+  background:var(--cyber-lime);
+  box-shadow:none;
 }
 
-
-/* =========================================================
-   LOGIN HEADER
-========================================================= */
-
-.login-header {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: space-between;
-
-    padding:
-        16px 18px;
-
-    background:
-        var(--cyber-pink);
-
-    color:
-        var(--cyber-lime);
-
-    border-bottom:
-        3px solid var(--cyber-black);
-
-    flex-shrink: 0;
+.login-content{
+  padding:30px 32px 25px;
+  background:var(--cyber-cream);
+  min-height:0;
+  overflow-y:auto;
+  -webkit-overflow-scrolling:touch;
 }
 
-
-.login-header-left {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 12px;
-
-    min-width: 0;
+.login-welcome{
+  width:100%;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  font-family:var(--cyber-font);
+  font-size:22px;
+  letter-spacing:1.5px;
+  color:#000000;
 }
 
-
-.login-icon {
-
-    width: 42px;
-    height: 42px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    background:
-        var(--cyber-lime);
-
-    color:
-        var(--cyber-purple-dark);
-
-    border:
-        2px solid var(--cyber-black);
-
-    border-radius: 6px;
-
-    font-size: 22px;
+.login-description{
+  width:100%;
+  margin-top:8px;
+  margin-bottom:26px;
+  margin-left:auto;
+  margin-right:auto;
+  text-align:center;
+  font-family:var(--cyber-font);
+  font-size:11px;
+  line-height:1.7;
+  color:#000000;
+  opacity:.85;
 }
 
-
-.login-title {
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 23px;
-
-    font-weight: bold;
-
-    letter-spacing: 2px;
-
-    color:
-        var(--cyber-lime);
-
-    white-space: nowrap;
+.login-form{
+  display:flex;
+  flex-direction:column;
+  gap:19px;
 }
 
-
-.login-subtitle {
-
-    margin-top: 4px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 10px;
-
-    letter-spacing: 1.5px;
-
-    opacity: 0.85;
-
-    color:
-        var(--cyber-lime);
+.input-group{
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
 
-
-.login-status {
-
-    display: flex;
-
-    align-items: center;
-
-    gap: 6px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 9px;
-
-    letter-spacing: 1px;
-
-    color:
-        var(--cyber-lime);
+.input-group label{
+  font-family:var(--cyber-font);
+  font-size:11px;
+  font-weight:bold;
+  letter-spacing:1.5px;
+  color:var(--cyber-purple-dark);
 }
 
-
-.status-dot {
-
-    width: 8px;
-    height: 8px;
-
-    border-radius: 50%;
-
-    background:
-        var(--cyber-lime);
-
-    box-shadow:
-        0 0 7px
-        rgba(197, 223, 169, 0.9);
+.input-wrapper{
+  display:flex;
+  align-items:center;
+  background:var(--cyber-white);
+  border:1.5px solid var(--cyber-purple);
+  border-radius:5px;
+  overflow:hidden;
+  transition:transform .12s ease,border-color .12s ease;
 }
 
-
-/* =========================================================
-   LOGIN CONTENT
-========================================================= */
-
-.login-content {
-
-    padding:
-        30px 32px 25px;
-
-    background:
-        var(--cyber-cream);
-
-    min-height: 0;
-
-    overflow-y: auto;
-
-    -webkit-overflow-scrolling: touch;
+.input-wrapper:focus-within{
+  border-color:var(--cyber-pink);
+  transform:translate(-1px,-1px);
+  box-shadow:none!important;
 }
 
-
-/* =========================================================
-   LOGIN TEXT
-========================================================= */
-
-.login-welcome {
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 22px;
-
-    font-weight: bold;
-
-    letter-spacing: 1.5px;
-
-    color:
-        var(--cyber-purple-dark);
+.input-icon{
+  width:44px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:#4EC7B1;
+  font-family:var(--cyber-font);
+  font-size:15px;
+  font-weight:bold;
+  border-right:1.5px solid var(--cyber-purple);
+  align-self:stretch;
 }
 
-
-.login-description {
-
-    margin-top: 8px;
-
-    margin-bottom: 26px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
-
-    line-height: 1.7;
-
-    color:
-        var(--cyber-purple);
-
-    opacity: 0.85;
+.input-wrapper input{
+  width:100%;
+  min-width:0;
+  height:46px;
+  border:none;
+  outline:none;
+  background:transparent;
+  padding:0 13px;
+  color:var(--cyber-purple-dark);
+  font-family:var(--cyber-font);
+  font-size:12px;
 }
 
-
-/* =========================================================
-   LOGIN FORM
-========================================================= */
-
-.login-form {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 19px;
+.input-wrapper input::placeholder{
+  color:#aa9da3;
 }
-
-
-.input-group {
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 7px;
-}
-
-
-.input-group label {
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 11px;
-
-    font-weight: bold;
-
-    letter-spacing: 1.5px;
-
-    color:
-        var(--cyber-purple-dark);
-}
-
-
-.input-wrapper {
-
-    display: flex;
-
-    align-items: center;
-
-    background:
-        var(--cyber-white);
-
-    border:
-        2px solid var(--cyber-purple);
-
-    border-radius: 5px;
-
-    overflow: hidden;
-
-    transition:
-        transform 0.12s ease,
-        box-shadow 0.12s ease,
-        border-color 0.12s ease;
-}
-
-
-.input-wrapper:focus-within {
-
-    border-color:
-        var(--cyber-pink);
-
-    transform:
-        translate(-2px, -2px);
-
-    box-shadow:
-        4px 4px 0
-        rgba(208, 126, 150, 0.25);
-}
-
-
-.input-icon {
-
-    width: 44px;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    color:
-        var(--cyber-purple-dark);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 15px;
-
-    font-weight: bold;
-
-    border-right:
-        2px solid var(--cyber-purple);
-
-    align-self: stretch;
-}
-
-
-.input-wrapper input {
-
-    width: 100%;
-
-    min-width: 0;
-
-    height: 46px;
-
-    border: none;
-
-    outline: none;
-
-    background: transparent;
-
-    padding:
-        0 13px;
-
-    color:
-        var(--cyber-purple-dark);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 12px;
-}
-
-
-.input-wrapper input::placeholder {
-
-    color:
-        #aa9da3;
-}
-
-
-/* =========================================================
-   LOGIN BUTTON
-========================================================= */
 
 .login-button,
-#loginSubmitButton {
-
-    width: 100%;
-
-    height: 48px;
-
-    margin-top: 3px;
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 10px;
-
-    border:
-        2px solid var(--cyber-black);
-
-    border-radius: 5px;
-
-    background:
-        var(--cyber-purple);
-
-    color:
-        var(--cyber-lime);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 12px;
-
-    font-weight: bold;
-
-    letter-spacing: 1.5px;
-
-    cursor: pointer;
-
-    box-shadow:
-        4px 4px 0
-        var(--cyber-black);
-
-    transition:
-        transform 0.12s ease,
-        box-shadow 0.12s ease,
-        background 0.12s ease;
+#loginSubmitButton{
+  width:100%;
+  height:48px;
+  margin-top:3px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  border:1.5px solid var(--cyber-black);
+  border-radius:5px;
+  background:#4EC7B1;
+  color:#FEFCE8;
+  font-family:var(--cyber-font);
+  font-size:12px;
+  font-weight:bold;
+  letter-spacing:1.5px;
+  cursor:pointer;
+  box-shadow:none!important;
+  transition:transform .12s ease,background .12s ease;
 }
-
 
 .login-button:hover,
-#loginSubmitButton:hover {
-
-    background:
-        var(--cyber-purple-dark);
-
-    transform:
-        translate(-2px, -2px);
-
-    box-shadow:
-        6px 6px 0
-        var(--cyber-black);
+#loginSubmitButton:hover{
+  background:#F8756F;
+  transform:translateY(-1px);
+  box-shadow:none!important;
 }
-
 
 .login-button:active,
-#loginSubmitButton:active {
-
-    transform:
-        translate(2px, 2px);
-
-    box-shadow:
-        1px 1px 0
-        var(--cyber-black);
+#loginSubmitButton:active{
+  transform:translateY(1px);
+  box-shadow:none!important;
 }
 
-
-.login-button-icon {
-
-    font-size: 10px;
+.login-button-icon{
+  display:none!important;
 }
 
-
-/* =========================================================
-   LOGIN MESSAGE
-========================================================= */
+.login-button::before,
+.login-button::after,
+#loginSubmitButton::before,
+#loginSubmitButton::after{
+  content:none!important;
+  display:none!important;
+}
 
 .login-message,
-#loginMessage {
-
-    min-height: 18px;
-
-    margin-top: -3px;
-
-    text-align: center;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 10px;
-
-    line-height: 1.5;
-
-    color:
-        var(--cyber-purple);
+#loginMessage{
+  min-height:18px;
+  margin-top:-3px;
+  text-align:center;
+  font-family:var(--cyber-font);
+  font-size:10px;
+  line-height:1.5;
+  color:var(--cyber-purple);
 }
 
-
-.login-message.error {
-
-    color:
-        var(--cyber-pink-dark);
+.login-message.error{
+  color:var(--cyber-pink-dark);
 }
 
-
-/* =========================================================
-   LOGIN SECURITY INFO
-========================================================= */
-
-.security-info {
-
-    margin-top: 26px;
-
-    display: flex;
-
-    flex-direction: column;
-
-    gap: 10px;
+.security-info{
+  margin-top:26px;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
 }
 
-
-.security-line {
-
-    height: 1px;
-
-    background:
-        var(--cyber-purple);
-
-    opacity: 0.2;
+.security-line{
+  height:1px;
+  background:#4EC7B1;
+  opacity:.2;
 }
 
-
-.security-content {
-
-    display: flex;
-
-    align-items: center;
-
-    justify-content: center;
-
-    gap: 10px;
+.security-content{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
 }
 
-
-.security-icon {
-
-    font-size: 15px;
+.security-icon{
+  font-size:15px;
 }
 
-
-.security-title {
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 9px;
-
-    font-weight: bold;
-
-    letter-spacing: 1px;
-
-    color:
-        var(--cyber-purple-dark);
+.security-title{
+  font-family:var(--cyber-font);
+  font-size:9px;
+  font-weight:bold;
+  letter-spacing:1px;
+  color:#4EC7B1;
 }
 
-
-.security-text {
-
-    margin-top: 3px;
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 9px;
-
-    color:
-        var(--cyber-purple);
-
-    opacity: 0.7;
+.security-text{
+  margin-top:3px;
+  font-family:var(--cyber-font);
+  font-size:9px;
+  color:var(--cyber-purple);
+  opacity:.7;
 }
 
-
-/* =========================================================
-   LOGIN FOOTER
-========================================================= */
-
-.login-footer {
-
-    display: flex;
-
-    justify-content: center;
-
-    align-items: center;
-
-    gap: 8px;
-
-    padding: 11px;
-
-    background:
-        #ded5c9;
-
-    border-top:
-        2px solid var(--cyber-purple);
-
-    font-family:
-        var(--cyber-font);
-
-    font-size: 9px;
-
-    letter-spacing: 0.8px;
-
-    color:
-        var(--cyber-purple);
-
-    flex-shrink: 0;
+.login-footer{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  gap:8px;
+  padding:11px;
+  background:#ded5c9;
+  border-top:1.5px solid var(--cyber-purple);
+  font-family:var(--cyber-font);
+  font-size:9px;
+  letter-spacing:.8px;
+  color:var(--cyber-purple);
+  flex-shrink:0;
 }
 
-
-/* =========================================================
-   OLD LOGIN COMPATIBILITY
-========================================================= */
-
-.cyber-login {
-
-    background:
-        var(--cyber-bg);
+.cyber-login{
+  background:var(--cyber-bg);
 }
 
-
-.cyber-login-box {
-
-    background:
-        var(--cyber-cream);
-
-    border:
-        2px solid var(--cyber-purple);
-
-    box-shadow:
-        6px 6px 0
-        rgba(89, 84, 195, 0.2);
+.cyber-login-box{
+  background:var(--cyber-cream);
+  border:1.5px solid var(--cyber-purple);
+  box-shadow:none!important;
 }
-
 
 .cyber-login-title,
-.cyber-login-subtitle {
-
-    font-family:
-        var(--cyber-font);
+.cyber-login-subtitle{
+  font-family:var(--cyber-font);
 }
 
-
-.cyber-login-title {
-
-    color:
-        var(--cyber-purple-dark);
+.cyber-login-title{
+  color:var(--cyber-purple-dark);
 }
 
-
-.cyber-login-subtitle {
-
-    color:
-        var(--cyber-purple);
+.cyber-login-subtitle{
+  color:var(--cyber-purple);
 }
 
-
-#loginForm input {
-
-    font-family:
-        var(--cyber-font);
-
-    border-color:
-        var(--cyber-purple);
-
-    background:
-        var(--cyber-white);
-
-    color:
-        var(--cyber-purple-dark);
+#loginForm input{
+  font-family:var(--cyber-font);
+  border-color:var(--cyber-purple);
+  background:var(--cyber-white);
+  color:var(--cyber-purple-dark);
 }
 
-
-#loginButton {
-
-    font-family:
-        var(--cyber-font);
-
-    background:
-        var(--cyber-pink);
-
-    color:
-        var(--cyber-lime);
+#loginButton{
+  font-family:var(--cyber-font);
+  background:var(--cyber-pink);
+  color:var(--cyber-lime);
+  box-shadow:none!important;
 }
 
 
 /* =========================================================
-   WIDGET SYSTEM
-   HEADERLESS + DRAGGABLE + ALWAYS ABOVE ICONS
-========================================================= */
+   WIDGET LAYER
+   ========================================================= */
 
+#widgetLayer>.cyber-window{
+  position:absolute!important;
+  background:transparent!important;
+  border:none!important;
+  border-radius:0!important;
+  box-shadow:none!important;
+  overflow:visible!important;
+  resize:none!important;
+  z-index:var(--z-widgets)!important;
+  pointer-events:auto!important;
+}
 
-/* =========================================================
-   WIDGET WINDOW
-========================================================= */
+#widgetLayer>.cyber-window.widget-active,
+#widgetLayer>.cyber-window.widget-dragging{
+  z-index:99999!important;
+}
 
-#widgetLayer > .cyber-window {
+#widgetLayer>.cyber-window .window-header{
+  display:none!important;
+}
 
-    position: absolute !important;
+#widgetLayer>.cyber-window .window-content{
+  position:relative!important;
+  width:100%!important;
+  height:100%!important;
+  min-width:0!important;
+  min-height:0!important;
+  background:transparent!important;
+  border:none!important;
+  border-radius:0!important;
+  overflow:visible!important;
+  flex:none!important;
+}
 
-    background:
-        transparent !important;
+#widgetLayer>.cyber-window .window-content iframe{
+  position:absolute!important;
+  inset:0!important;
+  width:100%!important;
+  height:100%!important;
+  background:transparent!important;
+  border:none!important;
+  margin:0!important;
+  padding:0!important;
+  display:block!important;
+}
 
-    border: none !important;
+#widgetLayer>.cyber-window::before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:0;
+  width:100%;
+  height:28px;
+  background:transparent;
+  cursor:grab;
+  z-index:999999;
+  pointer-events:auto;
+  touch-action:none;
+}
 
-    border-radius: 0 !important;
+#widgetLayer>.cyber-window.widget-dragging::before{
+  cursor:grabbing;
+}
 
-    box-shadow: none !important;
+#widgetLayer>.cyber-window.maximized{
+  position:fixed!important;
+  left:0!important;
+  top:0!important;
+  width:100dvw!important;
+  height:100dvh!important;
+  background:transparent!important;
+  border:none!important;
+  box-shadow:none!important;
+  z-index:99999!important;
+  pointer-events:auto!important;
+}
 
-    overflow: visible !important;
+#widgetLayer>.cyber-window.maximized .window-header{
+  display:none!important;
+}
 
-    resize: none !important;
-
-    z-index:
-        var(--z-widgets) !important;
-
-    pointer-events:
-        auto !important;
+#widgetLayer>.cyber-window.maximized .window-content{
+  position:absolute!important;
+  left:0!important;
+  top:0!important;
+  width:100dvw!important;
+  height:100dvh!important;
+  background:transparent!important;
+  overflow:visible!important;
 }
 
 
 /* =========================================================
-   ACTIVE / DRAGGING WIDGET
-========================================================= */
+   VIDEO FOLDER ITEMS
+   ========================================================= */
 
-#widgetLayer > .cyber-window.widget-active,
-#widgetLayer > .cyber-window.widget-dragging {
+.folder-app[data-file-type="Video"]{
+  --video-pink:#d880b0;
+  --video-pink-dark:#9d5684;
+  --video-pink-light:#f8d9e8;
+  --video-cream:#f8e4d3;
+  --video-purple:#755078;
+  --video-purple-glow:rgba(117,80,120,.22);
 
-    z-index:
-        99999 !important;
+  position:relative;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+}
+
+.folder-app[data-file-type="Video"] .folder-app-icon{
+  display:block;
+  width:64px;
+  height:64px;
+  object-fit:cover;
+  margin-bottom:8px;
+  border-radius:10px;
+  border:2px solid var(--video-pink-dark);
+  box-shadow:0 5px 0 rgba(117,80,120,.12),0 8px 14px rgba(117,80,120,.18);
+  transition:transform .2s cubic-bezier(.34,1.56,.64,1),box-shadow .2s ease;
+}
+
+.folder-app[data-file-type="Video"]::before,
+.folder-app[data-file-type="Video"]::after{
+  content:"";
+  position:absolute;
+  top:2px;
+  bottom:10px;
+  width:7px;
+  z-index:3;
+  background:radial-gradient(circle,var(--video-cream) 0 1.7px,transparent 2.2px) center 3px/7px 9px repeat-y;
+  background-color:var(--video-pink-dark);
+  border-radius:2px;
+  opacity:.95;
+  pointer-events:none;
+}
+
+.folder-app[data-file-type="Video"]::before{
+  left:3px;
+}
+
+.folder-app[data-file-type="Video"]::after{
+  right:3px;
+}
+
+.folder-app[data-file-type="Video"]:hover .folder-app-icon{
+  transform:translateY(-3px) rotate(-1.5deg) scale(1.02);
+  box-shadow:0 7px 0 rgba(117,80,120,.12),0 12px 18px rgba(117,80,120,.22);
+}
+
+.folder-app[data-file-type="Video"]:active .folder-app-icon{
+  transform:translateY(1px) scale(.97);
+  box-shadow:0 2px 0 rgba(117,80,120,.1),0 4px 7px rgba(117,80,120,.14);
+}
+
+.folder-app[data-file-type="Video"] .folder-app-name::after{
+  content:"MP4";
+  display:inline-block;
+  margin-left:5px;
+  padding:2px 5px;
+  border-radius:4px;
+  background:var(--video-purple);
+  color:var(--video-cream);
+  font-family:var(--cyber-font);
+  font-size:8px;
+  font-weight:800;
+  letter-spacing:.5px;
+  line-height:1;
+  vertical-align:middle;
+  box-shadow:1px 1px 2px rgba(0,0,0,.12);
+}
+
+.cyber-folder-window[data-view="list"] .folder-app[data-file-type="Video"] .folder-app-icon{
+  width:28px;
+  height:28px;
+  min-width:28px;
+  min-height:28px;
+  margin:0;
+  border-radius:6px;
+  border-width:1.5px;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app[data-file-type="Video"]::before,
+.cyber-folder-window[data-view="list"] .folder-app[data-file-type="Video"]::after{
+  top:2px;
+  bottom:2px;
+  width:4px;
+  background-size:4px 6px;
+  border-radius:1.5px;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app[data-file-type="Video"]::before{
+  left:2px;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app[data-file-type="Video"]::after{
+  right:2px;
+}
+
+.cyber-folder-window[data-view="list"] .folder-app[data-file-type="Video"] .folder-app-name::after{
+  font-size:6px;
+  padding:1px 3px;
+  margin-left:4px;
 }
 
 
 /* =========================================================
-   REMOVE WIDGET HEADER
-========================================================= */
+   DESKTOP RESPONSIVE SIZES
+   ========================================================= */
 
-#widgetLayer > .cyber-window .window-header {
+@media (min-width:1201px){
+  :root{
+    --desktop-icon-size:72px;
+    --desktop-icon-item-width:120px;
+    --desktop-icon-item-height:112px;
+    --cyber-rail-top:82px;
+    --cyber-rail-width:400px;
+    --cyber-rail-side-margin:28px;
+    --cyber-rail-column-gap:4px;
+    --cyber-rail-row-gap:22px;
+  }
 
-    display: none !important;
+  .desktop-icon-image{
+    width:var(--desktop-icon-size);
+    height:var(--desktop-icon-size);
+    max-width:var(--desktop-icon-size);
+    max-height:var(--desktop-icon-size);
+    margin-bottom:8px;
+  }
+
+  .desktop-icon-label{
+    font-size:13px;
+    line-height:17px;
+  }
+}
+
+@media (min-width:901px) and (max-width:1200px){
+  :root{
+    --desktop-icon-size:64px;
+    --desktop-icon-item-width:108px;
+    --desktop-icon-item-height:105px;
+    --cyber-rail-top:72px;
+    --cyber-rail-width:348px;
+    --cyber-rail-side-margin:22px;
+    --cyber-rail-column-gap:3px;
+    --cyber-rail-row-gap:18px;
+  }
+
+  .desktop-icon-image{
+    width:var(--desktop-icon-size);
+    height:var(--desktop-icon-size);
+    max-width:var(--desktop-icon-size);
+    max-height:var(--desktop-icon-size);
+    margin-bottom:6px;
+  }
+
+  .desktop-icon-label{
+    font-size:12px;
+    line-height:16px;
+  }
+
+  .cyber-folder-window{
+    width:90vw;
+    height:82vh;
+    min-width:0;
+    min-height:0;
+  }
+}
+
+@media (min-width:769px) and (max-width:900px){
+  :root{
+    --desktop-icon-size:56px;
+    --desktop-icon-item-width:94px;
+    --desktop-icon-item-height:94px;
+    --cyber-rail-top:64px;
+    --cyber-rail-width:300px;
+    --cyber-rail-side-margin:18px;
+    --cyber-rail-column-gap:2px;
+    --cyber-rail-row-gap:12px;
+  }
+
+  .desktop-icon-image{
+    width:var(--desktop-icon-size);
+    height:var(--desktop-icon-size);
+    max-width:var(--desktop-icon-size);
+    max-height:var(--desktop-icon-size);
+    margin-bottom:5px;
+  }
+
+  .desktop-icon-label{
+    font-size:10px;
+    line-height:14px;
+    height:18px;
+  }
+
+  .cyber-folder-window{
+    width:calc(100vw - 24px);
+    height:calc(100dvh - 24px);
+    max-width:calc(100vw - 24px);
+    max-height:calc(100dvh - 24px);
+    min-width:0;
+    min-height:0;
+    left:12px!important;
+    top:12px!important;
+  }
+}
+
+@media (min-width:601px) and (max-width:768px){
+  :root{
+    --desktop-icon-size:50px;
+    --desktop-icon-item-width:82px;
+    --desktop-icon-item-height:86px;
+    --cyber-rail-top:58px;
+    --cyber-rail-width:260px;
+    --cyber-rail-side-margin:14px;
+    --cyber-rail-column-gap:2px;
+    --cyber-rail-row-gap:8px;
+  }
+
+  .desktop-icon-image{
+    width:var(--desktop-icon-size);
+    height:var(--desktop-icon-size);
+    max-width:var(--desktop-icon-size);
+    max-height:var(--desktop-icon-size);
+    margin-bottom:4px;
+  }
+
+  .desktop-icon-label{
+    font-size:9px;
+    line-height:13px;
+    height:16px;
+    letter-spacing:0;
+  }
+
+  .cyber-folder-window{
+    width:calc(100vw - 20px);
+    height:calc(100dvh - 20px);
+    max-width:calc(100vw - 20px);
+    max-height:calc(100dvh - 20px);
+    min-width:0;
+    min-height:0;
+    left:10px!important;
+    top:10px!important;
+  }
+
+  .folder-window-toolbar,
+  .folder-toolbar-left,
+  .folder-toolbar-right{
+    flex-wrap:wrap;
+  }
+}
+
+@media (min-width:421px) and (max-width:600px){
+  :root{
+    --desktop-icon-size:42px;
+    --desktop-icon-item-width:72px;
+    --desktop-icon-item-height:76px;
+    --cyber-rail-top:52px;
+    --cyber-rail-width:158px;
+    --cyber-rail-side-margin:14px;
+    --cyber-rail-column-gap:4px;
+    --cyber-rail-row-gap:7px;
+  }
+
+  .cyberos-desktop-rail{
+    grid-template-columns:repeat(2,var(--desktop-icon-item-width));
+  }
+
+  .desktop-icon-image{
+    width:var(--desktop-icon-size);
+    height:var(--desktop-icon-size);
+    max-width:var(--desktop-icon-size);
+    max-height:var(--desktop-icon-size);
+    margin-bottom:3px;
+  }
+
+  .desktop-icon-label{
+    width:100%;
+    max-width:100%;
+    height:15px;
+    font-size:8px;
+    line-height:11px;
+    letter-spacing:0;
+  }
+
+  .desktop-icon{
+    border-radius:5px;
+  }
+
+  .cyber-folder-window{
+    left:6px!important;
+    top:6px!important;
+    width:calc(100vw - 12px);
+    height:calc(100dvh - 12px);
+    max-width:calc(100vw - 12px);
+    max-height:calc(100dvh - 12px);
+    min-width:0;
+    min-height:0;
+    border-radius:7px;
+  }
+
+  .folder-window-toolbar{
+    min-height:auto;
+    flex-wrap:wrap;
+    padding:6px;
+  }
+
+  .folder-toolbar-left,
+  .folder-toolbar-right{
+    flex-wrap:wrap;
+  }
+
+  .folder-sort-label{
+    display:none;
+  }
+
+  .folder-sort-select{
+    max-width:110px;
+  }
+
+  .folder-window-content{
+    padding:8px;
+  }
+
+  .cyber-folder-window[data-view="grid"] .folder-window-content{
+    grid-template-columns:repeat(auto-fill,minmax(82px,1fr));
+    grid-auto-rows:112px;
+    gap:7px;
+  }
+
+  .folder-app{
+    min-height:100%;
+    padding:6px 4px;
+  }
+
+  .folder-app img,
+  .folder-app-placeholder{
+    width:44px;
+    height:44px;
+    min-width:44px;
+    min-height:44px;
+    max-width:44px;
+    max-height:44px;
+  }
+
+  .folder-app span{
+    font-size:9px;
+    line-height:12px;
+  }
+}
+
+@media (max-width:420px){
+  :root{
+    --desktop-icon-size:36px;
+    --desktop-icon-item-width:64px;
+    --desktop-icon-item-height:68px;
+    --cyber-rail-top:48px;
+    --cyber-rail-width:140px;
+    --cyber-rail-side-margin:11px;
+    --cyber-rail-column-gap:3px;
+    --cyber-rail-row-gap:5px;
+  }
+
+  .cyberos-desktop-rail{
+    grid-template-columns:repeat(2,var(--desktop-icon-item-width));
+  }
+
+  .desktop-icon-image{
+    width:var(--desktop-icon-size);
+    height:var(--desktop-icon-size);
+    max-width:var(--desktop-icon-size);
+    max-height:var(--desktop-icon-size);
+    margin-bottom:2px;
+  }
+
+  .desktop-icon-label{
+    height:13px;
+    font-size:7px;
+    line-height:10px;
+    letter-spacing:0;
+  }
+
+  .desktop-icon{
+    border-radius:5px;
+  }
+
+  .cyber-folder-window[data-view="grid"] .folder-window-content{
+    grid-template-columns:repeat(3,minmax(60px,1fr));
+    grid-auto-rows:82px;
+    gap:5px;
+  }
+
+  .folder-app{
+    height:78px;
+    padding:3px;
+  }
+
+  .folder-app img,
+  .folder-app-placeholder{
+    width:36px;
+    height:36px;
+    min-width:36px;
+    min-height:36px;
+    max-width:36px;
+    max-height:36px;
+  }
+
+  .folder-app span{
+    font-size:8px;
+    line-height:10px;
+  }
 }
 
 
 /* =========================================================
-   WIDGET CONTENT
-========================================================= */
+   TASKBAR RESPONSIVE
+   ========================================================= */
 
-#widgetLayer > .cyber-window .window-content {
+@media (max-width:1100px){
+  :root{
+    --taskbar-height:52px;
+  }
 
-    position: relative !important;
+  .taskbar{
+    gap:7px;
+  }
 
-    width: 100% !important;
-    height: 100% !important;
+  .start-button{
+    min-width:78px;
+    height:38px;
+    font-size:16px;
+  }
 
-    min-width: 0 !important;
-    min-height: 0 !important;
+  .taskbar-search{
+    width:220px;
+    max-width:25vw;
+    height:38px;
+  }
 
-    background:
-        transparent !important;
+  .charge-button{
+    font-size:14px;
+  }
 
-    border: none !important;
+  .clock{
+    min-width:85px;
+  }
+}
 
-    border-radius: 0 !important;
+@media (max-width:820px){
+  :root{
+    --taskbar-height:56px;
+  }
 
-    overflow: visible !important;
+  .system-status{
+    display:none;
+  }
 
-    flex: none !important;
+  .taskbar{
+    overflow-x:auto;
+    overflow-y:hidden;
+    scrollbar-width:none;
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .taskbar::-webkit-scrollbar{
+    display:none;
+  }
+
+  .start-button{
+    min-width:72px;
+    height:40px;
+  }
+
+  .taskbar-search{
+    width:180px;
+    max-width:none;
+    flex-shrink:1;
+    height:40px;
+  }
+
+  .taskbar-apps{
+    flex:0 1 auto;
+    max-width:35vw;
+  }
+
+  .battery-area{
+    display:none;
+  }
+
+  .taskbar-app-name{
+    display:none;
+  }
+
+  .taskbar-app{
+    min-width:42px;
+    width:42px;
+    padding:0 5px;
+  }
+
+  .clock{
+    min-width:65px;
+  }
+
+  #clockTime{
+    font-size:11px;
+  }
+
+  #clockDate{
+    font-size:9px;
+  }
+
+  .cyber-window{
+    min-width:320px;
+    min-height:240px;
+    max-width:calc(100vw - 10px);
+    max-height:calc(100dvh - var(--taskbar-height) - 10px);
+  }
+
+  .cyber-folder-window{
+    width:min(430px,calc(100vw - 20px));
+    height:min(330px,calc(100dvh - 80px));
+    max-width:calc(100vw - 20px);
+    max-height:calc(100dvh - 80px);
+  }
+}
+
+@media (max-width:820px) and (orientation:portrait){
+  .taskbar-search{
+    width:160px;
+  }
+
+  .taskbar-apps{
+    max-width:28vw;
+  }
+
+  .cyber-window{
+    width:calc(100vw - 10px);
+    max-width:calc(100vw - 10px);
+    min-width:0;
+    left:5px!important;
+    max-height:calc(100dvh - var(--taskbar-height) - 10px);
+  }
+
+  .start-menu{
+    width:min(330px,calc(100vw - 20px));
+    max-height:calc(100dvh - var(--taskbar-height) - 15px);
+  }
+
+  .cyber-folder-window{
+    left:10px!important;
+    width:calc(100vw - 20px);
+    max-width:calc(100vw - 20px);
+  }
+}
+
+@media (max-width:1100px) and (orientation:landscape){
+  :root{
+    --taskbar-height:48px;
+  }
+
+  .topbar{
+    height:calc(40px + var(--safe-top));
+  }
+
+  .taskbar{
+    min-height:var(--taskbar-height);
+    height:calc(var(--taskbar-height) + var(--safe-bottom));
+    padding-top:4px;
+  }
+
+  .start-button{
+    height:34px;
+  }
+
+  .taskbar-search{
+    height:34px;
+  }
+
+  .taskbar-app{
+    height:34px;
+  }
+
+  .taskbar-apps{
+    height:34px;
+  }
+
+  .clock{
+    min-width:70px;
+  }
+
+  #clockTime{
+    font-size:10px;
+  }
+
+  #clockDate{
+    font-size:8px;
+  }
+
+  .cyber-folder-window{
+    max-height:calc(100dvh - 58px);
+  }
+}
+
+@media (max-width:520px){
+  :root{
+    --taskbar-height:54px;
+  }
+
+  .topbar{
+    height:calc(38px + var(--safe-top));
+  }
+
+  .start-button{
+    min-width:48px;
+    width:48px;
+    padding:0 5px;
+  }
+
+  .start-button-text{
+    font-size:10px;
+  }
+
+  .taskbar-search{
+    width:120px;
+    min-width:100px;
+    padding:0 8px;
+  }
+
+  .search-icon{
+    font-size:12px;
+  }
+
+  .taskbar-search input{
+    font-size:10px;
+  }
+
+  .clock{
+    min-width:58px;
+  }
+
+  #clockTime{
+    font-size:9px;
+  }
+
+  #clockDate{
+    font-size:8px;
+    margin-top:2px;
+  }
+
+  .taskbar{
+    gap:5px;
+    padding-left:max(6px,var(--safe-left));
+    padding-right:max(6px,var(--safe-right));
+  }
+
+  .cyber-window{
+    left:5px!important;
+    top:5px!important;
+    width:calc(100vw - 10px);
+    height:calc(100dvh - var(--taskbar-height) - 10px);
+    min-width:0;
+    min-height:0;
+    max-width:calc(100vw - 10px);
+    max-height:calc(100dvh - var(--taskbar-height) - 10px);
+  }
+
+  .cyber-folder-window{
+    left:5px!important;
+    top:5px!important;
+    width:calc(100vw - 10px);
+    height:min(330px,calc(100dvh - 70px));
+    min-width:0;
+    max-width:calc(100vw - 10px);
+    max-height:calc(100dvh - 70px);
+  }
+
+  .folder-window-content{
+    padding:10px;
+    grid-template-columns:repeat(3,minmax(65px,1fr));
+    grid-auto-rows:86px;
+    gap:6px;
+  }
+
+  .folder-app{
+    height:82px;
+    padding:4px;
+  }
+
+  .folder-app img,
+  .folder-app-placeholder{
+    width:40px;
+    height:40px;
+    min-width:40px;
+    min-height:40px;
+    max-width:40px;
+    max-height:40px;
+  }
+
+  .folder-app span{
+    font-size:9px;
+    line-height:12px;
+  }
 }
 
 
 /* =========================================================
-   WIDGET IFRAME
-========================================================= */
+   LOGIN RESPONSIVE
+   ========================================================= */
 
-#widgetLayer > .cyber-window .window-content iframe {
+@media (max-width:500px){
+  .login-overlay{
+    padding:max(10px,var(--safe-top)) max(10px,var(--safe-right)) max(10px,var(--safe-bottom)) max(10px,var(--safe-left));
+    align-items:center;
+  }
 
-    position: absolute !important;
+  .login-window{
+    width:calc(100vw - 20px);
+    max-height:calc(100dvh - 20px - var(--safe-top) - var(--safe-bottom));
+    box-shadow:none!important;
+  }
 
-    left: 0 !important;
-    top: 0 !important;
+  .login-content{
+    padding:24px 20px 20px;
+  }
 
-    width: 100% !important;
-    height: 100% !important;
+  .login-header{
+    padding:14px 15px;
+  }
 
-    background:
-        transparent !important;
+  .login-title{
+    font-size:19px;
+  }
 
-    border: none !important;
+  .login-subtitle{
+    font-size:9px;
+  }
 
-    margin: 0 !important;
-    padding: 0 !important;
+  .login-status{
+    right:15px;
+    font-size:8px;
+  }
 
-    display: block !important;
+  .login-welcome{
+    font-size:18px;
+  }
+
+  .login-description{
+    font-size:10px;
+  }
 }
 
 
 /* =========================================================
-   INVISIBLE DRAG HANDLE
-========================================================= */
+   HEIGHT RESPONSIVE
+   ========================================================= */
 
-#widgetLayer > .cyber-window::before {
+@media (max-height:650px){
+  :root{
+    --taskbar-height:48px;
+  }
 
-    content: "";
+  .taskbar{
+    min-height:var(--taskbar-height);
+    height:calc(var(--taskbar-height) + var(--safe-bottom));
+    padding-top:3px;
+    padding-bottom:max(3px,var(--safe-bottom));
+  }
 
-    position: absolute;
+  .start-button{
+    height:34px;
+  }
 
-    left: 0;
-    top: 0;
+  .taskbar-search{
+    height:34px;
+  }
 
-    width: 100%;
-    height: 28px;
+  .taskbar-apps{
+    height:34px;
+  }
 
-    background: transparent;
+  .taskbar-app{
+    height:34px;
+  }
 
-    cursor: grab;
+  .charge-button{
+    height:30px;
+  }
 
-    z-index: 999999;
+  .clock{
+    min-width:65px;
+  }
 
-    pointer-events: auto;
+  #clockTime{
+    font-size:10px;
+  }
 
-    touch-action: none;
+  #clockDate{
+    font-size:8px;
+  }
+
+  .cyber-window{
+    max-height:calc(100dvh - var(--taskbar-height) - 8px);
+  }
+
+  .cyber-folder-window{
+    max-height:calc(100dvh - var(--taskbar-height) - 8px);
+  }
+
+  .login-window{
+    max-height:calc(100dvh - 10px - var(--safe-top) - var(--safe-bottom));
+  }
 }
 
+@media (max-height:500px){
+  :root{
+    --taskbar-height:44px;
+  }
 
-#widgetLayer > .cyber-window.widget-dragging::before {
+  .topbar{
+    height:calc(34px + var(--safe-top));
+  }
 
-    cursor: grabbing;
-}
+  .taskbar{
+    min-height:var(--taskbar-height);
+    height:calc(var(--taskbar-height) + var(--safe-bottom));
+  }
 
+  .start-button{
+    height:30px;
+    min-width:60px;
+  }
 
-/* =========================================================
-   WIDGET MAXIMIZED
-========================================================= */
+  .taskbar-search{
+    height:30px;
+  }
 
-#widgetLayer > .cyber-window.maximized {
+  .taskbar-apps{
+    height:30px;
+  }
 
-    position: fixed !important;
+  .taskbar-app{
+    height:30px;
+  }
 
-    left: 0 !important;
-    top: 0 !important;
+  .clock{
+    display:none;
+  }
 
-    width: 100vw !important;
-    width: 100dvw !important;
-
-    height: 100vh !important;
-    height: 100dvh !important;
-
-    background:
-        transparent !important;
-
-    border: none !important;
-
-    box-shadow: none !important;
-
-    z-index:
-        99999 !important;
-
-    pointer-events:
-        auto !important;
-}
-
-
-#widgetLayer > .cyber-window.maximized .window-header {
-
-    display: none !important;
-}
-
-
-/* =========================================================
-   WIDGET MAXIMIZED CONTENT
-========================================================= */
-
-#widgetLayer > .cyber-window.maximized .window-content {
-
-    position: absolute !important;
-
-    left: 0 !important;
-    top: 0 !important;
-
-    width: 100vw !important;
-    width: 100dvw !important;
-
-    height: 100vh !important;
-    height: 100dvh !important;
-
-    background:
-        transparent !important;
-
-    overflow: visible !important;
-}
-
-
-/* =========================================================
-   =========================================================
-   TABLET / IPAD
-   =========================================================
-========================================================= */
-
-@media (max-width: 1100px) {
-
-    :root {
-
-        --taskbar-height: 52px;
-    }
-
-
-    .taskbar {
-
-        gap: 7px;
-    }
-
-
-    .start-button {
-
-        min-width: 78px;
-
-        height: 38px;
-
-        font-size: 16px;
-    }
-
-
-    .taskbar-search {
-
-        width: 220px;
-
-        max-width: 25vw;
-
-        height: 38px;
-    }
-
-
-    .charge-button {
-
-        font-size: 14px;
-    }
-
-
-    .clock {
-
-        min-width: 85px;
-    }
+  .cyber-folder-window{
+    height:calc(100dvh - 52px);
+    max-height:calc(100dvh - 52px);
+  }
 }
 
 
 /* =========================================================
-   IPAD / TOUCH TABLET
-========================================================= */
-
-@media (max-width: 820px) {
-
-    :root {
-
-        --taskbar-height: 56px;
-    }
-
-
-    /*
-       Hide desktop status.
-    */
-
-    .system-status {
-
-        display: none;
-    }
-
-
-    /*
-       Make taskbar horizontally scrollable
-       rather than clipping the right side.
-    */
-
-    .taskbar {
-
-        overflow-x: auto;
-
-        overflow-y: hidden;
-
-        scrollbar-width: none;
-
-        -webkit-overflow-scrolling: touch;
-    }
-
-
-    .taskbar::-webkit-scrollbar {
-
-        display: none;
-    }
-
-
-    .start-button {
-
-        min-width: 72px;
-
-        height: 40px;
-    }
-
-
-    .taskbar-search {
-
-        width: 180px;
-
-        max-width: none;
-
-        flex-shrink: 1;
-
-        height: 40px;
-    }
-
-
-    .taskbar-apps {
-
-        flex:
-            0 1 auto;
-
-        max-width:
-            35vw;
-    }
-
-
-    .battery-area {
-
-        display: none;
-    }
-
-
-    .taskbar-app-name {
-
-        display: none;
-    }
-
-
-    .taskbar-app {
-
-        min-width: 42px;
-
-        width: 42px;
-
-        padding:
-            0 5px;
-    }
-
-
-    .clock {
-
-        min-width: 65px;
-    }
-
-
-    #clockTime {
-
-        font-size: 11px;
-    }
-
-
-    #clockDate {
-
-        font-size: 9px;
-    }
-
-
-    /*
-       Desktop icons slightly smaller.
-    */
-
-    .desktop-icons,
-    #desktopIcons {
-
-        left:
-            max(15px, var(--safe-left));
-
-        top: 70px;
-
-        width: 285px;
-
-        grid-template-columns:
-            repeat(3, 82px);
-
-        column-gap: 7px;
-    }
-
-
-    .desktop-icon {
-
-        width: 82px;
-
-        min-width: 82px;
-    }
-
-
-    .desktop-icon-label {
-
-        width: 82px;
-
-        max-width: 82px;
-
-        font-size: 12px;
-    }
-
-
-    /*
-       Windows can actually fit the iPad.
-    */
-
-    .cyber-window {
-
-        min-width: 320px;
-
-        min-height: 240px;
-
-        max-width:
-            calc(100vw - 10px);
-
-        max-height:
-            calc(
-                100dvh
-                - var(--taskbar-height)
-                - 10px
-            );
-    }
+   TOUCH
+   ========================================================= */
+
+@media (hover:none) and (pointer:coarse){
+  button,
+  input,
+  textarea,
+  select{
+    touch-action:manipulation;
+  }
+
+  .window-header,
+  .folder-window-header{
+    touch-action:none;
+  }
+
+  .taskbar-apps,
+  .start-menu-apps,
+  .folder-window-content{
+    -webkit-overflow-scrolling:touch;
+  }
+
+  .desktop-icon:hover,
+  .start-menu-app:hover,
+  .folder-app:hover{
+    transform:none;
+  }
 }
 
 
 /* =========================================================
-   IPAD PORTRAIT
-========================================================= */
+   LOGIN FACE GIF
+   ========================================================= */
 
-@media (max-width: 820px) and (orientation: portrait) {
-
-    .taskbar-search {
-
-        width: 160px;
-    }
-
-
-    .taskbar-apps {
-
-        max-width: 28vw;
-    }
-
-
-    /*
-       Make windows almost full width.
-    */
-
-    .cyber-window {
-
-        width:
-            calc(100vw - 10px);
-
-        max-width:
-            calc(100vw - 10px);
-
-        min-width: 0;
-
-        left: 5px !important;
-
-        max-height:
-            calc(
-                100dvh
-                - var(--taskbar-height)
-                - 10px
-            );
-    }
-
-
-    /*
-       Start menu uses available height.
-    */
-
-    .start-menu {
-
-        width:
-            min(
-                330px,
-                calc(100vw - 20px)
-            );
-
-        max-height:
-            calc(
-                100dvh
-                - var(--taskbar-height)
-                - 15px
-            );
-    }
+.login-face-gif{
+  position:absolute;
+  width:200px;
+  height:auto;
+  left:50%;
+  top:50%;
+  transform:translate(0%,-22%) rotate(2.5deg);
+  z-index:9999;
+  pointer-events:none;
+  user-select:none;
 }
 
-
-/* =========================================================
-   SHORT IPAD LANDSCAPE
-========================================================= */
-
-@media (max-width: 1100px) and (orientation: landscape) {
-
-    :root {
-
-        --taskbar-height: 48px;
-    }
-
-
-    .topbar {
-
-        height:
-            calc(40px + var(--safe-top));
-    }
-
-
-    .taskbar {
-
-        min-height:
-            var(--taskbar-height);
-
-        height:
-            calc(
-                var(--taskbar-height)
-                + var(--safe-bottom)
-            );
-
-        padding-top: 4px;
-    }
-
-
-    .start-button {
-
-        height: 34px;
-    }
-
-
-    .taskbar-search {
-
-        height: 34px;
-    }
-
-
-    .taskbar-app {
-
-        height: 34px;
-    }
-
-
-    .taskbar-apps {
-
-        height: 34px;
-    }
-
-
-    .clock {
-
-        min-width: 70px;
-    }
-
-
-    #clockTime {
-
-        font-size: 10px;
-    }
-
-
-    #clockDate {
-
-        font-size: 8px;
-    }
-
-
-    .desktop-icons,
-    #desktopIcons {
-
-        top: 55px;
-    }
-}
-
-
-/* =========================================================
-   SMALL PHONES
-========================================================= */
-
-@media (max-width: 520px) {
-
-    :root {
-
-        --taskbar-height: 54px;
-    }
-
-
-    .topbar {
-
-        height:
-            calc(38px + var(--safe-top));
-    }
-
-
-    .desktop-icons,
-    #desktopIcons {
-
-        left:
-            max(8px, var(--safe-left));
-
-        top: 55px;
-
-        width: 190px;
-
-        grid-template-columns:
-            repeat(2, 82px);
-
-        column-gap: 5px;
-
-        row-gap: 7px;
-    }
-
-
-    .desktop-icon {
-
-        width: 82px;
-
-        min-width: 82px;
-    }
-
-
-    .desktop-icon-label {
-
-        width: 82px;
-
-        max-width: 82px;
-
-        font-size: 11px;
-    }
-
-
-    .start-button {
-
-        min-width: 48px;
-
-        width: 48px;
-
-        padding:
-            0 5px;
-    }
-
-
-    .start-button-text {
-
-        font-size: 10px;
-    }
-
-
-    .taskbar-search {
-
-        width: 120px;
-
-        min-width: 100px;
-
-        padding:
-            0 8px;
-    }
-
-
-    .search-icon {
-
-        font-size: 12px;
-    }
-
-
-    .taskbar-search input {
-
-        font-size: 10px;
-    }
-
-
-    .clock {
-
-        min-width: 58px;
-    }
-
-
-    #clockTime {
-
-        font-size: 9px;
-    }
-
-
-    #clockDate {
-
-        font-size: 8px;
-
-        margin-top: 2px;
-    }
-
-
-    .taskbar {
-
-        gap: 5px;
-
-        padding-left:
-            max(6px, var(--safe-left));
-
-        padding-right:
-            max(6px, var(--safe-right));
-    }
-
-
-    /*
-       Full-screen phone windows.
-    */
-
-    .cyber-window {
-
-        left: 5px !important;
-        top: 5px !important;
-
-        width:
-            calc(100vw - 10px);
-
-        height:
-            calc(
-                100dvh
-                - var(--taskbar-height)
-                - 10px
-            );
-
-        min-width: 0;
-
-        min-height: 0;
-
-        max-width:
-            calc(100vw - 10px);
-
-        max-height:
-            calc(
-                100dvh
-                - var(--taskbar-height)
-                - 10px
-            );
-    }
-}
-
-
-/* =========================================================
-   LOGIN MOBILE
-========================================================= */
-
-@media (max-width: 500px) {
-
-    .login-overlay {
-
-        padding:
-
-            max(10px, var(--safe-top))
-
-            max(10px, var(--safe-right))
-
-            max(10px, var(--safe-bottom))
-
-            max(10px, var(--safe-left));
-
-        align-items: center;
-    }
-
-
-    .login-window {
-
-        width:
-            calc(100vw - 20px);
-
-        max-height:
-            calc(
-                100dvh
-                - 20px
-                - var(--safe-top)
-                - var(--safe-bottom)
-            );
-
-        box-shadow:
-            5px 5px 0
-            var(--cyber-black);
-    }
-
-
-    .login-content {
-
-        padding:
-            24px 20px 20px;
-    }
-
-
-    .login-title {
-
-        font-size: 19px;
-    }
-
-
-    .login-status {
-
-        display: none;
-    }
-
-
-    .login-welcome {
-
-        font-size: 18px;
-    }
-
-
-    .login-description {
-
-        font-size: 10px;
-    }
-}
-
-
-/* =========================================================
-   VERY SHORT SCREENS
-   iPAD LANDSCAPE / SPLIT SCREEN
-========================================================= */
-
-@media (max-height: 650px) {
-
-    :root {
-
-        --taskbar-height: 48px;
-    }
-
-
-    .taskbar {
-
-        min-height:
-            var(--taskbar-height);
-
-        height:
-            calc(
-                var(--taskbar-height)
-                + var(--safe-bottom)
-            );
-
-        padding-top: 3px;
-
-        padding-bottom:
-            max(3px, var(--safe-bottom));
-    }
-
-
-    .start-button {
-
-        height: 34px;
-    }
-
-
-    .taskbar-search {
-
-        height: 34px;
-    }
-
-
-    .taskbar-apps {
-
-        height: 34px;
-    }
-
-
-    .taskbar-app {
-
-        height: 34px;
-    }
-
-
-    .charge-button {
-
-        height: 30px;
-    }
-
-
-    .clock {
-
-        min-width: 65px;
-    }
-
-
-    #clockTime {
-
-        font-size: 10px;
-    }
-
-
-    #clockDate {
-
-        font-size: 8px;
-    }
-
-
-    .cyber-window {
-
-        max-height:
-            calc(
-                100dvh
-                - var(--taskbar-height)
-                - 8px
-            );
-    }
-
-
-    .login-window {
-
-        max-height:
-            calc(
-                100dvh
-                - 10px
-                - var(--safe-top)
-                - var(--safe-bottom)
-            );
-    }
-}
-
-
-/* =========================================================
-   EXTREMELY SHORT LANDSCAPE
-========================================================= */
-
-@media (max-height: 500px) {
-
-    :root {
-
-        --taskbar-height: 44px;
-    }
-
-
-    .topbar {
-
-        height:
-            calc(
-                34px
-                + var(--safe-top)
-            );
-    }
-
-
-    .taskbar {
-
-        min-height:
-            var(--taskbar-height);
-
-        height:
-            calc(
-                var(--taskbar-height)
-                + var(--safe-bottom)
-            );
-    }
-
-
-    .start-button {
-
-        height: 30px;
-
-        min-width: 60px;
-    }
-
-
-    .taskbar-search {
-
-        height: 30px;
-    }
-
-
-    .taskbar-apps {
-
-        height: 30px;
-    }
-
-
-    .taskbar-app {
-
-        height: 30px;
-    }
-
-
-    .clock {
-
-        display: none;
-    }
-
-
-    .desktop-icons,
-    #desktopIcons {
-
-        top: 45px;
-    }
-}
-
-
-/* =========================================================
-   TOUCH DEVICES
-========================================================= */
-
-@media (hover: none) and (pointer: coarse) {
-
-    button,
-    input,
-    textarea,
-    select {
-
-        touch-action:
-            manipulation;
-    }
-
-
-    .window-header {
-
-        touch-action:
-            none;
-    }
-
-
-    .taskbar-apps {
-
-        -webkit-overflow-scrolling:
-            touch;
-    }
-
-
-    .start-menu-apps {
-
-        -webkit-overflow-scrolling:
-            touch;
-    }
-
-
-    /*
-       Remove hover-only movement on touch.
-    */
-
-    .desktop-icon:hover {
-
-        transform: none;
-    }
-
-
-    .start-menu-app:hover {
-
-        transform: none;
-    }
+.login-window{
+  position:relative;
+  z-index:10;
 }

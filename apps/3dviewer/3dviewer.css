@@ -1,0 +1,1037 @@
+
+/* =========================================================
+   CYBEROS HOLO LAB
+   CUTE HOLOGRAPHIC 3D INTERFACE
+========================================================= */
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    background: transparent;
+
+    font-family:
+        "Offside",
+        Arial,
+        sans-serif;
+}
+
+
+body {
+    user-select: none;
+}
+
+
+/* =========================================================
+   MAIN LAB
+========================================================= */
+
+#holo-lab {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    background:
+        radial-gradient(
+            circle at 50% 45%,
+            rgba(161, 142, 200, 0.10),
+            transparent 42%
+        );
+
+    color: #f7eaf1;
+}
+
+
+/* =========================================================
+   HEADER
+========================================================= */
+
+#holo-header {
+
+    position: absolute;
+
+    top: 28px;
+    left: 32px;
+    right: 32px;
+
+    height: 64px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: space-between;
+
+    z-index: 50;
+}
+
+
+.holo-title {
+
+    display: flex;
+
+    align-items: center;
+
+    gap: 14px;
+}
+
+
+.holo-title-symbol {
+
+    width: 44px;
+    height: 44px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(255, 107, 188, 0.5);
+
+    border-radius: 14px;
+
+    background:
+        rgba(211, 157, 182, 0.12);
+
+    color: #ff6bbc;
+
+    font-size: 23px;
+
+    box-shadow:
+        0 0 22px rgba(255, 107, 188, 0.25);
+
+    animation:
+        holoPulse 2.8s ease-in-out infinite;
+}
+
+
+.holo-title-main {
+
+    font-size: 17px;
+
+    letter-spacing: 2px;
+
+    color: #f7eaf1;
+}
+
+
+.holo-title-sub {
+
+    margin-top: 3px;
+
+    font-size: 9px;
+
+    letter-spacing: 3px;
+
+    color: #d880b0;
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+#holo-close {
+
+    width: 42px;
+    height: 42px;
+
+    border: 1px solid rgba(255, 139, 136, 0.45);
+
+    border-radius: 50%;
+
+    background:
+        rgba(248, 139, 136, 0.08);
+
+    color: #f88b88;
+
+    font-family: inherit;
+
+    font-size: 25px;
+
+    cursor: pointer;
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        box-shadow 0.2s ease;
+}
+
+
+#holo-close:hover {
+
+    transform: rotate(90deg) scale(1.08);
+
+    background:
+        rgba(248, 139, 136, 0.18);
+
+    box-shadow:
+        0 0 24px rgba(248, 139, 136, 0.3);
+}
+
+
+/* =========================================================
+   VIEWS
+========================================================= */
+
+.view {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+    height: 100%;
+
+    opacity: 0;
+
+    pointer-events: none;
+
+    transform:
+        scale(0.98);
+
+    transition:
+        opacity 0.35s ease,
+        transform 0.35s ease;
+}
+
+
+.view.active {
+
+    opacity: 1;
+
+    pointer-events: auto;
+
+    transform:
+        scale(1);
+}
+
+
+/* =========================================================
+   CATEGORY VIEW
+========================================================= */
+
+#category-view {
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        120px
+        40px
+        50px;
+}
+
+
+.section-heading {
+
+    text-align: center;
+
+    margin-bottom: 34px;
+}
+
+
+.section-kicker {
+
+    margin-bottom: 10px;
+
+    color: #ff6bbc;
+
+    font-size: 9px;
+
+    letter-spacing: 4px;
+}
+
+
+.section-heading h1 {
+
+    margin: 0;
+
+    font-size: clamp(25px, 3vw, 42px);
+
+    font-weight: normal;
+
+    letter-spacing: 2px;
+
+    color: #f7eaf1;
+
+    text-shadow:
+        0 0 24px rgba(255, 107, 188, 0.3);
+}
+
+
+.section-heading p {
+
+    margin:
+        12px
+        0
+        0;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+    color: rgba(247, 234, 241, 0.55);
+}
+
+
+/* =========================================================
+   CATEGORY GRID
+========================================================= */
+
+.category-grid {
+
+    width: min(
+        850px,
+        90vw
+    );
+
+    display: grid;
+
+    grid-template-columns:
+        repeat(
+            2,
+            minmax(0, 1fr)
+        );
+
+    gap: 18px;
+}
+
+
+/* =========================================================
+   CATEGORY CARD
+========================================================= */
+
+.category-card {
+
+    position: relative;
+
+    min-height: 150px;
+
+    padding: 24px;
+
+    overflow: hidden;
+
+    border:
+        1px solid
+        rgba(255, 107, 188, 0.22);
+
+    border-radius: 24px;
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(211, 157, 182, 0.12),
+            rgba(161, 142, 200, 0.07)
+        );
+
+    backdrop-filter:
+        blur(12px);
+
+    cursor: pointer;
+
+    transition:
+        transform 0.25s ease,
+        border-color 0.25s ease,
+        box-shadow 0.25s ease,
+        background 0.25s ease;
+}
+
+
+.category-card::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: -40%;
+
+    top: 0;
+
+    width: 40%;
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            transparent,
+            rgba(255, 107, 188, 0.14),
+            transparent
+        );
+
+    transform:
+        skewX(-20deg);
+
+    transition:
+        left 0.6s ease;
+}
+
+
+.category-card:hover {
+
+    transform:
+        translateY(-5px)
+        scale(1.015);
+
+    border-color:
+        rgba(255, 107, 188, 0.55);
+
+    background:
+        linear-gradient(
+            135deg,
+            rgba(211, 157, 182, 0.18),
+            rgba(161, 142, 200, 0.12)
+        );
+
+    box-shadow:
+        0 0 35px
+        rgba(255, 107, 188, 0.14);
+}
+
+
+.category-card:hover::before {
+
+    left: 130%;
+}
+
+
+.category-icon {
+
+    font-size: 34px;
+
+    margin-bottom: 16px;
+
+    filter:
+        drop-shadow(
+            0 0 12px
+            rgba(255, 107, 188, 0.45)
+        );
+}
+
+
+.category-name {
+
+    font-size: 15px;
+
+    letter-spacing: 2px;
+
+    color: #f7eaf1;
+}
+
+
+.category-description {
+
+    margin-top: 7px;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    color:
+        rgba(247, 234, 241, 0.45);
+}
+
+
+.category-count {
+
+    position: absolute;
+
+    right: 20px;
+    bottom: 20px;
+
+    font-size: 9px;
+
+    letter-spacing: 1px;
+
+    color: #d880b0;
+}
+
+
+/* =========================================================
+   BACK BUTTON
+========================================================= */
+
+.holo-back {
+
+    position: absolute;
+
+    top: 105px;
+    left: 34px;
+
+    padding:
+        10px
+        15px;
+
+    border:
+        1px solid
+        rgba(255, 107, 188, 0.28);
+
+    border-radius: 12px;
+
+    background:
+        rgba(211, 157, 182, 0.08);
+
+    color: #eecbdc;
+
+    font-family: inherit;
+
+    font-size: 9px;
+
+    letter-spacing: 2px;
+
+    cursor: pointer;
+
+    transition:
+        0.2s ease;
+
+    z-index: 50;
+}
+
+
+.holo-back span {
+
+    margin-right: 7px;
+
+    color: #ff6bbc;
+}
+
+
+.holo-back:hover {
+
+    border-color:
+        rgba(255, 107, 188, 0.65);
+
+    box-shadow:
+        0 0 22px
+        rgba(255, 107, 188, 0.16);
+
+    transform:
+        translateX(-3px);
+}
+
+
+/* =========================================================
+   MODEL VIEW
+========================================================= */
+
+.model-view-content {
+
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding:
+        100px
+        40px
+        35px;
+}
+
+
+/* =========================================================
+   MODEL STAGE
+========================================================= */
+
+.model-stage {
+
+    position: relative;
+
+    width: min(
+        620px,
+        70vw
+    );
+
+    height: min(
+        500px,
+        55vh
+    );
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+}
+
+
+.model-container {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 5;
+}
+
+
+.model-container canvas {
+
+    display: block;
+
+    width: 100% !important;
+    height: 100% !important;
+}
+
+
+/* =========================================================
+   HOLOGRAM RINGS
+========================================================= */
+
+.scan-ring {
+
+    position: absolute;
+
+    left: 50%;
+    top: 72%;
+
+    width: 320px;
+    height: 85px;
+
+    border:
+        1px solid
+        rgba(255, 107, 188, 0.35);
+
+    border-radius: 50%;
+
+    transform:
+        translate(-50%, -50%);
+
+    pointer-events: none;
+
+    box-shadow:
+        0 0 25px
+        rgba(255, 107, 188, 0.12);
+
+    animation:
+        ringFloat 3.2s ease-in-out infinite;
+}
+
+
+.ring-two {
+
+    width: 250px;
+    height: 65px;
+
+    opacity: 0.65;
+
+    animation-delay:
+        -1s;
+}
+
+
+.ring-three {
+
+    width: 185px;
+    height: 48px;
+
+    opacity: 0.45;
+
+    animation-delay:
+        -2s;
+}
+
+
+/* =========================================================
+   MODEL INFO
+========================================================= */
+
+.model-info {
+
+    position: relative;
+
+    z-index: 20;
+
+    text-align: center;
+
+    margin-top: -5px;
+}
+
+
+.model-category {
+
+    font-size: 8px;
+
+    letter-spacing: 4px;
+
+    color: #ff6bbc;
+}
+
+
+.model-name {
+
+    margin-top: 7px;
+
+    font-size: 22px;
+
+    letter-spacing: 3px;
+
+    color: #f7eaf1;
+
+    text-shadow:
+        0 0 20px
+        rgba(255, 107, 188, 0.3);
+}
+
+
+.model-status {
+
+    margin-top: 6px;
+
+    font-size: 8px;
+
+    letter-spacing: 2px;
+
+    color:
+        rgba(247, 234, 241, 0.45);
+}
+
+
+/* =========================================================
+   MODEL SELECTOR
+========================================================= */
+
+.model-selector {
+
+    display: flex;
+
+    gap: 9px;
+
+    margin-top: 18px;
+
+    z-index: 30;
+}
+
+
+.model-dot {
+
+    width: 7px;
+    height: 7px;
+
+    border-radius: 50%;
+
+    border: 1px solid
+        rgba(255, 107, 188, 0.55);
+
+    background:
+        transparent;
+
+    cursor: pointer;
+
+    transition:
+        0.2s ease;
+}
+
+
+.model-dot.active {
+
+    background:
+        #ff6bbc;
+
+    box-shadow:
+        0 0 12px
+        rgba(255, 107, 188, 0.8);
+}
+
+
+/* =========================================================
+   AMBIENT GLOW
+========================================================= */
+
+.ambient-glow {
+
+    position: absolute;
+
+    width: 420px;
+    height: 420px;
+
+    border-radius: 50%;
+
+    pointer-events: none;
+
+    filter:
+        blur(100px);
+
+    opacity: 0.10;
+}
+
+
+.glow-one {
+
+    left: -180px;
+    bottom: -180px;
+
+    background:
+        #ff6bbc;
+}
+
+
+.glow-two {
+
+    right: -180px;
+    top: -180px;
+
+    background:
+        #a18ec8;
+}
+
+
+/* =========================================================
+   PARTICLES
+========================================================= */
+
+.holo-particles {
+
+    position: absolute;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    overflow: hidden;
+}
+
+
+.holo-particles span {
+
+    position: absolute;
+
+    width: 3px;
+    height: 3px;
+
+    border-radius: 50%;
+
+    background:
+        #ff6bbc;
+
+    opacity: 0.35;
+
+    box-shadow:
+        0 0 10px
+        rgba(255, 107, 188, 0.8);
+
+    animation:
+        particleFloat
+        var(--duration, 6s)
+        linear
+        infinite;
+}
+
+
+.holo-particles span:nth-child(1) {
+    left: 10%;
+    top: 75%;
+    --duration: 7s;
+}
+
+.holo-particles span:nth-child(2) {
+    left: 23%;
+    top: 30%;
+    --duration: 9s;
+}
+
+.holo-particles span:nth-child(3) {
+    left: 36%;
+    top: 80%;
+    --duration: 6s;
+}
+
+.holo-particles span:nth-child(4) {
+    left: 51%;
+    top: 22%;
+    --duration: 8s;
+}
+
+.holo-particles span:nth-child(5) {
+    left: 66%;
+    top: 72%;
+    --duration: 10s;
+}
+
+.holo-particles span:nth-child(6) {
+    left: 76%;
+    top: 36%;
+    --duration: 7s;
+}
+
+.holo-particles span:nth-child(7) {
+    left: 88%;
+    top: 65%;
+    --duration: 8s;
+}
+
+.holo-particles span:nth-child(8) {
+    left: 94%;
+    top: 25%;
+    --duration: 6s;
+}
+
+
+/* =========================================================
+   ANIMATIONS
+========================================================= */
+
+@keyframes holoPulse {
+
+    0%,
+    100% {
+        opacity: 0.75;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 1;
+        transform: scale(1.05);
+    }
+}
+
+
+@keyframes ringFloat {
+
+    0%,
+    100% {
+        transform:
+            translate(-50%, -50%)
+            scale(1);
+
+        opacity: 0.3;
+    }
+
+    50% {
+        transform:
+            translate(-50%, -50%)
+            scale(1.08);
+
+        opacity: 0.65;
+    }
+}
+
+
+@keyframes particleFloat {
+
+    0% {
+        transform:
+            translateY(30px);
+
+        opacity: 0;
+    }
+
+    15% {
+        opacity: 0.4;
+    }
+
+    85% {
+        opacity: 0.4;
+    }
+
+    100% {
+        transform:
+            translateY(-160px);
+
+        opacity: 0;
+    }
+}
+
+
+/* =========================================================
+   RESPONSIVE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    #holo-header {
+
+        top: 18px;
+        left: 18px;
+        right: 18px;
+    }
+
+
+    #category-view {
+
+        padding:
+            100px
+            20px
+            30px;
+    }
+
+
+    .category-grid {
+
+        width: 94vw;
+
+        gap: 12px;
+    }
+
+
+    .category-card {
+
+        min-height: 125px;
+
+        padding: 18px;
+    }
+
+
+    .category-icon {
+
+        font-size: 27px;
+    }
+
+
+    .category-name {
+
+        font-size: 12px;
+    }
+
+
+    .category-description {
+
+        font-size: 8px;
+    }
+
+
+    .model-stage {
+
+        width: 94vw;
+
+        height: 55vh;
+    }
+
+
+    .holo-back {
+
+        left: 18px;
+    }
+
+}
+

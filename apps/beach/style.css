@@ -1,0 +1,606 @@
+
+/* =========================================================
+   BASIC RESET
+   ========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+
+html,
+body {
+
+    width: 100%;
+    height: 100%;
+
+    margin: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    /*
+        IMPORTANT:
+        Do not use black as the scene fallback.
+
+        The scene itself is 1920x1080 and the JavaScript
+        uses COVER scaling, so the viewport should never
+        expose black letterbox areas.
+    */
+
+    background: #87CEEB;
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+}
+
+
+/* =========================================================
+   SCENE CONTAINER
+
+   ALWAYS FULLSCREEN
+
+   JavaScript controls the actual scene scaling
+   and centering.
+
+   Do NOT add padding or margins here.
+========================================================= */
+
+#scene-container {
+
+    position: fixed;
+
+    inset: 0;
+
+    width: 100vw;
+    height: 100vh;
+
+    overflow: hidden;
+
+    /*
+        Match the scene background.
+
+        This prevents black showing behind the scene
+        if there is any tiny rendering gap.
+    */
+
+    background: #87CEEB;
+
+    margin: 0;
+    padding: 0;
+}
+
+
+/* =========================================================
+   SCENE
+
+   BASE DESIGN:
+       1920 × 1080
+
+   JavaScript controls:
+
+       left
+       top
+       transform: scale(...)
+
+   Therefore CSS must NOT attempt to center or scale
+   the scene itself.
+========================================================= */
+
+#scene {
+
+    position: absolute;
+
+    width: 1920px;
+    height: 1080px;
+
+    /*
+        JavaScript overwrites these values during
+        updateViewport().
+
+        Keep these as the initial fallback.
+    */
+
+    left: 0;
+    top: 0;
+
+    transform-origin:
+        top left;
+
+    transform:
+        scale(1);
+
+    overflow: visible;
+
+    user-select: none;
+
+    isolation: isolate;
+
+    /*
+        Scene background.
+    */
+
+    background: #87CEEB;
+}
+
+
+/* =========================================================
+   SCENE OBJECT
+
+   NORMAL MODE:
+
+   Objects without click actions do not receive clicks.
+
+   This prevents decorative objects such as trees,
+   clouds and background assets from blocking objects
+   underneath them.
+========================================================= */
+
+.scene-object {
+
+    position: absolute;
+
+    transform-origin:
+        center center;
+
+    overflow: visible;
+
+    user-select: none;
+
+    pointer-events: none;
+
+    cursor: default;
+
+    /*
+        Helps browser rendering when the scene is scaled.
+    */
+
+    will-change:
+        transform,
+        left,
+        top,
+        opacity;
+
+    -webkit-user-drag: none;
+}
+
+
+/* =========================================================
+   INTERACTIVE SCENE OBJECT
+
+   Only objects with a clickAction become clickable
+   during normal mode.
+========================================================= */
+
+.scene-object.scene-interactive {
+
+    pointer-events: auto;
+
+    cursor: pointer;
+}
+
+
+/* =========================================================
+   OBJECT IMAGE
+
+   Images never receive the click directly.
+
+   The parent .scene-object handles clicks.
+========================================================= */
+
+.scene-object img {
+
+    display: block;
+
+    width: 100%;
+    height: 100%;
+
+    max-width: none;
+    max-height: none;
+
+    object-fit: contain;
+
+    object-position:
+        center center;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    -webkit-user-drag: none;
+}
+
+
+/* =========================================================
+   HIDDEN OBJECT
+   ========================================================= */
+
+.scene-hidden {
+
+    display: none !important;
+}
+
+
+/* =========================================================
+   STATE TRANSITION
+   ========================================================= */
+
+.scene-state-change {
+
+    animation:
+        sceneFade 0.45s ease;
+}
+
+
+@keyframes sceneFade {
+
+    0% {
+
+        opacity: 0.75;
+    }
+
+    100% {
+
+        opacity: 1;
+    }
+}
+
+
+/* =========================================================
+   EDITOR
+
+   NOTE:
+
+   scene-editor.js creates:
+
+       #scene-editor-panel
+
+   Therefore all editor-specific CSS uses that ID.
+========================================================= */
+
+#scene-editor-panel {
+
+    position: fixed;
+
+    top: 20px;
+    right: 20px;
+
+    width: 230px;
+
+    padding: 14px;
+
+    box-sizing: border-box;
+
+    z-index: 1000000;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.94
+        );
+
+    color: #333;
+
+    border-radius: 14px;
+
+    box-shadow:
+        0 10px 35px
+        rgba(
+            0,
+            0,
+            0,
+            0.18
+        );
+
+    font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+
+    user-select: none;
+}
+
+
+/* =========================================================
+   EDITOR TITLE
+   ========================================================= */
+
+#scene-editor-panel h3 {
+
+    margin:
+        0 0 10px 0;
+
+    font-size:
+        15px;
+
+    font-weight:
+        700;
+}
+
+
+/* =========================================================
+   SELECTED OBJECT LABEL
+   ========================================================= */
+
+#scene-editor-selected {
+
+    margin-bottom:
+        10px;
+
+    padding:
+        8px;
+
+    border-radius:
+        8px;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.05
+        );
+
+    font-size:
+        12px;
+
+    overflow:
+        hidden;
+
+    text-overflow:
+        ellipsis;
+
+    white-space:
+        nowrap;
+}
+
+
+/* =========================================================
+   EDITOR BUTTONS
+   ========================================================= */
+
+.scene-editor-button {
+
+    width:
+        100%;
+
+    border:
+        none;
+
+    border-radius:
+        8px;
+
+    padding:
+        9px 10px;
+
+    margin:
+        4px 0;
+
+    background:
+        #f1f1f1;
+
+    color:
+        #333;
+
+    font-size:
+        12px;
+
+    font-weight:
+        600;
+
+    cursor:
+        pointer;
+
+    transition:
+        background 0.12s ease,
+        transform 0.12s ease;
+}
+
+
+.scene-editor-button:hover {
+
+    background:
+        #e4e4e4;
+
+    transform:
+        translateY(-1px);
+}
+
+
+.scene-editor-button:active {
+
+    transform:
+        translateY(0);
+}
+
+
+/* =========================================================
+   DELETE BUTTON
+   ========================================================= */
+
+.scene-editor-button.danger {
+
+    background:
+        #f5dede;
+}
+
+
+.scene-editor-button.danger:hover {
+
+    background:
+        #edcccc;
+}
+
+
+/* =========================================================
+   EDITOR HELP TEXT
+   ========================================================= */
+
+#scene-editor-info {
+
+    margin-top:
+        10px;
+
+    font-size:
+        11px;
+
+    line-height:
+        1.5;
+
+    opacity:
+        0.7;
+}
+
+
+/* =========================================================
+   EDITOR FILE INPUT
+   ========================================================= */
+
+#scene-editor-file {
+
+    display:
+        none;
+}
+
+
+/* =========================================================
+   EDIT MODE OBJECTS
+
+   IMPORTANT:
+
+   The editor panel is:
+
+       #scene-editor-panel
+
+   When it exists, EVERY scene object becomes selectable.
+
+   This allows:
+
+       trees
+       clouds
+       houses
+       decorations
+       background assets
+
+   to be moved/scaled/edited.
+========================================================= */
+
+body:has(#scene-editor-panel)
+.scene-object {
+
+    pointer-events:
+        auto;
+
+    cursor:
+        grab;
+}
+
+
+/* =========================================================
+   EDIT MODE ACTIVE CURSOR
+   ========================================================= */
+
+body:has(#scene-editor-panel)
+.scene-object:active {
+
+    cursor:
+        grabbing;
+}
+
+
+/* =========================================================
+   SELECTED OBJECT
+
+   Applied by SceneEditor.selectObject().
+========================================================= */
+
+.scene-editor-selected {
+
+    outline:
+        3px solid
+        #ff4f9a;
+
+    outline-offset:
+        3px;
+
+    filter:
+        drop-shadow(
+            0 0 8px
+            rgba(
+                255,
+                79,
+                154,
+                0.55
+            )
+        );
+}
+
+
+/* =========================================================
+   EDIT MODE
+
+   Make sure scene objects remain selectable even if
+   normal-mode click classes are absent.
+========================================================= */
+
+body:has(#scene-editor-panel)
+.scene-object.scene-interactive {
+
+    pointer-events:
+        auto;
+
+    cursor:
+        grab;
+}
+
+
+/* =========================================================
+   EDITOR ABOVE SCENE
+
+   The editor must always remain clickable even if the
+   scene itself has a high stacking context.
+========================================================= */
+
+#scene-editor-panel {
+
+    isolation:
+        isolate;
+
+    pointer-events:
+        auto;
+}
+
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 600px) {
+
+    #scene-editor-panel {
+
+        top:
+            10px;
+
+        right:
+            10px;
+
+        width:
+            230px;
+
+        padding:
+            13px;
+    }
+
+
+    #scene-editor-info {
+
+        font-size:
+            10px;
+    }
+}
+

@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Paper Fortune Teller</title>
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Offside&display=swap');
+
+:root {
+    --pink-bg: #ffa3c2;
+    --header-magenta: #f7746e;
+    --glass-blue: #d2f0f8;
+    --deck-coral: #ff7f97;
+    --base-magenta: #4ec7b1;
+}
+
+*{box-sizing:border-box;font-family:'Offside',Arial,sans-serif;}
+
+body{
+    margin:0;
+    height:100vh;
+    overflow:hidden;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content: center;
+    background-color: var(--pink-bg);
+    background-image: radial-gradient(#ff7db0 15%, transparent 16%), radial-gradient(#ff7db0 15%, transparent 16%);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    user-select: none;
+}
+
+#mainTitle{
+    background: var(--header-magenta);
+    color: #fff;
+    padding: 12px 24px;
+    border-radius: 14px;
+    font-size: 22px;
+    margin-bottom: 12px;
+    width: 75%;
+    max-width: 850px;
+    text-align: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.06);
+}
+
+#paperContainer{
+    background-color: var(--glass-blue);
+    background-image: radial-gradient(rgba(255,255,255,0.6) 15%, transparent 16%), radial-gradient(rgba(255,255,255,0.6) 15%, transparent 16%);
+    background-size: 40px 40px;
+    background-position: 0 0, 20px 20px;
+    border-radius: 24px;
+    width: 75%;
+    max-width: 850px;
+    height: calc(100vh - 220px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.08);
+}
+
+#stage{
+    position:absolute;width:100%;height:100%;top:0;left:0;
+    transition:transform 0.3s cubic-bezier(0.25, 1, 0.5, 1);
+    cursor:zoom-in;
+}
+#stage.zoomed-in{
+    cursor:zoom-out;
+}
+#paper{
+    position:absolute;width:min(150%,120vh);height:auto;left:50%;top:60%;
+    transform:translate(-50%,-50%);user-select:none;pointer-events:none;
+    filter:drop-shadow(0 15px 25px rgba(0,0,0,.08));z-index:2;
+}
+#markers{position:absolute;pointer-events:none;z-index:3}
+.marker{
+    position:absolute;transform:translate(-50%,-50%);color:#332b35;
+    font-weight:bold;text-align:center;line-height:1.1;user-select:none;
+    max-width:24%;
+    word-wrap:break-word;
+    white-space:pre-line;
+}
+.marker.layer1{
+    color:#ffffff;
+    text-shadow:0 1px 3px rgba(0,0,0,0.4);
+}
+.marker.clickable{pointer-events:auto;cursor:pointer}
+.marker.clickable:hover{filter:brightness(1.15)}
+
+/* Bottom Action Bar */
+#mainActions{display:flex;gap:16px;width:75%;max-width:850px;margin-top:16px;}
+.main-btn{
+    flex:1;padding:12px;border-radius:12px;border:none;color:#fff;font-size:16px;
+    cursor:pointer;text-transform:uppercase;font-weight:bold;transition:transform .1s, filter .1s;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.main-btn:active{transform:scale(0.98);}
+#btnEdit{background:#c4a3b8;} /* Muted pastel purple */
+#btnNextMain{background:#FEFCE8; color: #333;} /* Yellow */
+#btnPlay{background:var(--base-magenta);} /* Mint Teal */
+
+/* Squarish Draggable Panel */
+#panel{
+    position:absolute;z-index:20;right:6%;top:10%;width:480px;
+    background:#fffae6; /* Pale cream */
+    border-radius:24px;padding:20px;display:none;
+    box-shadow:0 12px 35px rgba(0,0,0,.15);cursor:grab;user-select:none;
+}
+#panel:active{cursor:grabbing;}
+.title-pill{background:var(--base-magenta);color:#fff;text-align:center;padding:12px;border-radius:16px;font-size:18px;font-weight:bold;}
+.sub{text-align:center;color:#333;font-size:15px;margin:12px 0 14px 0;}
+.pink-box{background:var(--deck-coral);padding:16px;border-radius:14px;display:flex;flex-direction:column;gap:12px;}
+.layer-section{display:flex;flex-direction:column;gap:6px;}
+.layer-title{
+    background:#fffae6;border:none;text-align:center;padding:6px;
+    border-radius:8px;font-size:15px;color:#333;font-weight:bold;
+}
+.layer-box{
+    background:var(--glass-blue);border:none;padding:10px;border-radius:10px;
+    display:flex;flex-direction:column;gap:8px;
+}
+.layers-row{display:flex;gap:12px;}
+.layers-row .layer-section{flex:1;}
+.layer-box input{
+    background:#fff;border:none;padding:8px 12px;text-align:center;border-radius:8px;
+    color:#333;font-size:14px;outline:none;width:100%;font-family:'Offside',Arial,sans-serif;
+}
+.layer-box input::placeholder{color:#9a8b9f;}
+.actions{display:flex;gap:12px;margin-top:14px;}
+.actions button{
+    flex:1;padding:14px;border-radius:14px;font-size:16px;border:none;
+    color:#fff;cursor:pointer;text-transform:uppercase;font-weight:bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+.actions button:active{transform:scale(0.98);}
+#next{background:#ffca28; color: #333;}
+#share{background:var(--base-magenta);}
+
+#toast{position:fixed;z-index:50;left:50%;bottom:24px;transform:translate(-50%,20px);opacity:0;pointer-events:none;background:#333;color:#fff;padding:10px 16px;border-radius:12px;font-size:14px;transition:.25s}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+
+@media(max-width:850px){
+ #mainTitle, #paperContainer, #mainActions{width:92%;}
+ #panel{right:2%;width:90%;max-width:400px;top:5%;}
+}
+</style>
+
+</head>
+<body>
+
+<div id="mainTitle">theshartechclub's fortune teller</div>
+
+<div id="paperContainer">
+  <div id="stage">
+    <img id="paper" src="paper.png" draggable="false">
+    <div id="markers"></div>
+  </div>
+</div>
+
+<div id="mainActions">
+  <button id="btnEdit" class="main-btn">EDIT</button>
+  <button id="btnNextMain" class="main-btn">NEXT</button>
+  <button id="btnPlay" class="main-btn">PLAY</button>
+</div>
+
+<aside id="panel">
+  <div class="title-pill">PAPER FORTUNE TELLER</div>
+  <div class="sub">Edit the fortunes below and hit share to send.</div>
+  
+  <div class="pink-box">
+    <div class="layer-section">
+      <div class="layer-title">LAYER I</div>
+      <div class="layer-box">
+        <input type="text" data-key="1" placeholder="Top">
+        <input type="text" data-key="2" placeholder="Right">
+        <input type="text" data-key="3" placeholder="Bottom">
+        <input type="text" data-key="4" placeholder="Left">
+      </div>
+    </div>
+
+    <div class="layers-row">
+      <div class="layer-section">
+        <div class="layer-title">LAYER II</div>
+        <div class="layer-box">
+          <input type="text" data-key="5" placeholder="5">
+          <input type="text" data-key="6" placeholder="6">
+          <input type="text" data-key="7" placeholder="7">
+          <input type="text" data-key="8" placeholder="8">
+        </div>
+      </div>
+      <div class="layer-section">
+        <div class="layer-title">LAYER III</div>
+        <div class="layer-box">
+          <input type="text" data-key="9" placeholder="Orange">
+          <input type="text" data-key="10" placeholder="Blue">
+          <input type="text" data-key="11" placeholder="Yellow">
+          <input type="text" data-key="12" placeholder="Green">
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="actions">
+    <button id="next">NEXT</button>
+    <button id="share">SHARE</button>
+  </div>
+</aside>
+
+<div id="toast"></div>
+
+<script>
+const textValues={"1":"Your wish will come true","2":"You will be rich","3":"A surprise is on the way","4":"Someone will visit you this week","5":"5","6":"6","7":"7","8":"8","9":"Orange","10":"Blue","11":"Yellow","12":"Green"};
+const textMarkers={
+  "paper.png":[{x:50.6,y:28,text:"1",size:9.5,rotate:0},{x:50,y:61,text:"3",size:9.5,rotate:0},{x:33.4,y:44.6,text:"4",size:9.5,rotate:-90},{x:66.7,y:44.6,text:"2",size:9.5,rotate:90}],
+  "firstfold.png":[{x:50.6,y:28,text:"1",size:9.5,rotate:0},{x:66.7,y:44.6,text:"2",size:9.5,rotate:90},{x:50.2,y:60.9,text:"3",size:9.5,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90}],
+  "secondfold.png":[{x:50.6,y:28,text:"1",size:9.5,rotate:0},{x:66.7,y:44.6,text:"2",size:9.5,rotate:90},{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90}],
+  "thirdfold.png":[{x:50.6,y:28,text:"1",size:9.5,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90},{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:59.4,y:44.5,text:"6",size:10,rotate:90}],
+  "fourthfold.png":[{x:50,y:35,text:"5",size:10,rotate:0},{x:59.4,y:44.5,text:"6",size:10,rotate:90},{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90}],
+  "fifthfold.png":[{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90},{x:54.4,y:40.8,text:"9",size:10,rotate:45}],
+  "sixthfold.png":[{x:54.4,y:40.8,text:"9",size:10,rotate:45},{x:45.4,y:40.8,text:"10",size:10,rotate:-45},{x:49.9,y:53.7,text:"7",size:10,rotate:0}],
+  "seventhfold.png":[{x:54.4,y:40.8,text:"9",size:10,rotate:45},{x:45.4,y:40.8,text:"10",size:10,rotate:-45},{x:45.3,y:49.2,text:"11",size:10,rotate:45}],
+  "eighthfold.png":[{x:54.4,y:40.8,text:"9",size:10,rotate:45},{x:45.4,y:40.8,text:"10",size:10,rotate:-45},{x:45.3,y:49.2,text:"11",size:10,rotate:45},{x:54.4,y:48.8,text:"12",size:10,rotate:136}],
+  "ninthfold.png":[],
+  "verticalfold.png":[{x:48,y:38.3,text:"5",size:10,rotate:-52},{x:55,y:38.5,text:"6",size:10,rotate:60},{x:53.8,y:48.5,text:"7",size:10,rotate:125},{x:47.6,y:49.4,text:"8",size:10,rotate:-117}],
+  "topfold.png":[{x:56.4,y:38.6,text:"9",size:10,rotate:45},{x:44.8,y:39.2,text:"10",size:10,rotate:-45},{x:44.7,y:49.7,text:"11",size:10,rotate:45},{x:55.6,y:49.8,text:"12",size:10,rotate:136}],
+  "horizontalfold.png":[{x:45.1,y:41.2,text:"5",size:10,rotate:-30},{x:55.9,y:41.8,text:"6",size:10,rotate:40},{x:55.8,y:48.3,text:"7",size:10,rotate:149},{x:44.8,y:47.9,text:"8",size:10,rotate:-145}],
+  "top.png":[{x:59.4,y:44.5,text:"6",size:10,rotate:90},{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90},{x:50.6,y:28,text:"1",size:9.5,rotate:0}],
+  "left.png":[{x:59.4,y:44.5,text:"6",size:10,rotate:90},{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:50,y:35,text:"5",size:10,rotate:0},{x:33.4,y:44.6,text:"4",size:9.5,rotate:-90}],
+  "bottom.png":[{x:59.4,y:44.5,text:"6",size:10,rotate:90},{x:41,y:44.5,text:"8",size:10,rotate:-90},{x:50,y:35,text:"5",size:10,rotate:0},{x:50,y:61,text:"3",size:9.5,rotate:0}],
+  "right.png":[{x:49.9,y:53.7,text:"7",size:10,rotate:0},{x:41,y:44.5,text:"8",size:10,rotate:-90},{x:50,y:35,text:"5",size:10,rotate:0},{x:66.7,y:44.6,text:"2",size:9.5,rotate:90}]
+};
+const foldFrames=["paper.png","firstfold.png","secondfold.png","thirdfold.png","fourthfold.png","fifthfold.png","sixthfold.png","seventhfold.png","eighthfold.png","ninthfold.png"];
+const playCycle=["topfold.png","verticalfold.png","topfold.png","horizontalfold.png","topfold.png"];
+
+const stage=document.getElementById("stage"),paper=document.getElementById("paper"),markers=document.getElementById("markers");
+const next=document.getElementById("next"),btnNextMain=document.getElementById("btnNextMain"),btnPlay=document.getElementById("btnPlay"),btnEdit=document.getElementById("btnEdit"),share=document.getElementById("share");
+const panel=document.getElementById("panel"),toast=document.getElementById("toast");
+let currentIndex=0,currentFrame="paper.png",playing=false;
+
+// --- Click to Zoom Stage Logic ---
+stage.addEventListener('click', (e) => {
+  if (e.target.closest('.clickable')) return; 
+
+  if (["top.png","right.png","bottom.png","left.png"].includes(currentFrame)) {
+    showFrame("topfold.png");
+    return;
+  }
+
+  const isZoomed = stage.classList.toggle('zoomed-in');
+  if (isZoomed) {
+    const rect = stage.getBoundingClientRect();
+    const x = ((e.clientX - rect.left) / rect.width) * 100;
+    const y = ((e.clientY - rect.top) / rect.height) * 100;
+    stage.style.transformOrigin = `${x}% ${y}%`;
+    stage.style.transform = 'scale(2.2)';
+  } else {
+    stage.style.transform = 'scale(1)';
+    setTimeout(() => { stage.style.transformOrigin = 'center center'; }, 300);
+  }
+});
+
+// --- Draggable Panel Logic ---
+let isDrag=false, sx, sy, ix, iy;
+panel.onmousedown = (e) => {
+  if(['INPUT','BUTTON'].includes(e.target.tagName)) return;
+  isDrag=true; sx=e.clientX; sy=e.clientY;
+  const rect = panel.getBoundingClientRect();
+  ix = rect.left; iy = rect.top;
+  panel.style.cursor = 'grabbing';
+  e.preventDefault(); 
+};
+document.onmousemove = (e) => {
+  if(!isDrag) return;
+  panel.style.right = 'auto';
+  panel.style.left = (ix + (e.clientX - sx)) + 'px';
+  panel.style.top = (iy + (e.clientY - sy)) + 'px';
+};
+document.onmouseup = () => { if(isDrag) { isDrag=false; panel.style.cursor='grab'; }};
+
+function formatTwoWordsPerLine(str) {
+  if(!str) return '';
+  const words = str.trim().split(/\s+/);
+  let lines = [];
+  for(let i = 0; i < words.length && lines.length < 4; i += 2) {
+    lines.push(words.slice(i, i + 2).join(" "));
+  }
+  return lines.join("\n");
+}
+
+function buildFields(){
+  document.querySelectorAll(".layer-box input").forEach(input=>{
+    const key=input.dataset.key;
+    input.setAttribute("maxlength", "100");
+
+    if(textValues[key]) input.value=textValues[key];
+    
+    input.addEventListener("input", function() {
+      let words = this.value.match(/\S+/g);
+      if (words && words.length > 8) {
+          this.value = words.slice(0, 8).join(" ");
+      }
+      textValues[key] = this.value;
+      renderMarkers(currentFrame);
+    });
+  });
+}
+
+function syncLayer(){
+  const r=paper.getBoundingClientRect(),s=stage.getBoundingClientRect();
+  markers.style.left=(r.left-s.left)+"px";markers.style.top=(r.top-s.top)+"px";
+  markers.style.width=r.width+"px";markers.style.height=r.height+"px";
+}
+
+function renderMarkers(frame){
+  markers.innerHTML="";
+  (textMarkers[frame]||[]).forEach(d=>{
+    const el=document.createElement("div");
+    el.className="marker";
+    
+    const isLayer1 = ["1","2","3","4"].includes(String(d.text));
+    if (isLayer1) el.classList.add("layer1");
+
+    const rawText = textValues[d.text] ?? d.text;
+    el.textContent = isLayer1 ? formatTwoWordsPerLine(rawText) : rawText;
+
+    el.style.left=d.x+"%";
+    el.style.top=d.y+"%";
+    
+    const scale=paper.getBoundingClientRect().width/500;
+    el.style.fontSize=Math.max(.1, d.size*scale)+"px";
+    el.style.transform=`translate(-50%,-50%) rotate(${d.rotate}deg)`;
+    
+    if(frame==="topfold.png" && ["9","10","11","12"].includes(String(d.text))){
+      el.classList.add("clickable");
+      el.onclick=e=>{e.stopPropagation();showFrame("fourthfold.png");}
+    }
+    if(frame==="fourthfold.png" && ["5","6","7","8"].includes(String(d.text))){
+      el.classList.add("clickable");
+      el.onclick=e=>{e.stopPropagation();showFrame({"5":"top.png","6":"right.png","7":"bottom.png","8":"left.png"}[d.text]);}
+    }
+    markers.appendChild(el);
+  });
+}
+
+function showFrame(frame,index=null){
+  currentFrame=frame;markers.innerHTML="";paper.src=frame;
+  if(index!==null){currentIndex=index;}
+  else if(frame==="fourthfold.png"){currentIndex=4;}
+  if(paper.complete)requestAnimationFrame(()=>{syncLayer();renderMarkers(frame)});
+}
+function allReady(){return Object.values(textValues).every(v=>String(v).trim())}
+
+function handleNext(){
+  if(playing)return;
+  if(currentIndex<foldFrames.length-1) showFrame(foldFrames[++currentIndex],currentIndex);
+  else showFrame("paper.png",0);
+}
+next.onclick = handleNext;
+btnNextMain.onclick = handleNext;
+
+btnEdit.onclick = () => {
+  const isHidden = panel.style.display === 'none' || panel.style.display === '';
+  panel.style.display = isHidden ? 'block' : 'none';
+  btnNextMain.style.display = isHidden ? 'none' : 'block'; 
+  showFrame("paper.png", 0);
+};
+
+btnPlay.onclick = async () => {
+  if(playing||!allReady()){ showToast("Fill all text fields to play!"); return; }
+  panel.style.display = 'none';
+  if(!isShared) btnNextMain.style.display = 'block';
+  playing=true;
+  for(let i=0;i<4;i++)for(const frame of playCycle){showFrame(frame);await new Promise(r=>setTimeout(r,200));}
+  showFrame("topfold.png");playing=false;
+};
+
+function showToast(msg){
+  toast.textContent=msg;toast.classList.add("show");clearTimeout(showToast.t);
+  showToast.t=setTimeout(()=>toast.classList.remove("show"),1800);
+}
+share.onclick=async()=>{
+  if(!allReady()){showToast("Add all 12 texts first ✦");return}
+  const str = btoa(unescape(encodeURIComponent(JSON.stringify(textValues))));
+  const url=location.href.split("#")[0].split("?")[0]+"?state="+encodeURIComponent(str);
+  try{await navigator.clipboard.writeText(url);showToast("Share link copied ✦")}
+  catch(e){prompt("Copy your share link:",url)}
+};
+
+paper.onload=()=>{syncLayer();renderMarkers(currentFrame)};
+window.addEventListener("resize",()=>{syncLayer();renderMarkers(currentFrame)});
+
+buildFields();
+const params=new URLSearchParams(location.search),saved=params.get("state");
+const isShared=!!saved;
+
+if(isShared){
+  btnEdit.style.display = 'none';
+  btnNextMain.style.display = 'none';
+  panel.style.display = 'none';
+  try{
+    const data=JSON.parse(decodeURIComponent(escape(atob(saved))));
+    if(data){Object.keys(textValues).forEach(k=>{if(typeof data[k]==="string")textValues[k]=data[k]});buildFields();showToast("Shared fortune teller loaded ✦");}
+  }catch(e){}
+  showFrame("topfold.png");
+} else {
+  panel.style.display = 'none';
+  btnNextMain.style.display = 'block';
+  showFrame("paper.png",0);
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,3570 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>the shartechclub's cat performer 🎹</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link
+    href="https://fonts.googleapis.com/css2?family=Offside&display=swap"
+    rel="stylesheet"
+>
+
+<style>
+
+/* =========================================================
+   RESET
+========================================================= */
+
+* {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    width: 100%;
+    height: 100%;
+}
+
+body {
+
+    background:
+        radial-gradient(
+            circle at 50% 15%,
+            rgba(106, 35, 155, .30),
+            transparent 32%
+        ),
+        linear-gradient(
+            180deg,
+            #07051d 0%,
+            #0a0827 45%,
+            #11082d 100%
+        );
+
+    color: #f7edff;
+
+    font-family: "Offside", sans-serif;
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    overflow: hidden;
+
+}
+
+
+/* =========================================================
+   BACKGROUND GRID
+========================================================= */
+
+body::before {
+
+    content: "";
+
+    position: fixed;
+
+    inset: 0;
+
+    pointer-events: none;
+
+    opacity: .30;
+
+    background-image:
+
+        linear-gradient(
+            rgba(151, 47, 255, .18) 1px,
+            transparent 1px
+        ),
+
+        linear-gradient(
+            90deg,
+            rgba(151, 47, 255, .18) 1px,
+            transparent 1px
+        );
+
+    background-size: 42px 42px;
+
+    transform:
+        perspective(500px)
+        rotateX(58deg)
+        scale(1.8);
+
+    transform-origin: bottom center;
+
+    top: 40%;
+
+}
+
+
+/* =========================================================
+   AMBIENT GLOW
+========================================================= */
+
+body::after {
+
+    content: "";
+
+    position: fixed;
+
+    width: 600px;
+
+    height: 600px;
+
+    left: 50%;
+
+    top: 45%;
+
+    transform: translate(-50%, -50%);
+
+    background:
+        radial-gradient(
+            circle,
+            rgba(255, 0, 190, .10),
+            transparent 65%
+        );
+
+    filter: blur(25px);
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   APP
+========================================================= */
+
+.app {
+
+    position: relative;
+
+    width: min(1180px, 96vw);
+
+    height: 96vh;
+
+    display: flex;
+
+    flex-direction: column;
+
+    align-items: center;
+
+    justify-content: center;
+
+    text-align: center;
+
+    z-index: 5;
+
+}
+
+
+/* =========================================================
+   TITLE
+========================================================= */
+
+h1 {
+
+    margin: 0;
+
+    color: #ffffff;
+
+    font-size: clamp(20px, 2.5vw, 31px);
+
+    font-weight: 400;
+
+    letter-spacing: 2px;
+
+    text-transform: uppercase;
+
+    text-shadow:
+
+        0 0 5px #ffffff,
+
+        0 0 14px #ff31c8,
+
+        0 0 30px rgba(255, 0, 200, .75);
+
+}
+
+
+.subtitle {
+
+    margin-top: 6px;
+
+    margin-bottom: 14px;
+
+    color: #b9a8e9;
+
+    font-size: 11px;
+
+    letter-spacing: 1px;
+
+}
+
+
+/* =========================================================
+   CONTROLS
+========================================================= */
+
+.controls {
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+    gap: 8px;
+
+    flex-wrap: wrap;
+
+    margin-bottom: 8px;
+
+    padding: 7px 10px;
+
+    background:
+        rgba(7, 4, 27, .90);
+
+    border:
+        1px solid
+        rgba(181, 67, 255, .65);
+
+    box-shadow:
+
+        0 0 10px rgba(139, 0, 255, .25),
+
+        inset 0 0 15px rgba(130, 0, 255, .08);
+
+}
+
+
+/* =========================================================
+   BUTTONS
+========================================================= */
+
+button,
+.file-label {
+
+    position: relative;
+
+    border:
+        1px solid
+        #793cff;
+
+    background:
+        linear-gradient(
+            180deg,
+            #1c1244,
+            #0f082c
+        );
+
+    color: #f4eaff;
+
+    padding: 8px 14px;
+
+    border-radius: 2px;
+
+    cursor: pointer;
+
+    font-family: "Offside", sans-serif;
+
+    font-size: 10px;
+
+    letter-spacing: .5px;
+
+    text-transform: uppercase;
+
+    transition:
+        transform .12s ease,
+        background .12s ease,
+        box-shadow .12s ease,
+        color .12s ease;
+
+    box-shadow:
+        0 0 5px rgba(129, 55, 255, .25);
+
+}
+
+
+button:hover:not(:disabled),
+.file-label:hover {
+
+    color: #ffffff;
+
+    background:
+        linear-gradient(
+            180deg,
+            #351477,
+            #1b0b4c
+        );
+
+    transform: translateY(-1px);
+
+    box-shadow:
+
+        0 0 8px rgba(163, 68, 255, .75),
+
+        inset 0 0 10px rgba(255, 40, 210, .12);
+
+}
+
+
+button:active:not(:disabled),
+.file-label:active {
+
+    transform: translateY(1px);
+
+}
+
+
+button:disabled {
+
+    opacity: .3;
+
+    cursor: not-allowed;
+
+    box-shadow: none;
+
+}
+
+
+#fileInput {
+
+    display: none;
+
+}
+
+
+/* =========================================================
+   VOLUME CONTROL
+========================================================= */
+
+.volume-control {
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    gap: 6px;
+
+    padding-left: 6px;
+
+    margin-left: 2px;
+
+}
+
+
+.volume-button {
+
+    width: 27px;
+
+    height: 27px;
+
+    padding: 0;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    font-size: 12px;
+
+}
+
+
+#volumeSlider {
+
+    width: 105px;
+
+    height: 4px;
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    background:
+        linear-gradient(
+            90deg,
+            #ff5fcf 0%,
+            #ff5fcf 70%,
+            #351477 70%,
+            #351477 100%
+        );
+
+    border: 1px solid #793cff;
+
+    outline: none;
+
+    cursor: pointer;
+
+}
+
+
+#volumeSlider::-webkit-slider-thumb {
+
+    appearance: none;
+
+    -webkit-appearance: none;
+
+    width: 12px;
+
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    border: 1px solid #ff5fcf;
+
+    box-shadow:
+        0 0 6px #ff5fcf;
+
+    cursor: pointer;
+
+}
+
+
+#volumeSlider::-moz-range-thumb {
+
+    width: 12px;
+
+    height: 12px;
+
+    border-radius: 50%;
+
+    background: #ffffff;
+
+    border: 1px solid #ff5fcf;
+
+    box-shadow:
+        0 0 6px #ff5fcf;
+
+    cursor: pointer;
+
+}
+
+
+.volume-value {
+
+    min-width: 35px;
+
+    color: #ff9bdd;
+
+    font-family: monospace;
+
+    font-size: 9px;
+
+    text-align: left;
+
+}
+
+
+/* =========================================================
+   INFORMATION
+========================================================= */
+
+.filename {
+
+    color: #d9c9ff;
+
+    font-size: 10px;
+
+    white-space: nowrap;
+
+    overflow: hidden;
+
+    text-overflow: ellipsis;
+
+    max-width: 70vw;
+
+    margin: 3px auto 0;
+
+}
+
+
+.time {
+
+    margin-top: 3px;
+
+    font-family: monospace;
+
+    font-size: 10px;
+
+    color: #7567a9;
+
+}
+
+/* =========================================================
+   SONG PROGRESS BAR
+========================================================= */
+
+.progress-container {
+
+    width: min(420px, 55vw);
+
+    height: 4px;
+
+    margin: 7px auto 2px;
+
+    background: rgba(20, 8, 40, .75);
+
+    border: 1px solid rgba(255, 70, 210, .28);
+
+    overflow: hidden;
+
+    box-shadow:
+        0 0 6px rgba(255, 40, 200, .12);
+
+}
+
+.progress-bar {
+
+    width: 0%;
+
+    height: 100%;
+
+    background:
+        linear-gradient(
+            90deg,
+            #b85cff,
+            #ff55c8,
+            #ff9bdd
+        );
+
+    box-shadow:
+        0 0 7px rgba(255, 70, 210, .65);
+
+    transition: width .08s linear;
+
+}
+
+
+.status {
+
+    margin-top: 4px;
+
+    margin-bottom: 7px;
+
+    font-size: 10px;
+
+    color: #ff72d5;
+
+    text-shadow:
+        0 0 7px rgba(255, 43, 203, .55);
+
+}
+
+
+/* =========================================================
+   STAGE
+========================================================= */
+
+.stage {
+
+    position: relative;
+
+    width: min(1050px, 94vw);
+
+    height: min(61vh, 590px);
+
+    min-height: 350px;
+
+    margin: 4px auto 0;
+
+    overflow: hidden;
+
+    border-radius: 0;
+
+    /*
+       LIGHTER PINK STAGE
+    */
+
+    background:
+        linear-gradient(
+            180deg,
+            #a95783 0%,
+            #7b3d68 48%,
+            #4d244c 100%
+        );
+
+    border:
+        2px solid
+        #c957d8;
+
+    box-shadow:
+
+        0 0 12px rgba(129, 30, 255, .55),
+
+        0 0 35px rgba(255, 0, 183, .20),
+
+        inset 0 0 50px rgba(88, 0, 145, .16);
+
+    display: flex;
+
+    justify-content: center;
+
+    align-items: center;
+
+}
+
+
+/* =========================================================
+   BACK WALL
+========================================================= */
+
+.stage::before {
+
+    content: "";
+
+    position: absolute;
+
+    left: 8%;
+
+    right: 8%;
+
+    top: 0;
+
+    height: 60%;
+
+    border-left:
+        1px solid rgba(255, 140, 220, .35);
+
+    border-right:
+        1px solid rgba(255, 140, 220, .35);
+
+    background:
+
+        linear-gradient(
+            90deg,
+            rgba(90, 40, 95, .45),
+            rgba(65, 25, 68, .58),
+            rgba(90, 40, 95, .45)
+        );
+
+    box-shadow:
+        inset 0 0 50px rgba(255, 100, 210, .10);
+
+    z-index: 0;
+
+}
+
+
+/* =========================================================
+   CURTAINS
+========================================================= */
+
+.curtain {
+
+    position: absolute;
+
+    top: 0;
+
+    width: 18%;
+
+    height: 72%;
+
+    z-index: 7;
+
+    pointer-events: none;
+
+}
+
+
+.curtain-left {
+
+    left: 0;
+
+    background:
+
+        repeating-linear-gradient(
+            90deg,
+
+            #301052 0px,
+            #301052 14px,
+
+            #4e167d 14px,
+            #4e167d 28px,
+
+            #24103f 28px,
+            #24103f 42px
+        );
+
+    border-right:
+        2px solid
+        rgba(194, 42, 255, .5);
+
+    box-shadow:
+
+        inset -18px 0 30px rgba(0, 0, 0, .45),
+
+        10px 0 25px rgba(80, 0, 110, .22);
+
+}
+
+
+.curtain-right {
+
+    right: 0;
+
+    background:
+
+        repeating-linear-gradient(
+            90deg,
+
+            #24103f 0px,
+            #24103f 14px,
+
+            #4e167d 14px,
+            #4e167d 28px,
+
+            #301052 28px,
+            #301052 42px
+        );
+
+    border-left:
+        2px solid
+        rgba(194, 42, 255, .5);
+
+    box-shadow:
+
+        inset 18px 0 30px rgba(0, 0, 0, .45),
+
+        -10px 0 25px rgba(80, 0, 110, .22);
+
+}
+
+
+/* =========================================================
+   TOP VALANCE
+========================================================= */
+
+.curtain-top {
+
+    position: absolute;
+
+    top: 0;
+
+    left: 16%;
+
+    width: 68%;
+
+    height: 25px;
+
+    z-index: 8;
+
+    background:
+
+        repeating-linear-gradient(
+            90deg,
+
+            #46126f 0px,
+            #46126f 14px,
+
+            #7920a4 14px,
+            #7920a4 28px,
+
+            #36104e 28px,
+            #36104e 42px
+        );
+
+    border-bottom:
+        2px solid
+        #ff22c8;
+
+    box-shadow:
+
+        0 0 12px rgba(255, 0, 200, .35);
+
+}
+
+
+/* =========================================================
+   STAGE GLOW
+========================================================= */
+
+.stage-glow {
+
+    position: absolute;
+
+    left: 50%;
+
+    bottom: 10%;
+
+    width: 75%;
+
+    height: 35%;
+
+    transform: translateX(-50%);
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(255, 22, 194, .20),
+            rgba(95, 42, 255, .10),
+            transparent 70%
+        );
+
+    filter: blur(15px);
+
+    z-index: 2;
+
+    pointer-events: none;
+
+}
+
+
+/* =========================================================
+   DISCO LIGHT
+========================================================= */
+
+.disco-light {
+
+    position: absolute;
+
+    top: 40px;
+
+    left: 50%;
+
+    width: 84px;
+
+    height: 84px;
+
+    transform:
+        translateX(-50%)
+        scale(1);
+
+    z-index: 10;
+
+    pointer-events: none;
+
+    opacity: .7;
+
+    transform-origin: center top;
+
+    transition:
+
+        opacity .035s linear,
+
+        filter .035s linear,
+
+        transform .035s linear;
+
+}
+
+
+.disco-mount {
+
+    position: absolute;
+
+    top: -8px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 25px;
+
+    height: 6px;
+
+    background: #ff32d1;
+
+    box-shadow:
+        0 0 6px #ff32d1;
+
+}
+
+
+.disco-stem {
+
+    position: absolute;
+
+    top: -3px;
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    width: 3px;
+
+    height: 18px;
+
+    background: #ff35d4;
+
+    box-shadow:
+        0 0 6px #ff35d4;
+
+}
+
+
+.disco-ball {
+
+    position: absolute;
+
+    left: 50%;
+
+    top: 11px;
+
+    transform: translateX(-50%);
+
+    width: 50px;
+
+    height: 50px;
+
+    border-radius: 50%;
+
+    border:
+        2px solid
+        #28e5ff;
+
+    background:
+
+        linear-gradient(
+            180deg,
+            #31e7ff,
+            #5955ff 50%,
+            #e82ac2
+        );
+
+    box-shadow:
+
+        0 0 9px #2de4ff,
+
+        0 0 18px #a32cff,
+
+        0 0 32px rgba(255, 31, 202, .55);
+
+    overflow: hidden;
+
+}
+
+
+.disco-ball::before {
+
+    content: "";
+
+    position: absolute;
+
+    inset: 0;
+
+    border-radius: 50%;
+
+    background:
+
+        repeating-linear-gradient(
+            0deg,
+            transparent 0px,
+            transparent 6px,
+            rgba(255,255,255,.72) 7px,
+            transparent 8px
+        ),
+
+        repeating-linear-gradient(
+            90deg,
+            transparent 0px,
+            transparent 6px,
+            rgba(255,255,255,.65) 7px,
+            transparent 8px
+        );
+
+    opacity: .8;
+
+}
+
+
+/* =========================================================
+   LIGHT BEAMS
+========================================================= */
+
+.disco-beam {
+
+    position: absolute;
+
+    top: 50px;
+
+    left: 50%;
+
+    width: 95px;
+
+    height: 310px;
+
+    transform-origin: top center;
+
+    opacity: .12;
+
+    filter: blur(4px);
+
+    border-radius: 50%;
+
+    transition:
+
+        opacity .035s linear,
+
+        transform .05s linear;
+
+}
+
+
+.beam-left {
+
+    background:
+
+        linear-gradient(
+            to bottom,
+            rgba(255, 31, 197, .9),
+            rgba(255, 31, 197, .25),
+            transparent
+        );
+
+    transform:
+        translateX(-50%)
+        rotate(-30deg);
+
+}
+
+
+.beam-center {
+
+    width: 110px;
+
+    background:
+
+        linear-gradient(
+            to bottom,
+            rgba(50, 224, 255, .9),
+            rgba(125, 76, 255, .25),
+            transparent
+        );
+
+    transform:
+        translateX(-50%);
+
+}
+
+
+.beam-right {
+
+    background:
+
+        linear-gradient(
+            to bottom,
+            rgba(66, 214, 255, .9),
+            rgba(92, 79, 255, .25),
+            transparent
+        );
+
+    transform:
+        translateX(-50%)
+        rotate(30deg);
+
+}
+
+
+/* =========================================================
+   FLOOR LIGHTS
+========================================================= */
+
+.floor-light {
+
+    position: absolute;
+
+    bottom: 6%;
+
+    width: 220px;
+
+    height: 90px;
+
+    border-radius: 50%;
+
+    filter: blur(15px);
+
+    opacity: .16;
+
+    z-index: 3;
+
+    pointer-events: none;
+
+    transition:
+
+        opacity .035s linear,
+
+        transform .05s linear;
+
+}
+
+
+.floor-left {
+
+    left: 5%;
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(255, 27, 189, .9),
+            transparent 70%
+        );
+
+}
+
+
+.floor-center {
+
+    left: 50%;
+
+    transform: translateX(-50%);
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(37, 219, 255, .8),
+            transparent 70%
+        );
+
+}
+
+
+.floor-right {
+
+    right: 5%;
+
+    background:
+
+        radial-gradient(
+            ellipse,
+            rgba(141, 55, 255, .9),
+            transparent 70%
+        );
+
+}
+
+
+/* =========================================================
+   SPARKLES
+========================================================= */
+
+.sparkles {
+
+    position: absolute;
+
+    inset: 0;
+
+    z-index: 6;
+
+    pointer-events: none;
+
+}
+
+
+.sparkle {
+
+    position: absolute;
+
+    width: 6px;
+
+    height: 6px;
+
+    opacity: .4;
+
+    transform:
+        scale(.6)
+        rotate(45deg);
+
+    background: #ffffff;
+
+    box-shadow:
+
+        0 0 8px #ffffff,
+
+        0 0 16px #ff38d1;
+
+    transition:
+
+        opacity .035s linear,
+
+        transform .035s linear;
+
+}
+
+
+.s1 { top: 22%; left: 18%; }
+.s2 { top: 31%; left: 78%; }
+.s3 { top: 48%; left: 13%; }
+.s4 { top: 52%; left: 86%; }
+.s5 { top: 18%; left: 67%; }
+.s6 { top: 42%; left: 72%; }
+.s7 { top: 57%; left: 25%; }
+.s8 { top: 27%; left: 31%; }
+.s9 { top: 63%; left: 77%; }
+.s10 { top: 67%; left: 17%; }
+
+
+/* =========================================================
+   NEON SIDE LIGHTS
+========================================================= */
+
+.stage .sparkles::before,
+.stage .sparkles::after {
+
+    content: "";
+
+    position: absolute;
+
+    width: 20px;
+
+    height: 20px;
+
+    border-radius: 50%;
+
+    background: #27e5ff;
+
+    box-shadow:
+
+        0 0 8px #27e5ff,
+
+        0 0 20px rgba(39, 229, 255, .8);
+
+}
+
+
+.stage .sparkles::before {
+
+    left: 6%;
+
+    top: 27%;
+
+}
+
+
+.stage .sparkles::after {
+
+    right: 6%;
+
+    top: 45%;
+
+    background: #ff42ad;
+
+    box-shadow:
+
+        0 0 8px #ff42ad,
+
+        0 0 20px rgba(255, 66, 173, .8);
+
+}
+
+
+/* =========================================================
+   PLATFORM
+========================================================= */
+
+
+/* =========================================================
+   STAGE FLOOR
+========================================================= */
+
+.stage-floor {
+
+    position: absolute;
+
+    bottom: 0;
+
+    left: 0;
+
+    width: 100%;
+
+    height: 29%;
+
+    z-index: 4;
+
+    transform:
+
+        perspective(450px)
+        rotateX(48deg);
+
+    transform-origin: bottom center;
+
+    background:
+
+        repeating-linear-gradient(
+            90deg,
+
+            rgba(255, 20, 180, .72) 0px,
+            rgba(255, 20, 180, .72) 7%,
+
+            rgba(25, 10, 63, .95) 7%,
+            rgba(25, 10, 63, .95) 14%
+        ),
+
+        repeating-linear-gradient(
+            0deg,
+
+            transparent 0px,
+            transparent 42px,
+
+            rgba(90, 40, 160, .55) 43px,
+            rgba(90, 40, 160, .55) 45px
+        );
+
+    border-top:
+        3px solid
+        #ff2ac9;
+
+    box-shadow:
+
+        0 -5px 20px
+        rgba(255, 0, 200, .35);
+
+}
+
+
+/* =========================================================
+   PERFORMER
+========================================================= */
+
+/* =========================================================
+   PERFORMER — BLENDED INTO STAGE LIGHTING
+========================================================= */
+
+.performer {
+
+    position: relative;
+
+    top: 20px;
+
+    width: min(300px, 36vw);
+
+    aspect-ratio: 911 / 766;
+
+    height: auto;
+
+    overflow: hidden;
+
+    display: block;
+
+    user-select: none;
+
+    -webkit-user-drag: none;
+
+    z-index: 8;
+
+    transform-origin: center bottom;
+
+    transition:
+        transform .035s linear,
+        filter .035s linear;
+
+    filter:
+        saturate(.90)
+        contrast(.92)
+        brightness(.93)
+        sepia(.08)
+        hue-rotate(-10deg)
+        drop-shadow(0 0 8px rgba(255, 100, 210, .16));
+}
+
+
+/* =========================================================
+   SPRITE
+========================================================= */
+
+#performerImage {
+
+    position: absolute;
+
+    inset: 0;
+
+    width: 100%;
+
+    height: 100%;
+
+    background-image: url("piano7.png");
+
+    background-repeat: no-repeat;
+
+    background-size: 500% 400%;
+
+    background-position: 0% 0%;
+
+    pointer-events: none;
+
+    user-select: none;
+
+    -webkit-user-drag: none;
+
+    transition: none;
+
+    will-change: background-position;
+
+}
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media(max-width:600px) {
+
+    body {
+        overflow: hidden;
+    }
+
+    .app {
+
+        width: 100vw;
+
+        height: 100vh;
+
+    }
+
+    h1 {
+
+        font-size: 18px;
+
+        letter-spacing: 1px;
+
+    }
+
+    .subtitle {
+
+        font-size: 9px;
+
+        max-width: 85vw;
+
+    }
+
+    .controls {
+
+        max-width: 94vw;
+
+    }
+
+    button,
+    .file-label {
+
+        padding: 7px 9px;
+
+        font-size: 9px;
+
+    }
+
+    .stage {
+
+        width: 94vw;
+
+        height: 54vh;
+
+        min-height: 310px;
+
+    }
+
+    .performer {
+
+        width: 78vw;
+
+        max-width: 290px;
+
+    }
+
+    .curtain {
+
+        width: 13%;
+
+    }
+
+    .disco-light {
+
+        transform:
+            translateX(-50%)
+            scale(.75);
+
+    }
+
+    .disco-beam {
+
+        height: 230px;
+
+    }
+
+    .volume-control {
+
+        width: 100%;
+
+        margin-left: 0;
+
+        margin-top: 2px;
+
+    }
+
+    #volumeSlider {
+
+        width: 130px;
+
+    }
+
+}
+
+
+/* =========================================================
+   REDUCED MOTION
+========================================================= */
+
+@media(prefers-reduced-motion: reduce) {
+
+    .disco-light,
+    .disco-beam,
+    .floor-light,
+    .sparkle,
+    .performer {
+
+        transition: none !important;
+
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+<div class="app">
+
+    <h1>
+        🪩 the shartechclub's performer 🪩
+    </h1>
+
+
+    <div class="subtitle">
+        Upload your favourite song and watch the cat perform!
+    </div>
+
+
+    <div class="controls">
+
+        <label class="file-label">
+
+            📁 Upload Song
+
+            <input
+                id="fileInput"
+                type="file"
+                accept="audio/*,video/*"
+            >
+
+        </label>
+
+
+        <button
+            id="playButton"
+            disabled
+        >
+            ▶ Play
+        </button>
+
+
+        <button
+            id="pauseButton"
+            disabled
+        >
+            ⏸ Pause
+        </button>
+
+
+        <button
+            id="stopButton"
+            disabled
+        >
+            ■ Stop
+        </button>
+
+
+        <!-- =================================================
+             VOLUME
+        ================================================== -->
+
+        <div class="volume-control">
+
+            <button
+                id="volumeDown"
+                class="volume-button"
+                type="button"
+                title="Decrease volume"
+            >
+                −
+            </button>
+
+
+            <span>🔊</span>
+
+
+            <input
+                id="volumeSlider"
+                type="range"
+                min="0"
+                max="100"
+                value="70"
+                step="1"
+                aria-label="Volume"
+            >
+
+
+            <button
+                id="volumeUp"
+                class="volume-button"
+                type="button"
+                title="Increase volume"
+            >
+                +
+            </button>
+
+
+            <span
+                id="volumeValue"
+                class="volume-value"
+            >
+                70%
+            </span>
+
+        </div>
+
+    </div>
+
+
+    <div
+        id="filename"
+        class="filename"
+    >
+        No song selected
+    </div>
+
+
+   <div class="progress-container">
+    <div id="progressBar" class="progress-bar"></div>
+</div>
+
+
+    <div
+        id="status"
+        class="status"
+    >
+        Upload a song 🎵
+    </div>
+
+
+    <div class="stage">
+
+        <div class="curtain curtain-left"></div>
+
+        <div class="curtain curtain-right"></div>
+
+        <div class="curtain-top"></div>
+
+
+        <div class="stage-glow"></div>
+
+
+        <div
+            id="discoLight"
+            class="disco-light"
+        >
+
+            <div class="disco-mount"></div>
+
+            <div class="disco-stem"></div>
+
+            <div class="disco-ball"></div>
+
+
+            <div
+                id="beamLeft"
+                class="disco-beam beam-left"
+            ></div>
+
+
+            <div
+                id="beamCenter"
+                class="disco-beam beam-center"
+            ></div>
+
+
+            <div
+                id="beamRight"
+                class="disco-beam beam-right"
+            ></div>
+
+        </div>
+
+
+        <div
+            id="floorLeft"
+            class="floor-light floor-left"
+        ></div>
+
+
+        <div
+            id="floorCenter"
+            class="floor-light floor-center"
+        ></div>
+
+
+        <div
+            id="floorRight"
+            class="floor-light floor-right"
+        ></div>
+
+
+        <div class="sparkles">
+
+            <div class="sparkle s1"></div>
+            <div class="sparkle s2"></div>
+            <div class="sparkle s3"></div>
+            <div class="sparkle s4"></div>
+            <div class="sparkle s5"></div>
+            <div class="sparkle s6"></div>
+            <div class="sparkle s7"></div>
+            <div class="sparkle s8"></div>
+            <div class="sparkle s9"></div>
+            <div class="sparkle s10"></div>
+
+        </div>
+
+
+        <div class="platform"></div>
+
+
+        <div class="performer">
+
+            <div
+                id="performerImage"
+                aria-label="Cat playing piano"
+                role="img"
+            ></div>
+
+        </div>
+
+
+        <div class="stage-floor"></div>
+
+    </div>
+
+</div>
+
+
+<audio
+    id="audio"
+    preload="auto"
+></audio>
+
+
+<script>
+
+/* =========================================================
+   ELEMENTS
+========================================================= */
+
+const fileInput =
+    document.getElementById("fileInput");
+
+const playButton =
+    document.getElementById("playButton");
+
+const pauseButton =
+    document.getElementById("pauseButton");
+
+const stopButton =
+    document.getElementById("stopButton");
+
+const audio =
+    document.getElementById("audio");
+
+const filename =
+    document.getElementById("filename");
+
+const progressBar =
+    document.getElementById("progressBar");
+
+const status =
+    document.getElementById("status");
+
+const performerImage =
+    document.getElementById("performerImage");
+
+const performer =
+    document.querySelector(".performer");
+
+
+/* =========================================================
+   VOLUME ELEMENTS
+========================================================= */
+
+const volumeSlider =
+    document.getElementById("volumeSlider");
+
+const volumeDown =
+    document.getElementById("volumeDown");
+
+const volumeUp =
+    document.getElementById("volumeUp");
+
+const volumeValue =
+    document.getElementById("volumeValue");
+
+
+/* =========================================================
+   VOLUME SYSTEM
+========================================================= */
+
+let volume =
+    0.70;
+
+
+/*
+   Apply initial volume immediately.
+*/
+
+audio.volume =
+    volume;
+
+
+/*
+   Update slider appearance.
+*/
+
+function updateVolumeUI() {
+
+    const percentage =
+        Math.round(
+            volume * 100
+        );
+
+
+    volumeSlider.value =
+        percentage;
+
+
+    volumeValue.textContent =
+        `${percentage}%`;
+
+
+    /*
+       Pink progress portion of slider.
+    */
+
+    volumeSlider.style.background =
+        `
+        linear-gradient(
+            90deg,
+            #ff5fcf 0%,
+            #ff5fcf ${percentage}%,
+            #351477 ${percentage}%,
+            #351477 100%
+        )
+        `;
+
+
+    audio.volume =
+        volume;
+
+}
+
+
+/*
+   Set volume safely between 0 and 1.
+*/
+
+function setVolume(value) {
+
+    volume =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                value
+            )
+        );
+
+
+    updateVolumeUI();
+
+}
+
+
+/*
+   Slider.
+*/
+
+volumeSlider.addEventListener(
+    "input",
+    () => {
+
+        setVolume(
+            Number(
+                volumeSlider.value
+            ) / 100
+        );
+
+    }
+);
+
+
+/*
+   Volume down.
+
+   5% per click.
+*/
+
+volumeDown.addEventListener(
+    "click",
+    () => {
+
+        setVolume(
+            volume - 0.05
+        );
+
+    }
+);
+
+
+/*
+   Volume up.
+
+   5% per click.
+*/
+
+volumeUp.addEventListener(
+    "click",
+    () => {
+
+        setVolume(
+            volume + 0.05
+        );
+
+    }
+);
+
+
+/*
+   Initial UI.
+*/
+
+updateVolumeUI();
+
+
+/* =========================================================
+   DISCO ELEMENTS
+========================================================= */
+
+const discoLight =
+    document.getElementById("discoLight");
+
+const beamLeft =
+    document.getElementById("beamLeft");
+
+const beamCenter =
+    document.getElementById("beamCenter");
+
+const beamRight =
+    document.getElementById("beamRight");
+
+const floorLeft =
+    document.getElementById("floorLeft");
+
+const floorCenter =
+    document.getElementById("floorCenter");
+
+const floorRight =
+    document.getElementById("floorRight");
+
+const sparkles =
+    document.querySelectorAll(".sparkle");
+
+
+/* =========================================================
+   SPRITE SETTINGS
+========================================================= */
+
+const SPRITE_COLUMNS = 5;
+
+const SPRITE_ROWS = 4;
+
+const SPRITE_FRAME_COUNT =
+    SPRITE_COLUMNS * SPRITE_ROWS;
+
+let currentSprite = 0;
+
+
+/* =========================================================
+   SHARED BEAT STATE
+========================================================= */
+
+let beatPulse = 0;
+
+let lastVisualBeat = 0;
+
+let beatCooldown = 130;
+
+
+/* =========================================================
+   AUDIO ENGINE
+========================================================= */
+
+let audioContext = null;
+
+let analyser = null;
+
+let sourceNode = null;
+
+let frequencyData = null;
+
+
+/* =========================================================
+   PIANIST
+========================================================= */
+
+const pianist = {
+
+    leftNote: 53,
+
+    rightNote: 65,
+
+    lastEnergy: 0,
+
+    previousLow: 0,
+
+    lastBeatTime: 0,
+
+    beatStrength: 0,
+
+    tempoEstimate: 500,
+
+    leftDirection: 1,
+
+    rightDirection: -1
+
+};
+
+
+/* =========================================================
+   PIANO RANGE
+========================================================= */
+
+const FIRST_MIDI = 48;
+
+const LAST_MIDI = 72;
+
+
+/* =========================================================
+   SPRITE SPEED
+========================================================= */
+
+const BASE_POSE_DURATION = 330;
+
+let poseStartTime = 0;
+
+let poseDuration =
+    BASE_POSE_DURATION;
+
+
+/* =========================================================
+   ALWAYS-MOVING CAT SETTINGS
+========================================================= */
+
+const IDLE_MOVE_MIN = 520;
+
+const IDLE_MOVE_MAX = 1100;
+
+let nextIdleMoveTime = 0;
+
+
+/* =========================================================
+   SHOW SPRITE
+========================================================= */
+
+function showSprite(index) {
+
+    index =
+        Math.max(
+            0,
+            Math.min(
+                SPRITE_FRAME_COUNT - 1,
+                index
+            )
+        );
+
+
+    const column =
+        index % SPRITE_COLUMNS;
+
+
+    const row =
+        Math.floor(
+            index / SPRITE_COLUMNS
+        );
+
+
+    const x =
+        (
+            column /
+            (SPRITE_COLUMNS - 1)
+        ) * 100;
+
+
+    const y =
+        (
+            row /
+            (SPRITE_ROWS - 1)
+        ) * 100;
+
+
+    performerImage.style.backgroundPosition =
+        `${x}% ${y}%`;
+
+
+    currentSprite =
+        index;
+
+}
+
+
+/* =========================================================
+   INITIAL SPRITE
+========================================================= */
+
+showSprite(0);
+
+
+/* =========================================================
+   AUDIO SETUP
+========================================================= */
+
+function setupAudio() {
+
+    if (audioContext)
+        return;
+
+
+    audioContext =
+        new (
+            window.AudioContext ||
+            window.webkitAudioContext
+        )();
+
+
+    analyser =
+        audioContext.createAnalyser();
+
+
+    analyser.fftSize = 1024;
+
+
+    analyser.smoothingTimeConstant =
+        0.58;
+
+
+    sourceNode =
+        audioContext.createMediaElementSource(
+            audio
+        );
+
+
+    sourceNode.connect(
+        analyser
+    );
+
+
+    analyser.connect(
+        audioContext.destination
+    );
+
+
+    frequencyData =
+        new Uint8Array(
+            analyser.frequencyBinCount
+        );
+
+}
+
+
+/* =========================================================
+   FILE UPLOAD
+========================================================= */
+
+fileInput.addEventListener(
+    "change",
+    event => {
+
+        const file =
+            event.target.files[0];
+
+
+        if (!file)
+            return;
+
+
+        audio.src =
+            URL.createObjectURL(file);
+
+
+        audio.load();
+
+
+        /*
+           Keep selected volume.
+        */
+
+        audio.volume =
+            volume;
+
+
+        filename.textContent =
+            file.name;
+
+
+        playButton.disabled =
+            false;
+
+
+        pauseButton.disabled =
+            false;
+
+
+        stopButton.disabled =
+            false;
+
+
+        status.textContent =
+            "Song loaded 🎵 — press Play";
+
+    }
+);
+
+
+/* =========================================================
+   NEAREST KEY
+========================================================= */
+
+function nearestKey(midi) {
+
+    return Math.max(
+        FIRST_MIDI,
+        Math.min(
+            LAST_MIDI,
+            Math.round(midi)
+        )
+    );
+
+}
+
+
+/* =========================================================
+   NEXT HAND NOTE
+========================================================= */
+
+function nextHandNote(
+    current,
+    hand,
+    low,
+    mid,
+    high,
+    energy
+) {
+
+    let minNote;
+
+    let maxNote;
+
+    let center;
+
+
+    if (
+        hand === "left"
+    ) {
+
+        minNote = 50;
+
+        maxNote = 59;
+
+        center = 54;
+
+    }
+    else {
+
+        minNote = 61;
+
+        maxNote = 70;
+
+        center = 65;
+
+    }
+
+
+    const steps = [
+        1,
+        1,
+        1,
+        2,
+        2,
+        3
+    ];
+
+
+    const step =
+        steps[
+            Math.floor(
+                Math.random() *
+                steps.length
+            )
+        ];
+
+
+    let direction =
+        hand === "left"
+            ? pianist.leftDirection
+            : pianist.rightDirection;
+
+
+    let actualStep =
+        energy > .10
+            ? step
+            : Math.min(
+                step,
+                2
+            );
+
+
+    if (
+        Math.random() < .16
+    ) {
+
+        direction *= -1;
+
+    }
+
+
+    if (
+        hand === "right" &&
+        high > low * 1.4 &&
+        Math.random() < .30
+    ) {
+
+        direction = 1;
+
+    }
+
+
+    if (
+        hand === "left" &&
+        low > high * 1.4 &&
+        Math.random() < .30
+    ) {
+
+        direction = -1;
+
+    }
+
+
+    let next =
+        current +
+        direction * actualStep;
+
+
+    if (
+        Math.abs(
+            next - center
+        ) > 5
+    ) {
+
+        if (
+            Math.random() < .65
+        ) {
+
+            next +=
+                next > center
+                    ? -1
+                    : 1;
+
+        }
+
+    }
+
+
+    next =
+        Math.max(
+            minNote,
+            Math.min(
+                maxNote,
+                next
+            )
+        );
+
+
+    if (
+        hand === "left"
+    ) {
+
+        pianist.leftDirection =
+            next >= maxNote - 1
+                ? -1
+                : next <= minNote + 1
+                    ? 1
+                    : direction;
+
+    }
+    else {
+
+        pianist.rightDirection =
+            next >= maxNote - 1
+                ? -1
+                : next <= minNote + 1
+                    ? 1
+                    : direction;
+
+    }
+
+
+    return nearestKey(next);
+
+}
+
+
+/* =========================================================
+   NOTE TO SPRITE
+========================================================= */
+
+function noteToSprite(
+    hand,
+    midi
+) {
+
+    const total =
+        LAST_MIDI - FIRST_MIDI;
+
+
+    let normalized =
+        (
+            midi - FIRST_MIDI
+        ) / total;
+
+
+    normalized =
+        Math.max(
+            0,
+            Math.min(
+                1,
+                normalized
+            )
+        );
+
+
+    let frame =
+        1 +
+        Math.floor(
+            normalized *
+            (SPRITE_FRAME_COUNT - 1)
+        );
+
+
+    if (
+        hand === "left"
+    ) {
+
+        frame -= 1;
+
+    }
+
+
+    return Math.max(
+        1,
+        Math.min(
+            SPRITE_FRAME_COUNT - 1,
+            frame
+        )
+    );
+
+}
+
+
+/* =========================================================
+   AUDIO ANALYSIS
+========================================================= */
+
+function analyseAudio() {
+
+    if (!analyser) {
+
+        return {
+
+            energy: 0,
+
+            low: 0,
+
+            mid: 0,
+
+            high: 0
+
+        };
+
+    }
+
+
+    analyser.getByteFrequencyData(
+        frequencyData
+    );
+
+
+    const sampleRate =
+        audioContext.sampleRate;
+
+
+    const nyquist =
+        sampleRate / 2;
+
+
+    let lowSum = 0;
+
+    let midSum = 0;
+
+    let highSum = 0;
+
+    let total = 0;
+
+
+    for (
+        let i = 0;
+        i < frequencyData.length;
+        i++
+    ) {
+
+        const value =
+            frequencyData[i] / 255;
+
+
+        const frequency =
+            (
+                i /
+                frequencyData.length
+            ) * nyquist;
+
+
+        total += value;
+
+
+        if (
+            frequency < 250
+        ) {
+
+            lowSum += value;
+
+        }
+        else if (
+            frequency < 2000
+        ) {
+
+            midSum += value;
+
+        }
+        else {
+
+            highSum += value;
+
+        }
+
+    }
+
+
+    return {
+
+        energy:
+            total /
+            frequencyData.length,
+
+        low:
+            lowSum /
+            frequencyData.length,
+
+        mid:
+            midSum /
+            frequencyData.length,
+
+        high:
+            highSum /
+            frequencyData.length
+
+    };
+
+}
+
+
+/* =========================================================
+   BEAT DETECTION
+========================================================= */
+
+function detectBeat(
+    data,
+    now
+) {
+
+    const jump =
+        data.energy -
+        pianist.lastEnergy;
+
+
+    const bassJump =
+        data.low -
+        pianist.previousLow;
+
+
+    const strength =
+        Math.max(
+            0,
+
+            jump * 1.15 +
+
+            bassJump * 1.65
+        );
+
+
+    const threshold =
+        Math.max(
+            .025,
+            pianist.lastEnergy * .18
+        );
+
+
+    let isBeat = false;
+
+
+    if (
+        strength > threshold &&
+        now -
+        pianist.lastBeatTime >
+        beatCooldown
+    ) {
+
+        const previous =
+            pianist.lastBeatTime;
+
+
+        if (
+            previous > 0
+        ) {
+
+            const interval =
+                now - previous;
+
+
+            if (
+                interval > 250 &&
+                interval < 1500
+            ) {
+
+                pianist.tempoEstimate =
+                    pianist.tempoEstimate * .65 +
+                    interval * .35;
+
+            }
+
+        }
+
+
+        pianist.lastBeatTime =
+            now;
+
+
+        pianist.beatStrength =
+            strength;
+
+
+        isBeat = true;
+
+    }
+    else {
+
+        pianist.beatStrength *= .88;
+
+    }
+
+
+    pianist.lastEnergy =
+        data.energy;
+
+
+    pianist.previousLow =
+        data.low;
+
+
+    return {
+
+        isBeat,
+
+        strength:
+            pianist.beatStrength
+
+    };
+
+}
+
+
+/* =========================================================
+   CAT POSE
+========================================================= */
+
+function startNewPose(data) {
+
+    let hand;
+
+
+    if (
+        data.high >
+        data.low * 1.15
+    ) {
+
+        hand = "right";
+
+    }
+    else if (
+        data.low >
+        data.high * 1.15
+    ) {
+
+        hand = "left";
+
+    }
+    else {
+
+        hand =
+            Math.random() < .5
+                ? "left"
+                : "right";
+
+    }
+
+
+    let note;
+
+
+    if (
+        hand === "left"
+    ) {
+
+        note =
+            nextHandNote(
+                pianist.leftNote,
+                "left",
+                data.low,
+                data.mid,
+                data.high,
+                data.energy
+            );
+
+
+        pianist.leftNote =
+            note;
+
+    }
+    else {
+
+        note =
+            nextHandNote(
+                pianist.rightNote,
+                "right",
+                data.low,
+                data.mid,
+                data.high,
+                data.energy
+            );
+
+
+        pianist.rightNote =
+            note;
+
+    }
+
+
+    let nextFrame =
+        noteToSprite(
+            hand,
+            note
+        );
+
+
+    if (
+        nextFrame === currentSprite
+    ) {
+
+        const possibleFrames = [];
+
+        for (
+            let i = 1;
+            i < SPRITE_FRAME_COUNT;
+            i++
+        ) {
+
+            if (
+                i !== currentSprite
+            ) {
+
+                possibleFrames.push(i);
+
+            }
+
+        }
+
+
+        nextFrame =
+            possibleFrames[
+                Math.floor(
+                    Math.random() *
+                    possibleFrames.length
+                )
+            ];
+
+    }
+
+
+    showSprite(nextFrame);
+
+
+    const tempo =
+        pianist.tempoEstimate;
+
+
+    poseDuration =
+        Math.max(
+            180,
+            Math.min(
+                520,
+                tempo * .82
+            )
+        );
+
+
+    poseStartTime =
+        performance.now();
+
+}
+
+
+/* =========================================================
+   ALWAYS-MOVE CAT
+========================================================= */
+
+function updateIdleMovement(
+    data,
+    now
+) {
+
+    if (
+        now < nextIdleMoveTime
+    ) {
+
+        return;
+
+    }
+
+
+    const energy =
+        Math.min(
+            1,
+            data.energy * 7
+        );
+
+
+    const movementDelay =
+        IDLE_MOVE_MAX -
+        (
+            IDLE_MOVE_MAX -
+            IDLE_MOVE_MIN
+        ) * energy;
+
+
+    startNewPose(data);
+
+
+    const randomness =
+        0.75 +
+        Math.random() * 0.5;
+
+
+    nextIdleMoveTime =
+        now +
+        movementDelay *
+        randomness;
+
+}
+
+
+/* =========================================================
+   DISCO UPDATE
+========================================================= */
+
+function updateDisco(
+    data,
+    beatStrength
+) {
+
+    const musicLevel =
+        Math.min(
+            1,
+            data.energy * 5.5
+        );
+
+
+    const beatLevel =
+        Math.min(
+            1,
+            beatStrength * 9
+        );
+
+
+    const intensity =
+        Math.min(
+            1,
+
+            musicLevel * .22 +
+
+            beatLevel * .95
+        );
+
+
+    const ballScale =
+        1 +
+        beatLevel * .32;
+
+
+    discoLight.style.transform =
+        `translateX(-50%) scale(${ballScale})`;
+
+
+    discoLight.style.opacity =
+        .28 +
+        intensity * .72;
+
+
+    const glowSize =
+        15 +
+        beatLevel * 38;
+
+
+    const ball =
+        document.querySelector(
+            ".disco-ball"
+        );
+
+
+    let glow;
+
+
+    if (
+        data.high >
+        data.low * 1.25
+    ) {
+
+        glow =
+            `
+            0 0 ${glowSize}px rgba(255,80,190,.95),
+            0 0 ${glowSize * 2}px rgba(173,100,255,.55)
+            `;
+
+    }
+    else if (
+        data.low >
+        data.high * 1.25
+    ) {
+
+        glow =
+            `
+            0 0 ${glowSize}px rgba(89,180,255,.95),
+            0 0 ${glowSize * 2}px rgba(126,100,255,.55)
+            `;
+
+    }
+    else {
+
+        glow =
+            `
+            0 0 ${glowSize}px rgba(255,120,210,.95),
+            0 0 ${glowSize * 2}px rgba(255,185,235,.55)
+            `;
+
+    }
+
+
+    ball.style.boxShadow =
+        glow;
+
+
+    beamLeft.style.opacity =
+        .06 +
+        intensity * .58;
+
+
+    beamCenter.style.opacity =
+        .07 +
+        intensity * .65;
+
+
+    beamRight.style.opacity =
+        .06 +
+        intensity * .58;
+
+
+    const spread =
+        27 +
+        beatLevel * 17;
+
+
+    beamLeft.style.transform =
+        `translateX(-50%) rotate(-${spread}deg)`;
+
+
+    beamRight.style.transform =
+        `translateX(-50%) rotate(${spread}deg)`;
+
+
+    floorLeft.style.opacity =
+        .08 +
+        intensity * .55;
+
+
+    floorCenter.style.opacity =
+        .08 +
+        intensity * .62;
+
+
+    floorRight.style.opacity =
+        .08 +
+        intensity * .55;
+
+
+    const floorScale =
+        1 +
+        beatLevel * .45;
+
+
+    floorLeft.style.transform =
+        `scale(${floorScale})`;
+
+
+    floorCenter.style.transform =
+        `translateX(-50%) scale(${floorScale})`;
+
+
+    floorRight.style.transform =
+        `scale(${floorScale})`;
+
+
+    sparkles.forEach(
+        (sparkle, index) => {
+
+            const offset =
+                index * .07;
+
+
+            const sparklePower =
+                Math.max(
+                    0,
+                    beatLevel - offset
+                );
+
+
+            sparkle.style.opacity =
+                .15 +
+                sparklePower * .85;
+
+
+            sparkle.style.transform =
+                `
+                scale(
+                    ${.55 + sparklePower * 1.4}
+                )
+                rotate(45deg)
+                `;
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   RESET DISCO
+========================================================= */
+
+function resetDisco() {
+
+    discoLight.style.opacity =
+        ".25";
+
+    discoLight.style.transform =
+        "translateX(-50%) scale(1)";
+
+
+    beamLeft.style.opacity =
+        ".05";
+
+    beamCenter.style.opacity =
+        ".05";
+
+    beamRight.style.opacity =
+        ".05";
+
+
+    beamLeft.style.transform =
+        "translateX(-50%) rotate(-28deg)";
+
+
+    beamRight.style.transform =
+        "translateX(-50%) rotate(28deg)";
+
+
+    floorLeft.style.opacity =
+        ".08";
+
+    floorCenter.style.opacity =
+        ".08";
+
+    floorRight.style.opacity =
+        ".08";
+
+
+    floorLeft.style.transform =
+        "scale(1)";
+
+    floorCenter.style.transform =
+        "translateX(-50%) scale(1)";
+
+    floorRight.style.transform =
+        "scale(1)";
+
+
+    sparkles.forEach(
+        sparkle => {
+
+            sparkle.style.opacity =
+                ".2";
+
+            sparkle.style.transform =
+                "scale(.6) rotate(45deg)";
+
+        }
+    );
+
+}
+
+
+/* =========================================================
+   PERFORMANCE LOOP
+========================================================= */
+
+let playing = false;
+
+let animationFrame = null;
+
+
+function animate(
+    now = performance.now()
+) {
+
+    if (!playing)
+        return;
+
+
+    animationFrame =
+        requestAnimationFrame(
+            animate
+        );
+
+
+    const data =
+        analyseAudio();
+
+
+    const beat =
+        detectBeat(
+            data,
+            now
+        );
+
+
+    if (
+        beat.isBeat
+    ) {
+
+        startNewPose(
+            data
+        );
+
+
+        lastVisualBeat =
+            now;
+
+
+        const energy =
+            Math.min(
+                1,
+                data.energy * 7
+            );
+
+
+        const delay =
+            400 -
+            energy * 150;
+
+
+        nextIdleMoveTime =
+            now +
+            delay;
+
+    }
+
+
+    updateIdleMovement(
+        data,
+        now
+    );
+
+
+    updateDisco(
+        data,
+        beat.strength
+    );
+
+
+    const pulse =
+        Math.min(
+            1,
+            beat.strength * 7
+        );
+
+
+    const quietMotion =
+        Math.sin(
+            now / 430
+        ) * .7;
+
+
+    performer.style.transform =
+        `
+        translateY(
+            ${-pulse * 3 + quietMotion}px
+        )
+        scale(
+            ${1 + pulse * .018}
+        )
+        `;
+
+
+if (audio.duration && isFinite(audio.duration)) {
+
+    const progress =
+        (audio.currentTime / audio.duration) * 100;
+
+    progressBar.style.width =
+        `${Math.min(100, Math.max(0, progress))}%`;
+
+}
+
+}
+
+
+/* =========================================================
+   PLAY
+========================================================= */
+
+playButton.addEventListener(
+    "click",
+    async () => {
+
+        if (!audio.src)
+            return;
+
+
+        setupAudio();
+
+
+        if (
+            audioContext.state ===
+            "suspended"
+        ) {
+
+            await audioContext.resume();
+
+        }
+
+
+        if (
+            audio.currentTime >=
+            audio.duration
+        ) {
+
+            audio.currentTime = 0;
+
+        }
+
+
+        /*
+           Make absolutely sure the current
+           volume is applied before playing.
+        */
+
+        audio.volume =
+            volume;
+
+
+        pianist.leftNote =
+            53;
+
+        pianist.rightNote =
+            65;
+
+        pianist.leftDirection =
+            1;
+
+        pianist.rightDirection =
+            -1;
+
+        pianist.lastEnergy =
+            0;
+
+        pianist.previousLow =
+            0;
+
+        pianist.lastBeatTime =
+            0;
+
+        pianist.beatStrength =
+            0;
+
+        pianist.tempoEstimate =
+            500;
+
+
+        beatPulse = 0;
+
+        lastVisualBeat = 0;
+
+
+        showSprite(1);
+
+
+        poseStartTime =
+            performance.now();
+
+
+        poseDuration =
+            330;
+
+
+        nextIdleMoveTime =
+            performance.now() + 550;
+
+
+        playing = true;
+
+
+        status.textContent =
+            " Playing... 🎹";
+
+
+        await audio.play();
+
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+
+        animate();
+
+    }
+);
+
+
+/* =========================================================
+   PAUSE
+========================================================= */
+
+pauseButton.addEventListener(
+    "click",
+    () => {
+
+        if (!playing)
+            return;
+
+
+        playing = false;
+
+
+        audio.pause();
+
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+
+        status.textContent =
+            "Paused ⏸";
+
+
+        resetDisco();
+
+
+        performer.style.transform =
+            "translateY(0) scale(1)";
+
+    }
+);
+
+
+/* =========================================================
+   STOP
+========================================================= */
+
+stopButton.addEventListener(
+    "click",
+    () => {
+
+        playing = false;
+
+
+        audio.pause();
+
+
+        audio.currentTime = 0;
+
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+
+        resetVisuals();
+
+
+        timeDisplay.textContent =
+            `0.00 / ${
+                audio.duration
+                    ?
+                    audio.duration.toFixed(2)
+                    :
+                    "0.00"
+            }`;
+
+
+        status.textContent =
+            "Stopped";
+
+    }
+);
+
+
+/* =========================================================
+   RESET
+========================================================= */
+
+function resetVisuals() {
+
+    progressBar.style.width = "0%";
+
+    pianist.leftNote =
+        53;
+
+    pianist.rightNote =
+        65;
+
+    pianist.leftDirection =
+        1;
+
+    pianist.rightDirection =
+        -1;
+
+    pianist.lastEnergy =
+        0;
+
+    pianist.previousLow =
+        0;
+
+    pianist.lastBeatTime =
+        0;
+
+    pianist.beatStrength =
+        0;
+
+    pianist.tempoEstimate =
+        500;
+
+
+    beatPulse = 0;
+
+    lastVisualBeat = 0;
+
+
+    poseStartTime =
+        0;
+
+
+    poseDuration =
+        BASE_POSE_DURATION;
+
+
+    nextIdleMoveTime =
+        0;
+
+
+    showSprite(0);
+
+
+    performer.style.transform =
+        "translateY(0) scale(1)";
+
+
+    resetDisco();
+
+}
+
+
+/* =========================================================
+   SONG FINISHED
+========================================================= */
+
+audio.addEventListener(
+    "ended",
+    () => {
+
+        playing = false;
+
+
+        cancelAnimationFrame(
+            animationFrame
+        );
+
+
+        resetVisuals();
+
+
+        status.textContent =
+            "Finished! 🐱🎹";
+
+    }
+);
+
+</script>
+
+</body>
+</html>

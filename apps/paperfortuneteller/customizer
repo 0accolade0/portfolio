@@ -1,0 +1,630 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Fortune Teller Marker Editor</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;background:#19151c;color:#fff;font-family:Arial,sans-serif;height:100vh;overflow:hidden}
+#app{display:flex;width:100%;height:100%}
+#stage{flex:1;position:relative;background:#29232d;overflow:hidden}
+#art{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);transform-origin:center;display:inline-block}
+#paper{display:block;max-width:90vw;max-height:90vh;width:auto;height:auto;user-select:none;pointer-events:none}
+#markers{position:absolute;inset:0;pointer-events:none}
+.marker{position:absolute;transform:translate(-50%,-50%);width:90px;min-height:20px;padding:3px 6px;background:#fff;color:#111;border:2px solid #ff6bbc;border-radius:6px;font-weight:bold;text-align:center;line-height:1.05;white-space:normal;overflow-wrap:break-word;cursor:grab;pointer-events:auto;user-select:none}
+#panel{width:330px;background:#211c24;padding:16px;overflow:auto;border-left:2px solid #3b323f}
+h2{margin:0 0 14px;font-size:18px}
+label{display:block;font-size:11px;margin:10px 0 4px;color:#cfc5d2}
+select,input,button{width:100%;padding:8px;border:0;border-radius:7px;font:inherit}
+select,input{background:#332b36;color:#fff}
+button{margin-top:9px;background:#ff6bbc;color:#111;font-weight:bold;cursor:pointer}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+hr{border:0;border-top:1px solid #403642;margin:16px 0}
+small,.count{color:#a99fac}.count{font-size:10px;text-align:right;margin-top:3px}
+</style>
+</head>
+
+<body>
+<div id="app">
+
+<div id="stage">
+<div id="art">
+<img id="paper" src="paper.png">
+<div id="markers"></div>
+</div>
+</div>
+
+<div id="panel">
+<h2>📝 Marker Editor</h2>
+
+<label>Frame</label>
+<select id="frame"></select>
+
+<label>Frame Orientation</label>
+<select id="frameRotate">
+<option value="0">0°</option>
+<option value="90">90°</option>
+<option value="180">180°</option>
+<option value="270">270°</option>
+</select>
+
+<label>Selected Marker</label>
+<select id="marker"></select>
+
+<label>Text</label>
+<input id="text" maxlength="60" placeholder="Max 60 characters">
+<div class="count" id="count">0 / 60</div>
+
+<div class="row">
+<div><label>X (%)</label><input id="x" type="number" step=".1"></div>
+<div><label>Y (%)</label><input id="y" type="number" step=".1"></div>
+</div>
+
+<div class="row">
+<div><label>Font Size</label><input id="size" type="number"></div>
+<div><label>Marker Rotation</label><input id="rotate" type="number"></div>
+</div>
+
+<button onclick="addMarker()">＋ Add Text Marker</button>
+<button onclick="duplicateMarker()">⧉ Duplicate & Copy</button>
+<button onclick="pasteMarker()">📌 Paste Marker</button>
+<button onclick="deleteMarker()">Delete Selected</button>
+
+<hr>
+
+<h2>🔤 Text Library</h2>
+<small>Same marker ID = same text everywhere.</small>
+<div id="textLibrary"></div>
+
+<hr>
+
+<button onclick="copyData()">📋 Copy Marker Data</button>
+</div>
+</div>
+
+<script>
+
+/* =========================================================
+   FRAMES
+   ========================================================= */
+
+const frames=[
+"paper.png","firstfold.png","secondfold.png","thirdfold.png",
+"fourthfold.png","fifthfold.png","sixthfold.png","seventhfold.png",
+"eighthfold.png","ninthfold.png","verticalfold.png","topfold.png",
+"horizontalfold.png","top.png","left.png","bottom.png","right.png"
+];
+
+
+/* =========================================================
+   TEXT DATA
+   ========================================================= */
+
+const texts={
+"1":"Your wish will come true",
+"2":"You will be rich",
+"3":"A surprise is on the way",
+"4":"Someone will visit you this week",
+"5":"5",
+"6":"6",
+"7":"7",
+"8":"8",
+"9":"Orange",
+"10":"Blue",
+"11":"Yellow",
+"12":"Green",
+"NEW_1791129614687":"Orange",
+"NEW_1791129660276":"Green",
+"NEW_1791129741706":"Yellow",
+"NEW_1791129771858":"Green",
+"NEW_1791129819004":"NEW TEXT",
+"NEW_1791130082609":"7",
+"NEW_1791130112239":"8",
+"NEW_1791130130428":"8",
+"NEW_1791130172510":"8",
+"NEW_1791130207268":"7",
+"NEW_1791130268012":"6"
+};
+
+
+/* =========================================================
+   MARKER DATA
+   ========================================================= */
+
+const markers={
+"paper.png":[
+{x:50.6,y:28,text:"1",size:12,rotate:0},
+{x:50,y:61,text:"3",size:12,rotate:0},
+{x:33.4,y:44.6,text:"4",size:12,rotate:-90},
+{x:66.7,y:44.6,text:"2",size:12,rotate:90},
+{x:50.6,y:28,text:"1",size:12,rotate:0},
+{x:66.7,y:44.6,text:"2",size:12,rotate:90},
+{x:33.4,y:44.6,text:"4",size:12,rotate:-90},
+{x:50,y:61,text:"3",size:12,rotate:0}
+],
+
+"firstfold.png":[
+{x:50.6,y:28,text:"1",size:12,rotate:0},
+{x:66.7,y:44.6,text:"2",size:12,rotate:90},
+{x:50.2,y:60.9,text:"3",size:12,rotate:0},
+{x:41,y:44.5,text:"NEW_1791130112239",size:12,rotate:-90}
+],
+
+"secondfold.png":[
+{x:50.6,y:28,text:"1",size:12,rotate:0},
+{x:66.7,y:44.6,text:"2",size:12,rotate:90},
+{x:49.9,y:53.7,text:"NEW_1791130082609",size:12,rotate:0},
+{x:41,y:44.5,text:"NEW_1791130130428",size:12,rotate:-90}
+],
+
+"thirdfold.png":[
+{x:50.6,y:28,text:"1",size:12,rotate:0},
+{x:41,y:44.5,text:"NEW_1791130172510",size:12,rotate:-90},
+{x:49.9,y:53.7,text:"NEW_1791130207268",size:12,rotate:0},
+{x:59.4,y:44.5,text:"NEW_1791130268012",size:12,rotate:90}
+],
+
+"fourthfold.png":[
+{x:50,y:35,text:"5",size:12,rotate:0},
+{x:59.4,y:44.5,text:"6",size:12,rotate:90},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:50,y:35,text:"5",size:12,rotate:0},
+{x:50,y:35,text:"5",size:12,rotate:0},
+{x:59.4,y:44.5,text:"6",size:12,rotate:90},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:59.4,y:44.5,text:"6",size:12,rotate:90},
+{x:50,y:35,text:"5",size:12,rotate:0}
+],
+
+"fifthfold.png":[
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:54.4,y:40.8,text:"9",size:10,rotate:45},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:41,y:44.5,text:"8",size:12,rotate:-90}
+],
+
+"sixthfold.png":[
+{x:54.4,y:40.8,text:"9",size:10,rotate:45},
+{x:45.4,y:40.8,text:"10",size:10,rotate:-45},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:45.4,y:40.8,text:"10",size:10,rotate:-45},
+{x:45.4,y:40.8,text:"10",size:10,rotate:-45}
+],
+
+"seventhfold.png":[
+{x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+{x:45.4,y:40.8,text:"NEW_1791129660276",size:10,rotate:-45},
+{x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45},
+{x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+{x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45},
+{x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45},
+{x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+{x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+{x:45.4,y:40.8,text:"NEW_1791129660276",size:10,rotate:-45},
+{x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45}
+],
+
+"eighthfold.png":[
+{x:54.4,y:40.8,text:"NEW_1791129614687",size:10,rotate:45},
+{x:45.4,y:40.8,text:"NEW_1791129660276",size:10,rotate:-45},
+{x:45.29447471548195,y:49.24104488798594,text:"NEW_1791129741706",size:10,rotate:45},
+{x:45.4,y:40.8,text:"NEW_1791129660276",size:10,rotate:-45},
+{x:54.40194300809753,y:48.48208919693464,text:"NEW_1791129660276",size:10,rotate:-45},
+{x:54.40194300809753,y:48.48208919693464,text:"NEW_1791129660276",size:10,rotate:-45}
+],
+
+"ninthfold.png":[],
+
+"verticalfold.png":[
+{x:48.026715203266626,y:38.31208293684723,text:"5",size:5,rotate:-52},
+{x:55.009107560938574,y:38.46387407505749,text:"6",size:5,rotate:60},
+{x:53.7947784552565,y:48.48208919693464,text:"7",size:5,rotate:125},
+{x:47.57134178863584,y:49.3928360261962,text:"8",size:5,rotate:-117},
+{x:48.026715203266626,y:38.31208293684723,text:"5",size:5,rotate:-52},
+{x:55.009107560938574,y:38.46387407505749,text:"6",size:5,rotate:60},
+{x:53.7947784552565,y:48.48208919693464,text:"7",size:5,rotate:125},
+{x:47.57134178863584,y:49.3928360261962,text:"8",size:5,rotate:-117}
+],
+
+"topfold.png":[
+{x:56.37522780483091,y:38.615665213267754,text:"NEW_1791129614687",size:10,rotate:45},
+{x:44.83910130085116,y:39.22282976610879,text:"10",size:10,rotate:-45},
+{x:44.687310162640905,y:49.69641830261672,text:"NEW_1791129741706",size:10,rotate:45},
+{x:55.76806325198987,y:49.39283602661672,text:"NEW_1791129660276",size:10,rotate:-45}
+],
+
+"horizontalfold.png":[
+{x:45.14268357727168,y:41.196114562842176,text:"5",size:5,rotate:-30},
+{x:55.91985439020013,y:41.80327911568321,text:"6",size:5,rotate:40},
+{x:55.76806325198987,y:48.33029805872438,text:"7",size:5,rotate:149},
+{x:44.83910130085116,y:47.8749246440936,text:"8",size:5,rotate:-145}
+],
+
+"top.png":[
+{x:59.4,y:44.5,text:"6",size:12,rotate:90},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:50.6,y:28,text:"1",size:12,rotate:0}
+],
+
+"left.png":[
+{x:59.4,y:44.5,text:"6",size:12,rotate:90},
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:50,y:35,text:"5",size:12,rotate:0},
+{x:33.4,y:44.6,text:"4",size:12,rotate:-90}
+],
+
+"bottom.png":[
+{x:59.4,y:44.5,text:"6",size:12,rotate:90},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:50,y:35,text:"5",size:12,rotate:0},
+{x:50,y:61,text:"3",size:12,rotate:0}
+],
+
+"right.png":[
+{x:49.9,y:53.7,text:"7",size:12,rotate:0},
+{x:41,y:44.5,text:"8",size:12,rotate:-90},
+{x:50,y:35,text:"5",size:12,rotate:0},
+{x:66.7,y:44.6,text:"2",size:12,rotate:90}
+]
+};
+
+
+/* =========================================================
+   FRAME ORIENTATIONS
+   ========================================================= */
+
+const frameRotations={
+"paper.png":0,
+"firstfold.png":0,
+"secondfold.png":0,
+"thirdfold.png":0,
+"fourthfold.png":0,
+"fifthfold.png":0,
+"sixthfold.png":0,
+"seventhfold.png":0,
+"eighthfold.png":0,
+"ninthfold.png":0,
+"verticalfold.png":0,
+"topfold.png":0,
+"horizontalfold.png":0,
+"top.png":0,
+"left.png":0,
+"bottom.png":0,
+"right.png":0
+};
+
+
+/* =========================================================
+   ELEMENTS
+   ========================================================= */
+
+const frame=document.getElementById("frame"),
+marker=document.getElementById("marker"),
+text=document.getElementById("text"),
+x=document.getElementById("x"),
+y=document.getElementById("y"),
+size=document.getElementById("size"),
+rotate=document.getElementById("rotate"),
+frameRotate=document.getElementById("frameRotate"),
+paper=document.getElementById("paper"),
+art=document.getElementById("art"),
+layer=document.getElementById("markers"),
+count=document.getElementById("count");
+
+const MAX=60;
+let currentMarker=0,copiedMarker=null;
+
+
+/* =========================================================
+   INITIALISE
+   ========================================================= */
+
+frames.forEach(f=>frame.add(new Option(f,f)));
+
+
+/* =========================================================
+   FRAME ORIENTATION
+   ========================================================= */
+
+function applyFrameRotation(){
+ const r=frameRotations[frame.value]||0;
+ art.style.transform=`translate(-50%,-50%) rotate(${r}deg)`;
+ frameRotate.value=r;
+}
+
+frameRotate.onchange=()=>{
+ frameRotations[frame.value]=+frameRotate.value;
+ applyFrameRotation();
+};
+
+frame.onchange=()=>{
+ currentMarker=0;
+ paper.src=frame.value;
+ frameRotate.value=frameRotations[frame.value]||0;
+ updateMarkerList();
+ applyFrameRotation();
+};
+
+
+/* =========================================================
+   MARKER LIST
+   ========================================================= */
+
+function updateMarkerList(){
+ marker.innerHTML="";
+ marker.add(new Option("— Select Marker —",""));
+
+ markers[frame.value].forEach((m,i)=>{
+  marker.add(new Option(`Marker ${i+1} — ${texts[m.text]??m.text}`,i));
+ });
+
+ if(markers[frame.value].length){
+  currentMarker=Math.min(currentMarker,markers[frame.value].length-1);
+  marker.value=currentMarker;
+  loadMarker();
+ }else{
+  text.value="";
+  x.value="";
+  y.value="";
+  size.value="";
+  rotate.value="";
+  count.textContent="0 / 60";
+ }
+
+ render();
+}
+
+marker.onchange=()=>{
+ if(marker.value==="")return;
+ currentMarker=+marker.value;
+ loadMarker();
+};
+
+function loadMarker(){
+ const m=markers[frame.value][currentMarker];
+ if(!m)return;
+
+ text.value=texts[m.text]??m.text;
+ x.value=m.x;
+ y.value=m.y;
+ size.value=m.size;
+ rotate.value=m.rotate;
+ count.textContent=`${text.value.length} / ${MAX}`;
+}
+
+
+/* =========================================================
+   TEXT EDIT
+   ========================================================= */
+
+text.oninput=()=>{
+ const m=markers[frame.value][currentMarker];
+ if(!m)return;
+
+ text.value=text.value.slice(0,MAX);
+ texts[m.text]=text.value;
+
+ count.textContent=`${text.value.length} / ${MAX}`;
+
+ render();
+ renderLibrary();
+ updateMarkerList();
+
+ marker.value=currentMarker;
+};
+
+
+/* =========================================================
+   POSITION / SIZE / MARKER ROTATION
+   ========================================================= */
+
+["x","y","size","rotate"].forEach(id=>{
+ document.getElementById(id).oninput=()=>{
+  const m=markers[frame.value][currentMarker];
+  if(!m)return;
+
+  m[id]=+document.getElementById(id).value;
+  render();
+ };
+});
+
+
+/* =========================================================
+   RENDER
+   ========================================================= */
+
+function render(){
+ layer.innerHTML="";
+
+ markers[frame.value].forEach((m,i)=>{
+  const el=document.createElement("div");
+
+  el.className="marker";
+  el.textContent=texts[m.text]??m.text;
+
+  el.style.left=m.x+"%";
+  el.style.top=m.y+"%";
+  el.style.fontSize=m.size+"px";
+  el.style.transform=`translate(-50%,-50%) rotate(${m.rotate}deg)`;
+
+  el.onmousedown=e=>{
+   e.preventDefault();
+
+   currentMarker=i;
+   marker.value=i;
+   loadMarker();
+
+   const r=layer.getBoundingClientRect();
+
+   const move=ev=>{
+    m.x=Math.max(0,Math.min(100,((ev.clientX-r.left)/r.width)*100));
+    m.y=Math.max(0,Math.min(100,((ev.clientY-r.top)/r.height)*100));
+
+    x.value=m.x.toFixed(1);
+    y.value=m.y.toFixed(1);
+
+    render();
+   };
+
+   const up=()=>{
+    removeEventListener("mousemove",move);
+    removeEventListener("mouseup",up);
+   };
+
+   addEventListener("mousemove",move);
+   addEventListener("mouseup",up);
+  };
+
+  layer.appendChild(el);
+ });
+}
+
+
+/* =========================================================
+   MARKER ACTIONS
+   ========================================================= */
+
+function addMarker(){
+ const id="NEW_"+Date.now();
+
+ markers[frame.value].push({
+  x:50,
+  y:50,
+  text:id,
+  size:12,
+  rotate:0
+ });
+
+ texts[id]="NEW TEXT";
+
+ currentMarker=markers[frame.value].length-1;
+
+ updateMarkerList();
+ marker.value=currentMarker;
+ renderLibrary();
+ render();
+}
+
+function duplicateMarker(){
+ const m=markers[frame.value][currentMarker];
+ if(!m)return;
+
+ copiedMarker={...m};
+
+ markers[frame.value].push({...copiedMarker});
+
+ currentMarker=markers[frame.value].length-1;
+
+ updateMarkerList();
+ marker.value=currentMarker;
+ render();
+}
+
+function pasteMarker(){
+ if(!copiedMarker)return alert("Copy a marker first! 📋");
+
+ markers[frame.value].push({...copiedMarker});
+
+ currentMarker=markers[frame.value].length-1;
+
+ updateMarkerList();
+ marker.value=currentMarker;
+ render();
+}
+
+function deleteMarker(){
+ const a=markers[frame.value];
+
+ if(!a.length)return;
+
+ a.splice(currentMarker,1);
+
+ currentMarker=Math.max(0,currentMarker-1);
+
+ updateMarkerList();
+ render();
+}
+
+
+/* =========================================================
+   TEXT LIBRARY
+   ========================================================= */
+
+function renderLibrary(){
+ const box=document.getElementById("textLibrary");
+
+ box.innerHTML="";
+
+ Object.keys(texts).forEach(id=>{
+  const label=document.createElement("div");
+
+  label.textContent="ID "+id;
+  label.style.cssText="font-size:11px;color:#cfc5d2;margin:8px 0 3px";
+
+  const input=document.createElement("input");
+
+  input.maxLength=MAX;
+  input.value=texts[id];
+
+  input.oninput=()=>{
+   input.value=input.value.slice(0,MAX);
+
+   texts[id]=input.value;
+
+   render();
+   updateMarkerList();
+  };
+
+  box.appendChild(label);
+  box.appendChild(input);
+ });
+}
+
+
+/* =========================================================
+   COPY ALL DATA
+   ========================================================= */
+
+function copyData(){
+ const out=`/* FORTUNE TELLER TEXT MARKER DATA */
+
+const textValues = ${JSON.stringify(texts,null,2)};
+
+const textMarkers = ${JSON.stringify(markers,null,2)};
+
+const frameRotations = ${JSON.stringify(frameRotations,null,2)};`;
+
+ navigator.clipboard.writeText(out);
+
+ alert("Copied! 📋");
+}
+
+
+/* =========================================================
+   INITIAL LOAD
+   ========================================================= */
+
+paper.onload=()=>{
+ applyFrameRotation();
+ render();
+};
+
+addEventListener("resize",render);
+
+updateMarkerList();
+renderLibrary();
+applyFrameRotation();
+render();
+
+</script>
+</body>
+</html>
+

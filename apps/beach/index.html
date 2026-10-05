@@ -1,0 +1,1150 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+    >
+
+    <title>Beach Scene</title>
+
+    <!-- =========================================================
+         GOOGLE OFFSIDE FONT
+    ========================================================== -->
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Offside&display=swap"
+        rel="stylesheet"
+    >
+
+    <link rel="stylesheet" href="style.css">
+
+
+    <style>
+
+        /* =========================================================
+           SUNSET POINT PENNANT BANNER
+
+           The pennants are positioned mathematically on the
+           exact same quadratic curve as the string.
+        ========================================================= */
+
+
+        #sunset-header {
+
+            position: fixed;
+
+            top: 0;
+            left: 0;
+
+            width: 100%;
+            height: 155px;
+
+            z-index: 9999;
+
+            pointer-events: none;
+
+            /*
+             * IMPORTANT:
+             * Completely transparent container.
+             * No rectangle/background/border.
+             */
+
+            background: transparent !important;
+            border: none !important;
+            outline: none !important;
+            box-shadow: none !important;
+
+            overflow: visible;
+
+            appearance: none;
+        }
+
+
+        /* =========================================================
+           CURVED STRING
+        ========================================================= */
+
+        #pennant-string {
+
+            position: absolute;
+
+            top: 0;
+            left: 50%;
+
+            width: min(1150px, 96vw);
+            height: 140px;
+
+            transform: translateX(-50%);
+
+            overflow: visible;
+
+            z-index: 1;
+
+            pointer-events: none;
+
+            background: transparent !important;
+        }
+
+
+        #pennant-string path {
+
+            fill: none;
+
+            stroke: #5b4636;
+
+            stroke-width: 3.5;
+
+            stroke-linecap: round;
+
+            vector-effect: non-scaling-stroke;
+
+            filter:
+                drop-shadow(
+                    0 2px 1px rgba(0, 0, 0, 0.15)
+                );
+        }
+
+
+        /* =========================================================
+           PENNANT ROW
+        ========================================================= */
+
+        #sunset-title {
+
+            position: absolute;
+
+            top: 0;
+            left: 50%;
+
+            width: min(1150px, 96vw);
+            height: 140px;
+
+            transform: translateX(-50%);
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: flex-start;
+
+            flex-wrap: nowrap;
+
+            z-index: 2;
+
+            pointer-events: none;
+
+            background: transparent !important;
+        }
+
+
+        /* =========================================================
+           INDIVIDUAL PENNANT
+        ========================================================= */
+
+        .wind-letter {
+
+            position: relative;
+
+            width: 36px;
+            height: 65px;
+
+            flex: 0 0 36px;
+
+            margin: 0 -1px;
+
+            display: flex;
+
+            justify-content: center;
+
+            align-items: flex-start;
+
+            /*
+             * Exact position calculated by JavaScript.
+             */
+
+            top: var(--curve-y, 0px);
+
+            /*
+             * Exact tangent angle calculated from the
+             * quadratic Bézier curve.
+             */
+
+            transform:
+                rotate(
+                    calc(
+                        var(--curve-angle, 0deg)
+                        +
+                        var(--wind-angle, 0deg)
+                    )
+                );
+
+            transform-origin: 50% 0%;
+
+            animation:
+                letterWind
+                var(--wind-time, 3s)
+                ease-in-out
+                infinite
+                alternate;
+
+            animation-delay:
+                var(--wind-delay, 0s);
+
+            background: transparent !important;
+        }
+
+
+        /* =========================================================
+           TRIANGLE PENNANT
+        ========================================================= */
+
+        .wind-letter::before {
+
+            content: "";
+
+            position: absolute;
+
+            top: 0;
+            left: 50%;
+
+            width: 0;
+            height: 0;
+
+            transform: translateX(-50%);
+
+            border-left: 18px solid transparent;
+            border-right: 18px solid transparent;
+
+            border-top:
+                56px solid var(--triangle-color);
+
+            filter:
+                drop-shadow(
+                    0 3px 2px rgba(0, 0, 0, 0.14)
+                );
+        }
+
+
+        /* =========================================================
+           OFFSIDE LETTER
+        ========================================================= */
+
+        .wind-letter span {
+
+            position: relative;
+
+            z-index: 3;
+
+            margin-top: 15px;
+
+            font-family:
+                "Offside",
+                sans-serif;
+
+            font-size: 17px;
+
+            font-weight: 400;
+
+            line-height: 1;
+
+            color: #ffffff;
+
+            text-shadow:
+                1px 1px 0 rgba(0, 0, 0, 0.18);
+
+            /*
+             * Prevent the font from creating unexpected
+             * extra spacing.
+             */
+
+            display: block;
+
+            white-space: nowrap;
+        }
+
+
+        /* =========================================================
+           WORD SPACES
+        ========================================================= */
+
+        .space {
+
+            width: 12px;
+
+            flex: 0 0 12px;
+
+            position: relative;
+
+            background: transparent !important;
+        }
+
+
+        /* =========================================================
+           WIND ANIMATION
+
+           Only the wind angle changes.
+           Curve position and curve angle remain exact.
+        ========================================================= */
+
+        @keyframes letterWind {
+
+            0% {
+
+                --wind-angle: -4deg;
+            }
+
+            20% {
+
+                --wind-angle: 2deg;
+            }
+
+            40% {
+
+                --wind-angle: -1deg;
+            }
+
+            60% {
+
+                --wind-angle: 4deg;
+            }
+
+            80% {
+
+                --wind-angle: -2deg;
+            }
+
+            100% {
+
+                --wind-angle: 3deg;
+            }
+        }
+
+
+        /* =========================================================
+           PENNANT COLORS
+        ========================================================= */
+
+        .c1 {
+
+            --triangle-color:
+                #ff72a8;
+        }
+
+        .c2 {
+
+            --triangle-color:
+                #72c8ff;
+        }
+
+        .c3 {
+
+            --triangle-color:
+                #ffd45c;
+        }
+
+        .c4 {
+
+            --triangle-color:
+                #79d98b;
+        }
+
+        .c5 {
+
+            --triangle-color:
+                #b88cff;
+        }
+
+
+        /* =========================================================
+           WIND TIMING
+        ========================================================= */
+
+        .wind-letter:nth-of-type(1) {
+            --wind-time: 3.1s;
+            --wind-delay: -0.2s;
+        }
+
+        .wind-letter:nth-of-type(2) {
+            --wind-time: 3.5s;
+            --wind-delay: -1.0s;
+        }
+
+        .wind-letter:nth-of-type(3) {
+            --wind-time: 2.8s;
+            --wind-delay: -0.5s;
+        }
+
+        .wind-letter:nth-of-type(4) {
+            --wind-time: 3.7s;
+            --wind-delay: -1.7s;
+        }
+
+        .wind-letter:nth-of-type(5) {
+            --wind-time: 3.0s;
+            --wind-delay: -0.8s;
+        }
+
+        .wind-letter:nth-of-type(6) {
+            --wind-time: 3.4s;
+            --wind-delay: -1.3s;
+        }
+
+        .wind-letter:nth-of-type(7) {
+            --wind-time: 2.9s;
+            --wind-delay: -0.3s;
+        }
+
+        .wind-letter:nth-of-type(8) {
+            --wind-time: 3.6s;
+            --wind-delay: -1.5s;
+        }
+
+        .wind-letter:nth-of-type(9) {
+            --wind-time: 3.1s;
+            --wind-delay: -0.7s;
+        }
+
+        .wind-letter:nth-of-type(10) {
+            --wind-time: 3.8s;
+            --wind-delay: -1.9s;
+        }
+
+        .wind-letter:nth-of-type(11) {
+            --wind-time: 2.8s;
+            --wind-delay: -0.4s;
+        }
+
+        .wind-letter:nth-of-type(12) {
+            --wind-time: 3.3s;
+            --wind-delay: -1.2s;
+        }
+
+        .wind-letter:nth-of-type(13) {
+            --wind-time: 3.0s;
+            --wind-delay: -0.6s;
+        }
+
+        .wind-letter:nth-of-type(14) {
+            --wind-time: 3.7s;
+            --wind-delay: -1.6s;
+        }
+
+        .wind-letter:nth-of-type(15) {
+            --wind-time: 2.9s;
+            --wind-delay: -0.9s;
+        }
+
+        .wind-letter:nth-of-type(16) {
+            --wind-time: 3.4s;
+            --wind-delay: -1.4s;
+        }
+
+        .wind-letter:nth-of-type(17) {
+            --wind-time: 3.1s;
+            --wind-delay: -0.3s;
+        }
+
+        .wind-letter:nth-of-type(18) {
+            --wind-time: 3.5s;
+            --wind-delay: -1.1s;
+        }
+
+        .wind-letter:nth-of-type(19) {
+            --wind-time: 2.9s;
+            --wind-delay: -0.4s;
+        }
+
+        .wind-letter:nth-of-type(20) {
+            --wind-time: 3.6s;
+            --wind-delay: -1.6s;
+        }
+
+        .wind-letter:nth-of-type(21) {
+            --wind-time: 3.0s;
+            --wind-delay: -0.7s;
+        }
+
+        .wind-letter:nth-of-type(22) {
+            --wind-time: 3.4s;
+            --wind-delay: -1.3s;
+        }
+
+        .wind-letter:nth-of-type(23) {
+            --wind-time: 2.8s;
+            --wind-delay: -0.2s;
+        }
+
+        .wind-letter:nth-of-type(24) {
+            --wind-time: 3.7s;
+            --wind-delay: -1.7s;
+        }
+
+        .wind-letter:nth-of-type(25) {
+            --wind-time: 3.1s;
+            --wind-delay: -0.9s;
+        }
+
+        .wind-letter:nth-of-type(26) {
+            --wind-time: 3.5s;
+            --wind-delay: -1.5s;
+        }
+
+        .wind-letter:nth-of-type(27) {
+            --wind-time: 2.9s;
+            --wind-delay: -0.5s;
+        }
+
+
+        /* =========================================================
+           MOBILE
+        ========================================================= */
+
+        @media (max-width: 700px) {
+
+            #sunset-header {
+
+                height: 120px;
+            }
+
+
+            #pennant-string {
+
+                width: 100vw;
+
+                height: 100px;
+            }
+
+
+            #pennant-string path {
+
+                stroke-width: 2.5;
+            }
+
+
+            #sunset-title {
+
+                width: 100vw;
+
+                height: 100px;
+            }
+
+
+            .wind-letter {
+
+                width: 25px;
+
+                height: 45px;
+
+                flex: 0 0 25px;
+            }
+
+
+            .wind-letter::before {
+
+                border-left-width: 12px;
+
+                border-right-width: 12px;
+
+                border-top-width: 38px;
+            }
+
+
+            .wind-letter span {
+
+                margin-top: 10px;
+
+                font-family:
+                    "Offside",
+                    sans-serif;
+
+                font-size: 11px;
+
+                font-weight: 400;
+            }
+
+
+            .space {
+
+                width: 6px;
+
+                flex: 0 0 6px;
+            }
+
+        }
+
+
+        /* =========================================================
+           SMALL PHONES
+        ========================================================= */
+
+        @media (max-width: 430px) {
+
+            #sunset-title {
+
+                transform:
+                    translateX(-50%)
+                    scale(0.84);
+
+                transform-origin:
+                    top center;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+    <!-- =========================================================
+         SUNSET POINT HEADER
+    ========================================================== -->
+
+    <div id="sunset-header">
+
+
+        <!-- =====================================================
+             CURVED STRING
+
+             This is the curve the pennants mathematically follow.
+        ====================================================== -->
+
+        <svg
+            id="pennant-string"
+            viewBox="0 0 1000 140"
+            preserveAspectRatio="none"
+            aria-hidden="true"
+        >
+
+            <path
+                d="M 20 25 Q 500 110 980 25"
+            />
+
+        </svg>
+
+
+        <!-- =====================================================
+             PENNANTS
+
+             theshartechclub's sunset point
+        ====================================================== -->
+
+        <div id="sunset-title">
+
+
+            <!-- theshartechclub's -->
+
+            <div class="wind-letter c1">
+                <span>t</span>
+            </div>
+
+            <div class="wind-letter c2">
+                <span>h</span>
+            </div>
+
+            <div class="wind-letter c3">
+                <span>e</span>
+            </div>
+
+            <div class="wind-letter c4">
+                <span>s</span>
+            </div>
+
+            <div class="wind-letter c5">
+                <span>h</span>
+            </div>
+
+            <div class="wind-letter c1">
+                <span>a</span>
+            </div>
+
+            <div class="wind-letter c2">
+                <span>r</span>
+            </div>
+
+            <div class="wind-letter c3">
+                <span>t</span>
+            </div>
+
+            <div class="wind-letter c4">
+                <span>e</span>
+            </div>
+
+            <div class="wind-letter c5">
+                <span>c</span>
+            </div>
+
+            <div class="wind-letter c1">
+                <span>h</span>
+            </div>
+
+            <div class="wind-letter c2">
+                <span>c</span>
+            </div>
+
+            <div class="wind-letter c3">
+                <span>l</span>
+            </div>
+
+            <div class="wind-letter c4">
+                <span>u</span>
+            </div>
+
+            <div class="wind-letter c5">
+                <span>b</span>
+            </div>
+
+            <div class="wind-letter c1">
+                <span>'</span>
+            </div>
+
+            <div class="wind-letter c2">
+                <span>s</span>
+            </div>
+
+
+            <!-- SPACE -->
+
+            <div class="space"></div>
+
+
+            <!-- sunset -->
+
+            <div class="wind-letter c3">
+                <span>s</span>
+            </div>
+
+            <div class="wind-letter c4">
+                <span>u</span>
+            </div>
+
+            <div class="wind-letter c5">
+                <span>n</span>
+            </div>
+
+            <div class="wind-letter c1">
+                <span>s</span>
+            </div>
+
+            <div class="wind-letter c2">
+                <span>e</span>
+            </div>
+
+            <div class="wind-letter c3">
+                <span>t</span>
+            </div>
+
+
+            <!-- SPACE -->
+
+            <div class="space"></div>
+
+
+            <!-- point -->
+
+            <div class="wind-letter c4">
+                <span>p</span>
+            </div>
+
+            <div class="wind-letter c5">
+                <span>o</span>
+            </div>
+
+            <div class="wind-letter c1">
+                <span>i</span>
+            </div>
+
+            <div class="wind-letter c2">
+                <span>n</span>
+            </div>
+
+            <div class="wind-letter c3">
+                <span>t</span>
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         SCENE
+    ========================================================== -->
+
+    <div id="scene-container">
+
+        <div id="scene"></div>
+
+    </div>
+
+
+    <!-- =========================================================
+         EXISTING SCENE SCRIPTS
+    ========================================================== -->
+
+    <script src="scene.js"></script>
+
+    <script src="scene-editor.js"></script>
+
+    <script src="house-interaction.js"></script>
+
+    <script src="tree-interaction.js"></script>
+
+    <script src="scene-export.js"></script>
+
+
+    <!-- =========================================================
+         EXACT PENNANT → STRING ALIGNMENT
+    ========================================================== -->
+
+    <script>
+
+        function alignPennantsToString() {
+
+            const title =
+                document.getElementById(
+                    "sunset-title"
+                );
+
+            const string =
+                document.getElementById(
+                    "pennant-string"
+                );
+
+
+            if (!title || !string) {
+                return;
+            }
+
+
+            const letters =
+                Array.from(
+                    title.querySelectorAll(
+                        ".wind-letter"
+                    )
+                );
+
+
+            if (!letters.length) {
+                return;
+            }
+
+
+            const titleRect =
+                title.getBoundingClientRect();
+
+
+            const stringRect =
+                string.getBoundingClientRect();
+
+
+            /* =====================================================
+               SAME CURVE AS THE SVG
+
+               M 20 25
+               Q 500 110
+               980 25
+            ====================================================== */
+
+            const startX = 20;
+            const controlX = 500;
+            const endX = 980;
+
+            const startY = 25;
+            const controlY = 110;
+            const endY = 25;
+
+
+            const svgWidth =
+                stringRect.width;
+
+
+            const svgHeight =
+                stringRect.height;
+
+
+            const scaleY =
+                svgHeight / 140;
+
+
+            letters.forEach(
+                (letter) => {
+
+
+                    const rect =
+                        letter.getBoundingClientRect();
+
+
+                    /*
+                     * Center X of the pennant.
+                     */
+
+                    const centerX =
+                        rect.left +
+                        rect.width / 2;
+
+
+                    /*
+                     * Convert browser X position
+                     * into SVG coordinates.
+                     */
+
+                    let x =
+                        (
+                            centerX -
+                            stringRect.left
+                        )
+                        /
+                        svgWidth
+                        *
+                        1000;
+
+
+                    /*
+                     * Keep the point inside
+                     * the actual string.
+                     */
+
+                    x =
+                        Math.max(
+                            startX,
+                            Math.min(
+                                endX,
+                                x
+                            )
+                        );
+
+
+                    /*
+                     * Normalize to 0 → 1.
+                     */
+
+                    const t =
+                        (
+                            x - startX
+                        )
+                        /
+                        (
+                            endX - startX
+                        );
+
+
+                    /* =================================================
+                       QUADRATIC BÉZIER Y
+
+                       B(t) =
+                       (1-t)^2 P0
+                       +
+                       2(1-t)t P1
+                       +
+                       t^2 P2
+                    ================================================== */
+
+                    const y =
+                        Math.pow(
+                            1 - t,
+                            2
+                        )
+                        *
+                        startY
+
+                        +
+
+                        2
+                        *
+                        (1 - t)
+                        *
+                        t
+                        *
+                        controlY
+
+                        +
+
+                        Math.pow(
+                            t,
+                            2
+                        )
+                        *
+                        endY;
+
+
+                    /*
+                     * Convert SVG coordinates
+                     * into actual CSS pixels.
+                     */
+
+                    const curveY =
+                        y * scaleY;
+
+
+                    /*
+                     * Position relative to
+                     * the pennant row.
+                     */
+
+                    const relativeY =
+                        stringRect.top
+                        -
+                        titleRect.top
+                        +
+                        curveY;
+
+
+                    /* =================================================
+                       QUADRATIC CURVE TANGENT
+
+                       dx/dt = 2(1-t)(P1x-P0x)
+                             + 2t(P2x-P1x)
+
+                       dy/dt = 2(1-t)(P1y-P0y)
+                             + 2t(P2y-P1y)
+                    ================================================== */
+
+                    const dx =
+                        2
+                        *
+                        (
+                            (1 - t)
+                            *
+                            (controlX - startX)
+                            +
+                            t
+                            *
+                            (endX - controlX)
+                        );
+
+
+                    const dy =
+                        2
+                        *
+                        (
+                            (1 - t)
+                            *
+                            (controlY - startY)
+                            +
+                            t
+                            *
+                            (endY - controlY)
+                        );
+
+
+                    /*
+                     * Exact tangent angle.
+                     */
+
+                    const angle =
+                        Math.atan2(
+                            dy,
+                            dx
+                        )
+                        *
+                        180
+                        /
+                        Math.PI;
+
+
+                    /*
+                     * Apply exact vertical position.
+                     */
+
+                    letter.style.setProperty(
+                        "--curve-y",
+                        `${relativeY}px`
+                    );
+
+
+                    /*
+                     * Apply exact curve rotation.
+                     */
+
+                    letter.style.setProperty(
+                        "--curve-angle",
+                        `${angle}deg`
+                    );
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           REFRESH
+        ========================================================== */
+
+        function refreshPennantAlignment() {
+
+            requestAnimationFrame(
+                () => {
+
+                    alignPennantsToString();
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           INITIAL LOAD
+        ========================================================== */
+
+        window.addEventListener(
+            "load",
+            refreshPennantAlignment
+        );
+
+
+        /* =========================================================
+           WINDOW RESIZE
+        ========================================================== */
+
+        window.addEventListener(
+            "resize",
+            refreshPennantAlignment
+        );
+
+
+        /* =========================================================
+           FONT LOAD
+
+           Important because Offside changes the actual width
+           of the letters after Google Fonts finishes loading.
+        ========================================================== */
+
+        if (
+            document.fonts &&
+            document.fonts.ready
+        ) {
+
+            document.fonts.ready.then(
+                () => {
+
+                    refreshPennantAlignment();
+
+                }
+            );
+
+        }
+
+
+        /* =========================================================
+           INITIAL RUN
+        ========================================================== */
+
+        refreshPennantAlignment();
+
+    </script>
+
+
+</body>
+</html>

@@ -1,0 +1,1438 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arcade Claw Machine - Customizable</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Offside&display=swap" rel="stylesheet">
+    
+    <style id="game-styles">
+        :root {
+            --pink-bg: #ffa3c2;
+            --header-magenta: #d11a5b;
+            --glass-blue: #d2f0f8;
+            --deck-coral: #ff7f97;
+            --base-magenta: #c91854;
+            --border-color: #222222;
+            
+            /* Calibration Variables */
+            --glass-height: 350px;
+            --glass-y-offset: 0px;
+            --deck-y-offset: 0px;
+
+            /* Custom Asset Scale & Position Variables */
+            --claw-size: 120px;
+            --claw-y-offset: 0px;
+
+            --joystick-size: 110px;
+            --joystick-y-offset: 0px;
+
+            --button-size: 90px;
+            --button-y-offset: 0px;
+        }
+
+        body {
+            font-family: 'Offside', sans-serif;
+            background-color: var(--pink-bg);
+            background-image: radial-gradient(#ff7db0 15%, transparent 16%), radial-gradient(#ff7db0 15%, transparent 16%);
+            background-size: 40px 40px;
+            background-position: 0 0, 20px 20px;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: hidden;
+            user-select: none;
+        }
+
+        .brand-font {
+            font-family: 'Offside', sans-serif;
+        }
+
+        #token-card {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 80;
+            background-color: #fff8cc;
+            border: 4px solid #333;
+            border-radius: 20px;
+            box-shadow: 4px 4px 0px #222;
+        }
+
+        #machine-outer {
+            position: relative;
+            width: 440px;
+            height: 680px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #custom-machine-overlay {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 60;
+            object-fit: contain;
+            display: none;
+        }
+
+        #machine-container {
+            width: 420px;
+            height: 660px;
+            background-color: transparent;
+            border: 5px solid var(--border-color);
+            border-radius: 24px;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            box-shadow: 0 15px 0px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+
+        #top-marquee {
+            height: 70px;
+            background-color: var(--header-magenta);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            z-index: 10;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 4px solid var(--border-color);
+        }
+
+        #marquee-title {
+            color: #ffffff;
+            letter-spacing: 1.5px;
+            white-space: nowrap;
+            z-index: 2;
+        }
+
+        #glass-window {
+            height: var(--glass-height);
+            transform: translateY(var(--glass-y-offset));
+            background-color: var(--glass-blue);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 4px solid var(--border-color);
+            box-shadow: inset 0 0 25px rgba(255,255,255,0.8);
+            z-index: 10;
+        }
+
+        #rail {
+            position: absolute;
+            top: 12px;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #555;
+            border-bottom: 2px solid #222;
+            z-index: 8;
+        }
+
+        #chute-dropzone {
+            position: absolute;
+            bottom: 0;
+            left: 10px;
+            width: 75px;
+            height: 50px;
+            background-color: #222;
+            border-radius: 10px 10px 0 0;
+            z-index: 5;
+            opacity: 0.8;
+        }
+
+        #crane-system {
+            position: absolute;
+            top: 16px;
+            left: 200px;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            z-index: 50;
+        }
+
+        #crane-cable {
+            width: 4px;
+            height: 20px;
+            background: #222;
+        }
+
+        #crane-head-assembly {
+            position: relative;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            overflow: visible;
+        }
+
+        .custom-claw-img {
+            width: var(--claw-size) !important;
+            height: var(--claw-size) !important;
+            max-width: none !important;
+            max-height: none !important;
+            object-fit: contain;
+            position: absolute;
+            top: var(--claw-y-offset);
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        #css-claw-joint {
+            width: 28px;
+            height: 28px;
+            background: #fff;
+            border: 4px solid #222;
+            border-radius: 50%;
+            position: absolute;
+            top: 0;
+            z-index: 2;
+        }
+
+        .arm {
+            position: absolute;
+            top: 14px;
+            width: 18px;
+            height: 42px;
+            border: 4px solid #222;
+            border-radius: 0 0 8px 8px;
+            transform-origin: top center;
+            transition: transform 0.2s;
+            background: #e0e0e0;
+        }
+
+        .arm-left { left: 8px; border-right: none; border-top: none; transform: rotate(25deg); }
+        .arm-right { right: 8px; border-left: none; border-top: none; transform: rotate(-25deg); }
+        .claw-closed .arm-left { transform: rotate(5deg); }
+        .claw-closed .arm-right { transform: rotate(-5deg); }
+
+        .toy-slot {
+            position: absolute;
+            bottom: 0px;
+            user-select: none;
+            z-index: 20;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            transition: width 0.1s ease, height 0.1s ease, left 0.15s ease, bottom 0.15s ease;
+        }
+
+        .toy-img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            filter: drop-shadow(2px 3px 0px rgba(0,0,0,0.15));
+        }
+
+        #control-panel {
+            background-color: var(--deck-coral);
+            height: 90px;
+            transform: translateY(var(--deck-y-offset));
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            padding: 0 20px;
+            position: relative;
+            z-index: 10;
+            background-size: cover;
+            background-position: center;
+            border-bottom: 4px solid var(--border-color);
+        }
+
+        #joystick-container {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        #custom-joystick-img {
+            width: var(--joystick-size) !important;
+            height: var(--joystick-size) !important;
+            max-width: none !important;
+            max-height: none !important;
+            position: absolute;
+            top: var(--joystick-y-offset);
+            object-fit: contain;
+            transition: transform 0.1s ease;
+        }
+
+        .default-joystick-base {
+            width: 46px;
+            height: 18px;
+            background: #333;
+            border-radius: 10px;
+            position: relative;
+            border: 3px solid #111;
+        }
+
+        .default-joystick-stick {
+            width: 8px;
+            height: 32px;
+            background: #aaa;
+            position: absolute;
+            bottom: 10px;
+            left: 16px;
+            border: 2px solid #222;
+        }
+
+        .default-joystick-ball {
+            width: 24px;
+            height: 24px;
+            background: #ff2a2a;
+            border: 3px solid #222;
+            border-radius: 50%;
+            position: absolute;
+            top: -18px;
+            left: -10px;
+            transition: transform 0.1s;
+        }
+
+        .tilt-left #custom-joystick-img, .tilt-left .default-joystick-ball { transform: translateX(-8px) rotate(-15deg); }
+        .tilt-right #custom-joystick-img, .tilt-right .default-joystick-ball { transform: translateX(8px) rotate(15deg); }
+        .tilt-up #custom-joystick-img, .tilt-up .default-joystick-ball { transform: translateY(-8px); }
+        .tilt-down #custom-joystick-img, .tilt-down .default-joystick-ball { transform: translateY(8px); }
+
+        #button-container {
+            width: 65px;
+            height: 65px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            overflow: visible;
+        }
+
+        #custom-button-img {
+            width: var(--button-size) !important;
+            height: var(--button-size) !important;
+            max-width: none !important;
+            max-height: none !important;
+            position: absolute;
+            top: var(--button-y-offset);
+            object-fit: contain;
+            transition: transform 0.08s ease;
+        }
+
+        .default-red-btn {
+            width: 55px;
+            height: 35px;
+            background: #ff2a2a;
+            border: 4px solid #222;
+            border-radius: 50%;
+            box-shadow: 0 6px 0 #990000;
+            transition: all 0.08s;
+        }
+
+        .default-red-btn:active, .btn-pressed .default-red-btn, .btn-pressed#custom-button-img {
+            transform: translateY(4px);
+            box-shadow: 0 2px 0 #990000;
+        }
+
+        #machine-base {
+            flex: 1;
+            background-color: var(--base-magenta);
+            position: relative;
+            z-index: 10;
+            background-size: cover;
+            background-position: center;
+        }
+
+        #prize-chute-exterior {
+            position: absolute;
+            bottom: 16px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 120px;
+            height: 80px;
+            background: #222;
+            border: 4px solid var(--border-color);
+            border-radius: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            overflow: visible;
+        }
+
+        #prize-out-display {
+            position: absolute;
+            bottom: -15px;
+            width: 65px;
+            height: 65px;
+            z-index: 70;
+            transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform: translateY(-20px) scale(0);
+            opacity: 0;
+        }
+
+        #prize-out-display.dispense {
+            transform: translateY(0) scale(1);
+            opacity: 1;
+        }
+
+        .hide-all-frames #machine-container,
+        .hide-all-frames #control-panel,
+        .hide-all-frames #top-marquee,
+        .hide-all-frames #glass-window,
+        .hide-all-frames #machine-base,
+        .hide-all-frames #prize-chute-exterior {
+            border-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .hide-inner-bg #glass-window,
+        .hide-inner-bg #control-panel,
+        .hide-inner-bg #top-marquee,
+        .hide-inner-bg #machine-base {
+            background-color: transparent !important;
+            box-shadow: none !important;
+        }
+
+        .slot-highlight {
+            outline: 3px dashed #00f0ff !important;
+            outline-offset: 1px;
+            position: relative;
+        }
+
+        .slot-highlight::after {
+            content: attr(data-slot-name);
+            position: absolute;
+            top: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #00f0ff;
+            color: #000;
+            font-size: 9px;
+            font-weight: 800;
+            padding: 1px 4px;
+            border-radius: 4px;
+            white-space: nowrap;
+            z-index: 100;
+            pointer-events: none;
+        }
+
+        #customizer-panel {
+            position: fixed;
+            right: -420px;
+            top: 0;
+            width: 400px;
+            height: 100vh;
+            background: #ffffff;
+            box-shadow: -5px 0 25px rgba(0,0,0,0.25);
+            z-index: 200;
+            transition: right 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+        }
+
+        #customizer-panel.open { right: 0; }
+        .drawer-scroll::-webkit-scrollbar { width: 6px; }
+        .drawer-scroll::-webkit-scrollbar-thumb { background: #d11a5b; border-radius: 10px; }
+
+        #toast-notification {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%) translateY(100px);
+            background: #222;
+            color: #fff;
+            padding: 12px 24px;
+            border-radius: 30px;
+            font-weight: 700;
+            z-index: 300;
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            box-shadow: 0 5px 20px rgba(0,0,0,0.3);
+        }
+        #toast-notification.show {
+            transform: translateX(-50%) translateY(0);
+        }
+    </style>
+</head>
+<body>
+
+    <div id="token-card" class="p-3 flex items-center gap-3">
+        <span class="text-3xl">🎟️</span>
+        <div class="flex flex-col">
+            <span class="brand-font text-xs text-gray-500 uppercase">Tokens</span>
+            <span class="brand-font text-2xl text-gray-800 leading-none" id="token-count">5</span>
+        </div>
+        <button id="btn-add-tokens" class="ml-2 bg-yellow-400 hover:bg-yellow-500 text-black brand-font px-2 py-1 text-xs rounded-lg border-2 border-black active:translate-y-0.5">
+            + Add
+        </button>
+    </div>
+
+    <div id="machine-outer">
+        <img id="custom-machine-overlay" alt="Custom Machine Overlay" src="" />
+
+        <div id="machine-container" class="slot-target" data-slot-name="Outer Cabinet Frame">
+            
+            <div id="top-marquee" class="slot-target" data-slot-name="Header Marquee">
+                <h1 id="marquee-title" class="brand-font text-3xl">PRIZE CLAW</h1>
+            </div>
+
+            <div id="glass-window" class="slot-target" data-slot-name="Glass Chamber">
+                <div id="rail"></div>
+                <div id="chute-dropzone"></div>
+
+                <div id="toys-layer"></div>
+
+                <div id="crane-system">
+                    <div id="crane-cable"></div>
+                    <div id="crane-head-assembly" class="slot-target" data-slot-name="Claw Head">
+                        <img id="custom-claw-open" class="custom-claw-img hidden" alt="Claw Open" />
+                        <img id="custom-claw-closed" class="custom-claw-img hidden" alt="Claw Closed" />
+
+                        <div id="css-claw-body">
+                            <div id="css-claw-joint"></div>
+                            <div class="arm arm-left"></div>
+                            <div class="arm arm-right"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="control-panel" class="slot-target" data-slot-name="Control Deck">
+                <div id="joystick-container" class="slot-target" data-slot-name="Joystick UI">
+                    <img id="custom-joystick-img" class="hidden" alt="Joystick" />
+                    <div id="default-joystick" class="default-joystick-base">
+                        <div class="default-joystick-stick"></div>
+                        <div class="default-joystick-ball"></div>
+                    </div>
+                </div>
+
+                <div id="dpad-controls" class="flex gap-1 items-center">
+                    <button id="btn-left" class="w-9 h-9 bg-pink-500 border-2 border-black rounded-lg brand-font text-white text-sm active:bg-pink-600">◄</button>
+                    <div class="flex flex-col gap-1">
+                        <button id="btn-up" class="w-9 h-9 bg-pink-500 border-2 border-black rounded-lg brand-font text-white text-sm active:bg-pink-600">▲</button>
+                        <button id="btn-down" class="w-9 h-9 bg-pink-500 border-2 border-black rounded-lg brand-font text-white text-sm active:bg-pink-600">▼</button>
+                    </div>
+                    <button id="btn-right" class="w-9 h-9 bg-pink-500 border-2 border-black rounded-lg brand-font text-white text-sm active:bg-pink-600">►</button>
+                </div>
+
+                <div id="button-container" class="slot-target" data-slot-name="Drop Button UI">
+                    <img id="custom-button-img" class="hidden" alt="Drop Button" />
+                    <button id="default-button" class="default-red-btn"></button>
+                </div>
+            </div>
+
+            <div id="machine-base" class="slot-target" data-slot-name="Lower Base">
+                <div id="prize-chute-exterior">
+                    <div class="w-full h-3/4 bg-black rounded-t-md"></div>
+                    <img id="prize-out-display" alt="Prize Won" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button id="btn-toggle-drawer" class="fixed bottom-5 right-5 z-50 bg-pink-600 hover:bg-pink-700 text-white brand-font px-4 py-3 rounded-2xl border-4 border-black shadow-lg flex items-center gap-2 text-sm active:translate-y-1">
+        <span>🎨 Customizer / Uploads</span>
+    </button>
+
+    <div id="customizer-panel">
+        <div class="p-4 bg-pink-600 text-white flex justify-between items-center border-b-4 border-black">
+            <h2 class="brand-font text-lg">Asset & Layout Customizer</h2>
+            <button id="btn-close-drawer" class="text-white brand-font text-xl hover:text-gray-200">✕</button>
+        </div>
+
+        <div class="p-4 drawer-scroll flex-1 overflow-y-auto flex flex-col gap-5 text-sm">
+            <div class="bg-emerald-50 p-3 rounded-xl border-2 border-emerald-400 flex flex-col gap-2">
+                <span class="font-bold text-emerald-900 flex items-center gap-1">🚀 Export & Publish Clean Code</span>
+                <p class="text-[11px] text-emerald-800 leading-tight">
+                    Finished editing? Click below to generate a clean, ready-to-publish <code>index.html</code> with all your image assets embedded!
+                </p>
+                <div class="flex gap-2 mt-1">
+                    <button id="btn-copy-clean-code" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white brand-font py-2 rounded-lg text-xs border-2 border-emerald-900 shadow active:translate-y-0.5">
+                        📋 Copy Clean Code
+                    </button>
+                    <button id="btn-download-html" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white brand-font py-2 rounded-lg text-xs border-2 border-blue-900 shadow active:translate-y-0.5">
+                        💾 Download index.html
+                    </button>
+                </div>
+            </div>
+
+            <!-- SPACING & LAYOUT DISTANCE CONTROLS -->
+            <div class="bg-indigo-50 p-3 rounded-xl border-2 border-indigo-300 flex flex-col gap-2">
+                <span class="font-bold text-indigo-900">📏 Toy Position & Distance Controls</span>
+                <p class="text-[11px] text-gray-600 leading-tight">Adjust horizontal spacing, vertical row height, or shift the whole pile up/down.</p>
+
+                <div class="flex flex-col gap-1 mt-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Pile Base Y-Offset (Up/Down Floor):</span>
+                        <span id="val-toy-y-shift">0px</span>
+                    </label>
+                    <input type="range" id="slider-toy-y-shift" min="-40" max="80" value="0" class="w-full accent-indigo-600">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Horizontal Distance / Spacing:</span>
+                        <span id="val-toy-h-spacing">100%</span>
+                    </label>
+                    <input type="range" id="slider-toy-h-spacing" min="30" max="220" value="100" class="w-full accent-indigo-600">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Vertical Row Distance:</span>
+                        <span id="val-toy-v-spacing">100%</span>
+                    </label>
+                    <input type="range" id="slider-toy-v-spacing" min="30" max="220" value="100" class="w-full accent-indigo-600">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Global Scale (All Toys):</span>
+                        <span id="val-global-toy-size">52px</span>
+                    </label>
+                    <input type="range" id="slider-global-toy-size" min="20" max="100" value="52" class="w-full accent-indigo-600">
+                </div>
+            </div>
+
+            <div class="bg-yellow-50 p-3 rounded-xl border-2 border-yellow-300 flex flex-col gap-2">
+                <span class="font-bold text-yellow-900">✨ Layout Alignment & Transparency</span>
+                
+                <div class="flex items-center justify-between">
+                    <label for="toggle-hide-inner-bg" class="text-xs text-gray-800 font-bold">Hide Inner Background Colors</label>
+                    <input type="checkbox" id="toggle-hide-inner-bg" class="w-5 h-5 accent-pink-600 cursor-pointer">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label for="toggle-hide-all-borders" class="text-xs text-gray-800 font-bold">Hide Machine Outer Borders</label>
+                    <input type="checkbox" id="toggle-hide-all-borders" class="w-5 h-5 accent-pink-600 cursor-pointer">
+                </div>
+
+                <div class="flex items-center justify-between">
+                    <label for="toggle-highlights" class="text-xs text-blue-900 font-bold">Highlight Slot Guidelines</label>
+                    <input type="checkbox" id="toggle-highlights" class="w-5 h-5 accent-blue-600 cursor-pointer">
+                </div>
+
+                <div class="mt-2 flex flex-col gap-1 border-t pt-2">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Glass Chamber Height:</span>
+                        <span id="val-glass-height">350px</span>
+                    </label>
+                    <input type="range" id="slider-glass-height" min="200" max="450" value="350" class="w-full accent-pink-600">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Glass Chamber Y-Offset:</span>
+                        <span id="val-glass-y">0px</span>
+                    </label>
+                    <input type="range" id="slider-glass-y" min="-50" max="50" value="0" class="w-full accent-pink-600">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Control Deck Y-Offset:</span>
+                        <span id="val-deck-y">0px</span>
+                    </label>
+                    <input type="range" id="slider-deck-y" min="-50" max="50" value="0" class="w-full accent-pink-600">
+                </div>
+
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs font-bold text-gray-700 flex justify-between">
+                        <span>Claw Floor Depth Limit:</span>
+                        <span id="val-claw-reach">270px</span>
+                    </label>
+                    <input type="range" id="slider-claw-reach" min="150" max="380" value="270" class="w-full accent-pink-600">
+                </div>
+            </div>
+
+            <!-- INDIVIDUAL TOYS CONTROL PANEL -->
+            <div class="bg-pink-50 p-3 rounded-xl border-2 border-pink-200 flex flex-col gap-3">
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-pink-900">🧸 Individual Toy Customization</span>
+                </div>
+                <p class="text-[11px] text-gray-500 leading-tight">Adjust each toy's specific size or upload unique graphics.</p>
+
+                <div id="teddy-upload-rows" class="flex flex-col gap-2 max-h-80 overflow-y-auto pr-1"></div>
+            </div>
+
+            <div class="bg-pink-50 p-3 rounded-xl border-2 border-pink-200 flex flex-col gap-2">
+                <span class="font-bold text-pink-900">🖼️ Upload Main Cabinet Frame Graphic</span>
+                <p class="text-[11px] text-gray-500 leading-tight">Upload your template graphic.</p>
+                <input type="file" id="upload-machine-body" accept="image/*" class="text-xs">
+                <input type="text" id="url-machine-body" placeholder="Or paste image URL..." class="p-1.5 border rounded text-xs">
+            </div>
+
+            <div class="bg-gray-50 p-3 rounded-xl border-2 border-gray-200 flex flex-col gap-2">
+                <span class="font-bold text-gray-800">🏷️ Header Marquee</span>
+                <input type="text" id="input-banner-text" value="PRIZE CLAW" class="p-2 border rounded-lg text-sm font-bold" placeholder="Header Text..." />
+                <div class="flex gap-2 items-center">
+                    <label class="text-xs text-gray-500">Title Color:</label>
+                    <input type="color" id="input-banner-color" value="#ffffff" class="w-8 h-8 rounded cursor-pointer border">
+                </div>
+                <label class="text-xs text-gray-600 font-bold mt-1">Header Background PNG:</label>
+                <input type="file" id="upload-marquee-bg" accept="image/*" class="text-xs">
+            </div>
+
+            <div class="bg-pink-50 p-3 rounded-xl border-2 border-pink-200 flex flex-col gap-2">
+                <span class="font-bold text-pink-900">🏗️ Claw Head Graphics</span>
+                <div class="flex flex-col gap-1">
+                    <label class="text-xs text-gray-600 font-bold">Claw Open PNG:</label>
+                    <input type="file" id="upload-claw-open" accept="image/*" class="text-xs">
+                </div>
+                <div class="flex flex-col gap-1 mt-1">
+                    <label class="text-xs text-gray-600 font-bold">Claw Closed PNG:</label>
+                    <input type="file" id="upload-claw-closed" accept="image/*" class="text-xs">
+                </div>
+                <div class="flex flex-col gap-2 mt-2 border-t pt-2">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-bold text-gray-700 flex justify-between">
+                            <span>Claw Scale Size:</span>
+                            <span id="val-claw-size">120px</span>
+                        </label>
+                        <input type="range" id="slider-claw-size" min="30" max="400" value="120" class="w-full accent-pink-600">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-bold text-gray-700 flex justify-between">
+                            <span>Claw Y Position Offset:</span>
+                            <span id="val-claw-y">0px</span>
+                        </label>
+                        <input type="range" id="slider-claw-y" min="-100" max="100" value="0" class="w-full accent-pink-600">
+                    </div>
+                </div>
+            </div>
+
+            <div class="bg-pink-50 p-3 rounded-xl border-2 border-pink-200 flex flex-col gap-2">
+                <span class="font-bold text-pink-900">🕹️ Joystick & Buttons Graphics</span>
+                <div>
+                    <label class="text-xs text-gray-600 font-bold">Joystick PNG:</label>
+                    <input type="file" id="upload-joystick" accept="image/*" class="text-xs w-full">
+                </div>
+                <div class="flex flex-col gap-2 mt-1 border-b pb-2">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-bold text-gray-700 flex justify-between">
+                            <span>Joystick Scale Size:</span>
+                            <span id="val-joystick-size">110px</span>
+                        </label>
+                        <input type="range" id="slider-joystick-size" min="30" max="350" value="110" class="w-full accent-pink-600">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-bold text-gray-700 flex justify-between">
+                            <span>Joystick Y Position Offset:</span>
+                            <span id="val-joystick-y">0px</span>
+                        </label>
+                        <input type="range" id="slider-joystick-y" min="-100" max="100" value="0" class="w-full accent-pink-600">
+                    </div>
+                </div>
+
+                <div class="mt-2">
+                    <label class="text-xs text-gray-600 font-bold">Drop Button PNG:</label>
+                    <input type="file" id="upload-button" accept="image/*" class="text-xs w-full">
+                </div>
+                <div class="flex flex-col gap-2 mt-1">
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-bold text-gray-700 flex justify-between">
+                            <span>Button Scale Size:</span>
+                            <span id="val-button-size">90px</span>
+                        </label>
+                        <input type="range" id="slider-button-size" min="30" max="350" value="90" class="w-full accent-pink-600">
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <label class="text-xs font-bold text-gray-700 flex justify-between">
+                            <span>Button Y Position Offset:</span>
+                            <span id="val-button-y">0px</span>
+                        </label>
+                        <input type="range" id="slider-button-y" min="-100" max="100" value="0" class="w-full accent-pink-600">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="toast-notification">Code Copied!</div>
+
+    <script id="game-logic">
+        const GLASS_WIDTH = 388;
+        let maxCraneY = 270;
+        const CLAW_SPEED = 3;
+        const DROP_SPEED = 4;
+        const RETRACT_SPEED = 3.5;
+        const CHUTE_X = 50;
+
+        let tokens = 5;
+        let gameState = 'IDLE';
+        let craneX = 200;
+        let craneY = 20;
+        let targetDropY = 270;
+
+        let horizontalSpacingScale = 1.0;
+        let verticalSpacingScale = 1.0;
+        let toyYShift = 0;
+        let globalToySize = 52;
+        let INITIAL_TOYS_CONFIG = null;
+
+        const keys = { up: false, down: false, left: false, right: false };
+
+        const DEFAULT_TEDDY_SVGS = [
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%23b45309"/><circle cx="70" cy="30" r="15" fill="%23b45309"/><circle cx="50" cy="55" r="35" fill="%23d97706"/><circle cx="50" cy="60" r="18" fill="%23fef3c7"/><ellipse cx="43" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="57" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="50" cy="56" rx="6" ry="4" fill="%23000"/></svg>',
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%23db2777"/><circle cx="70" cy="30" r="15" fill="%23db2777"/><circle cx="50" cy="55" r="35" fill="%23f472b6"/><circle cx="50" cy="60" r="18" fill="%23fce7f3"/><ellipse cx="43" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="57" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="50" cy="56" rx="6" ry="4" fill="%23000"/></svg>',
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%232563eb"/><circle cx="70" cy="30" r="15" fill="%232563eb"/><circle cx="50" cy="55" r="35" fill="%2360a5fa"/><circle cx="50" cy="60" r="18" fill="%23dbeafe"/><ellipse cx="43" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="57" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="50" cy="56" rx="6" ry="4" fill="%23000"/></svg>',
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%23059669"/><circle cx="70" cy="30" r="15" fill="%23059669"/><circle cx="50" cy="55" r="35" fill="%2334d399"/><circle cx="50" cy="60" r="18" fill="%23ecfdf5"/><ellipse cx="43" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="57" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="50" cy="56" rx="6" ry="4" fill="%23000"/></svg>',
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%237c3aed"/><circle cx="70" cy="30" r="15" fill="%237c3aed"/><circle cx="50" cy="55" r="35" fill="%23a78bfa"/><circle cx="50" cy="60" r="18" fill="%23f5f3ff"/><ellipse cx="43" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="57" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="50" cy="56" rx="6" ry="4" fill="%23000"/></svg>',
+            'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="30" cy="30" r="15" fill="%23ea580c"/><circle cx="70" cy="30" r="15" fill="%23ea580c"/><circle cx="50" cy="55" r="35" fill="%23fb923c"/><circle cx="50" cy="60" r="18" fill="%23fff7ed"/><ellipse cx="43" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="57" cy="48" rx="4" ry="6" fill="%23000"/><ellipse cx="50" cy="56" rx="6" ry="4" fill="%23000"/></svg>'
+        ];
+
+        let toysData = [];
+        let grabbedToy = null;
+
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playTone(freq, duration, type='sine') {
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.type = type;
+                osc.frequency.value = freq;
+                gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + duration);
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                osc.start();
+                osc.stop(audioCtx.currentTime + duration);
+            } catch(e){}
+        }
+
+        function showToast(text) {
+            const toast = document.getElementById('toast-notification');
+            if (!toast) return;
+            toast.innerText = text;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2500);
+        }
+
+        const basePileLayout = [
+            { baseX: 80,  baseBottom: 0,  z: 40, rot: -15 },
+            { baseX: 122, baseBottom: 2,  z: 40, rot: 8 },
+            { baseX: 165, baseBottom: 0,  z: 40, rot: -6 },
+            { baseX: 208, baseBottom: 3,  z: 40, rot: 10 },
+            { baseX: 250, baseBottom: 0,  z: 40, rot: -12 },
+            { baseX: 293, baseBottom: 4,  z: 40, rot: 14 },
+            { baseX: 335, baseBottom: 0,  z: 40, rot: -8 },
+            { baseX: 365, baseBottom: 2,  z: 40, rot: 18 },
+
+            { baseX: 75,  baseBottom: 38, z: 30, rot: 22 },
+            { baseX: 115, baseBottom: 35, z: 30, rot: -10 },
+            { baseX: 155, baseBottom: 42, z: 30, rot: 12 },
+            { baseX: 198, baseBottom: 36, z: 30, rot: -7 },
+            { baseX: 240, baseBottom: 40, z: 30, rot: 15 },
+            { baseX: 282, baseBottom: 35, z: 30, rot: -14 },
+            { baseX: 325, baseBottom: 42, z: 30, rot: 9 },
+            { baseX: 360, baseBottom: 38, z: 30, rot: -16 },
+
+            { baseX: 95,  baseBottom: 72, z: 20, rot: -11 },
+            { baseX: 140, baseBottom: 78, z: 20, rot: 14 },
+            { baseX: 185, baseBottom: 70, z: 20, rot: -5 },
+            { baseX: 230, baseBottom: 75, z: 20, rot: 11 },
+            { baseX: 275, baseBottom: 72, z: 20, rot: -13 },
+            { baseX: 320, baseBottom: 78, z: 20, rot: 8 },
+            { baseX: 350, baseBottom: 70, z: 20, rot: -18 },
+
+            { baseX: 125, baseBottom: 110, z: 10, rot: 12 },
+            { baseX: 170, baseBottom: 115, z: 10, rot: -9 },
+            { baseX: 215, baseBottom: 108, z: 10, rot: 6 },
+            { baseX: 260, baseBottom: 112, z: 10, rot: -14 },
+            { baseX: 305, baseBottom: 105, z: 10, rot: 10 }
+        ];
+
+        function initToys() {
+            const toysLayer = document.getElementById('toys-layer');
+            if (!toysLayer) return;
+            
+            toysLayer.innerHTML = '';
+            toysData = [];
+
+            basePileLayout.forEach((pos, index) => {
+                const id = index + 1;
+                const slotEl = document.createElement('div');
+                slotEl.id = `slot-toy-${id}`;
+                slotEl.className = 'toy-slot slot-target';
+                slotEl.style.zIndex = pos.z;
+                slotEl.style.transform = `rotate(${pos.rot}deg)`;
+                
+                slotEl.setAttribute('data-slot-name', `Teddy ${id}`);
+                toysLayer.appendChild(slotEl);
+
+                const config = INITIAL_TOYS_CONFIG && INITIAL_TOYS_CONFIG[index] ? INITIAL_TOYS_CONFIG[index] : null;
+                const defaultSrc = DEFAULT_TEDDY_SVGS[index % DEFAULT_TEDDY_SVGS.length];
+                const src = config ? config.src : defaultSrc;
+                const customSize = config ? config.customSize : null;
+
+                const toyObj = {
+                    id: id,
+                    slotEl: slotEl,
+                    baseX: pos.baseX,
+                    baseBottom: pos.baseBottom,
+                    x: pos.baseX,
+                    bottom: pos.baseBottom,
+                    size: customSize !== null ? customSize : globalToySize,
+                    customSize: customSize,
+                    active: true,
+                    src: src
+                };
+
+                toysData.push(toyObj);
+                renderToyImage(toyObj);
+            });
+
+            updateToyPositionsAndSizes();
+        }
+
+        function updateToyPositionsAndSizes() {
+            const CENTER_X = 220;
+
+            toysData.forEach(toy => {
+                if (!toy.active) return;
+
+                const currentSize = toy.customSize !== null ? toy.customSize : globalToySize;
+                toy.size = currentSize;
+
+                const shiftedX = CENTER_X + (toy.baseX - CENTER_X) * horizontalSpacingScale;
+                const shiftedBottom = (toy.baseBottom * verticalSpacingScale) + toyYShift;
+
+                toy.x = shiftedX;
+                toy.bottom = shiftedBottom;
+
+                toy.slotEl.style.width = `${currentSize}px`;
+                toy.slotEl.style.height = `${currentSize}px`;
+                toy.slotEl.style.left = `${shiftedX - (currentSize / 2)}px`;
+                toy.slotEl.style.bottom = `${shiftedBottom}px`;
+            });
+        }
+
+        function renderToyImage(toy) {
+            if (!toy.slotEl) return;
+            toy.slotEl.innerHTML = '';
+            const img = document.createElement('img');
+            img.src = toy.src;
+            img.className = 'toy-img';
+            toy.slotEl.appendChild(img);
+        }
+
+        function setupCustomizer() {
+            const drawer = document.getElementById('customizer-panel');
+            const toggleBtn = document.getElementById('btn-toggle-drawer');
+            if (!drawer || !toggleBtn) return;
+
+            toggleBtn.onclick = () => drawer.classList.toggle('open');
+            document.getElementById('btn-close-drawer').onclick = () => drawer.classList.remove('open');
+
+            document.getElementById('slider-toy-y-shift').oninput = (e) => {
+                toyYShift = parseInt(e.target.value);
+                document.getElementById('val-toy-y-shift').innerText = `${e.target.value}px`;
+                updateToyPositionsAndSizes();
+            };
+
+            document.getElementById('slider-toy-h-spacing').oninput = (e) => {
+                horizontalSpacingScale = parseFloat(e.target.value) / 100;
+                document.getElementById('val-toy-h-spacing').innerText = `${e.target.value}%`;
+                updateToyPositionsAndSizes();
+            };
+
+            document.getElementById('slider-toy-v-spacing').oninput = (e) => {
+                verticalSpacingScale = parseFloat(e.target.value) / 100;
+                document.getElementById('val-toy-v-spacing').innerText = `${e.target.value}%`;
+                updateToyPositionsAndSizes();
+            };
+
+            document.getElementById('slider-global-toy-size').oninput = (e) => {
+                globalToySize = parseInt(e.target.value);
+                document.getElementById('val-global-toy-size').innerText = `${e.target.value}px`;
+                updateToyPositionsAndSizes();
+            };
+
+            document.getElementById('toggle-hide-inner-bg').onchange = (e) => {
+                if (e.target.checked) document.body.classList.add('hide-inner-bg');
+                else document.body.classList.remove('hide-inner-bg');
+            };
+
+            document.getElementById('toggle-hide-all-borders').onchange = (e) => {
+                if (e.target.checked) document.body.classList.add('hide-all-frames');
+                else document.body.classList.remove('hide-all-frames');
+            };
+
+            document.getElementById('toggle-highlights').onchange = (e) => {
+                document.querySelectorAll('.slot-target').forEach(el => {
+                    if (e.target.checked) el.classList.add('slot-highlight');
+                    else el.classList.remove('slot-highlight');
+                });
+            };
+
+            document.getElementById('slider-glass-height').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--glass-height', val);
+                document.getElementById('val-glass-height').innerText = val;
+            };
+
+            document.getElementById('slider-glass-y').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--glass-y-offset', val);
+                document.getElementById('val-glass-y').innerText = val;
+            };
+
+            document.getElementById('slider-deck-y').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--deck-y-offset', val);
+                document.getElementById('val-deck-y').innerText = val;
+            };
+
+            document.getElementById('slider-claw-reach').oninput = (e) => {
+                maxCraneY = parseInt(e.target.value);
+                document.getElementById('val-claw-reach').innerText = e.target.value + 'px';
+            };
+
+            document.getElementById('slider-claw-size').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--claw-size', val);
+                document.getElementById('val-claw-size').innerText = val;
+            };
+            document.getElementById('slider-claw-y').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--claw-y-offset', val);
+                document.getElementById('val-claw-y').innerText = val;
+            };
+
+            document.getElementById('slider-joystick-size').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--joystick-size', val);
+                document.getElementById('val-joystick-size').innerText = val;
+            };
+            document.getElementById('slider-joystick-y').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--joystick-y-offset', val);
+                document.getElementById('val-joystick-y').innerText = val;
+            };
+
+            document.getElementById('slider-button-size').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--button-size', val);
+                document.getElementById('val-button-size').innerText = val;
+            };
+            document.getElementById('slider-button-y').oninput = (e) => {
+                const val = e.target.value + 'px';
+                document.documentElement.style.setProperty('--button-y-offset', val);
+                document.getElementById('val-button-y').innerText = val;
+            };
+
+            const handleMachineBody = (src) => {
+                const img = document.getElementById('custom-machine-overlay');
+                img.src = src;
+                img.style.display = src ? 'block' : 'none';
+            };
+
+            document.getElementById('upload-machine-body').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => handleMachineBody(evt.target.result);
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+            document.getElementById('url-machine-body').oninput = (e) => handleMachineBody(e.target.value);
+
+            document.getElementById('input-banner-text').oninput = (e) => {
+                document.getElementById('marquee-title').innerText = e.target.value || 'PRIZE CLAW';
+            };
+            document.getElementById('input-banner-color').oninput = (e) => {
+                document.getElementById('marquee-title').style.color = e.target.value;
+            };
+
+            document.getElementById('upload-marquee-bg').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        document.getElementById('top-marquee').style.backgroundImage = `url(${evt.target.result})`;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+
+            document.getElementById('upload-claw-open').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const clawImg = document.getElementById('custom-claw-open');
+                        clawImg.src = evt.target.result;
+                        clawImg.classList.remove('hidden');
+                        document.getElementById('css-claw-body').classList.add('hidden');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+
+            document.getElementById('upload-claw-closed').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        document.getElementById('custom-claw-closed').src = evt.target.result;
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+
+            document.getElementById('upload-joystick').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const img = document.getElementById('custom-joystick-img');
+                        img.src = evt.target.result;
+                        img.classList.remove('hidden');
+                        document.getElementById('default-joystick').classList.add('hidden');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+
+            document.getElementById('upload-button').onchange = (e) => {
+                if (e.target.files[0]) {
+                    const reader = new FileReader();
+                    reader.onload = (evt) => {
+                        const img = document.getElementById('custom-button-img');
+                        img.src = evt.target.result;
+                        img.classList.remove('hidden');
+                        document.getElementById('default-button').classList.add('hidden');
+                    };
+                    reader.readAsDataURL(e.target.files[0]);
+                }
+            };
+
+            const rowsContainer = document.getElementById('teddy-upload-rows');
+            rowsContainer.innerHTML = '';
+
+            toysData.forEach((toy) => {
+                const card = document.createElement('div');
+                card.className = 'bg-white p-2 rounded-lg border border-pink-200 flex flex-col gap-1.5 shadow-sm';
+                card.innerHTML = `
+                    <div class="flex justify-between items-center border-b pb-1">
+                        <span class="font-bold text-xs text-pink-900">Teddy / Slot ${toy.id}</span>
+                        <span class="text-[11px] font-bold text-gray-600" id="val-toy-size-${toy.id}">${toy.size}px</span>
+                    </div>
+                    <div class="flex flex-col gap-1">
+                        <div class="flex justify-between items-center">
+                            <label class="text-[10px] font-semibold text-gray-500 uppercase">Override Size:</label>
+                        </div>
+                        <input type="range" min="20" max="120" value="${toy.size}" class="w-full accent-pink-600 cursor-pointer" id="slider-toy-size-${toy.id}">
+                    </div>
+                    <div class="flex flex-col gap-1 mt-0.5">
+                        <label class="text-[10px] font-semibold text-gray-500 uppercase">Custom Image:</label>
+                        <input type="file" accept="image/*" class="text-xs w-full" id="upload-teddy-${toy.id}">
+                    </div>
+                `;
+                rowsContainer.appendChild(card);
+
+                setTimeout(() => {
+                    document.getElementById(`slider-toy-size-${toy.id}`).oninput = (e) => {
+                        const newSize = parseInt(e.target.value);
+                        toy.customSize = newSize;
+                        document.getElementById(`val-toy-size-${toy.id}`).innerText = `${newSize}px`;
+                        updateToyPositionsAndSizes();
+                    };
+
+                    document.getElementById(`upload-teddy-${toy.id}`).onchange = (e) => {
+                        if (e.target.files[0]) {
+                            const reader = new FileReader();
+                            reader.onload = (evt) => {
+                                toy.src = evt.target.result;
+                                renderToyImage(toy);
+                            };
+                            reader.readAsDataURL(e.target.files[0]);
+                        }
+                    };
+                }, 0);
+            });
+
+            const generateCleanHTML = () => {
+                const cloneDoc = document.documentElement.cloneNode(true);
+
+                // Preserve live root CSS variables inline
+                const rootStyles = getComputedStyle(document.documentElement);
+                const cssVars = [
+                    '--glass-height', '--glass-y-offset', '--deck-y-offset',
+                    '--claw-size', '--claw-y-offset', '--joystick-size',
+                    '--joystick-y-offset', '--button-size', '--button-y-offset'
+                ];
+                let inlineCss = '';
+                cssVars.forEach(v => {
+                    const val = rootStyles.getPropertyValue(v).trim();
+                    if (val) inlineCss += `${v}:${val}; `;
+                });
+                cloneDoc.setAttribute('style', inlineCss);
+
+                const drawerEl = cloneDoc.querySelector('#customizer-panel');
+                const btnEl = cloneDoc.querySelector('#btn-toggle-drawer');
+                if (drawerEl) drawerEl.remove();
+                if (btnEl) btnEl.remove();
+
+                cloneDoc.querySelectorAll('.slot-highlight').forEach(el => el.classList.remove('slot-highlight'));
+
+                let scriptContent = cloneDoc.querySelector('#game-logic').innerHTML;
+                scriptContent = scriptContent.replace(/let maxCraneY = \d+;/, `let maxCraneY = ${maxCraneY};`);
+                scriptContent = scriptContent.replace(/let horizontalSpacingScale = [0-9.]+;/, `let horizontalSpacingScale = ${horizontalSpacingScale};`);
+                scriptContent = scriptContent.replace(/let verticalSpacingScale = [0-9.]+;/, `let verticalSpacingScale = ${verticalSpacingScale};`);
+                scriptContent = scriptContent.replace(/let toyYShift = -?\d+;/, `let toyYShift = ${toyYShift};`);
+                scriptContent = scriptContent.replace(/let globalToySize = \d+;/, `let globalToySize = ${globalToySize};`);
+
+                const exportedToysConfig = toysData.map(t => ({
+                    customSize: t.customSize,
+                    src: t.src
+                }));
+
+                scriptContent = scriptContent.replace(
+                    /let INITIAL_TOYS_CONFIG = null;/,
+                    `let INITIAL_TOYS_CONFIG = ${JSON.stringify(exportedToysConfig)};`
+                );
+
+                scriptContent = scriptContent.replace('setupCustomizer();', '// Customizer removed for production');
+                cloneDoc.querySelector('#game-logic').innerHTML = scriptContent;
+
+                return "<!DOCTYPE html>\n" + cloneDoc.outerHTML;
+            };
+
+            document.getElementById('btn-copy-clean-code').onclick = () => {
+                const cleanCode = generateCleanHTML();
+                navigator.clipboard.writeText(cleanCode).then(() => {
+                    showToast("✨ Clean Production Code Copied!");
+                });
+            };
+
+            document.getElementById('btn-download-html').onclick = () => {
+                const cleanCode = generateCleanHTML();
+                const blob = new Blob([cleanCode], { type: 'text/html' });
+                const link = document.createElement('a');
+                link.href = URL.createObjectURL(blob);
+                link.download = 'index.html';
+                link.click();
+                showToast("💾 index.html Downloaded!");
+            };
+        }
+
+        function setupControls() {
+            const joystickContainer = document.getElementById('joystick-container');
+            const dropBtn = document.getElementById('button-container');
+
+            window.onkeydown = (e) => {
+                if (e.key === 'ArrowLeft') { keys.left = true; joystickContainer.className = 'slot-target tilt-left'; }
+                if (e.key === 'ArrowRight') { keys.right = true; joystickContainer.className = 'slot-target tilt-right'; }
+                if (e.key === 'ArrowUp') { keys.up = true; joystickContainer.className = 'slot-target tilt-up'; }
+                if (e.key === 'ArrowDown') { keys.down = true; joystickContainer.className = 'slot-target tilt-down'; }
+                if (e.key === ' ' && gameState === 'IDLE') {
+                    dropBtn.classList.add('btn-pressed');
+                    triggerDrop();
+                }
+            };
+
+            window.onkeyup = (e) => {
+                if (['ArrowLeft','ArrowRight','ArrowUp','ArrowDown'].includes(e.key)) {
+                    keys[e.key.replace('Arrow','').toLowerCase()] = false;
+                    joystickContainer.className = 'slot-target';
+                }
+                if (e.key === ' ') dropBtn.classList.remove('btn-pressed');
+            };
+
+            const bindBtn = (id, key, tilt) => {
+                const btn = document.getElementById(id);
+                if (!btn) return;
+                btn.onmousedown = btn.ontouchstart = (e) => {
+                    e.preventDefault();
+                    keys[key] = true;
+                    joystickContainer.className = `slot-target ${tilt}`;
+                };
+                btn.onmouseup = btn.ontouchend = (e) => {
+                    e.preventDefault();
+                    keys[key] = false;
+                    joystickContainer.className = 'slot-target';
+                };
+            };
+            bindBtn('btn-left', 'left', 'tilt-left');
+            bindBtn('btn-right', 'right', 'tilt-right');
+            bindBtn('btn-up', 'up', 'tilt-up');
+            bindBtn('btn-down', 'down', 'tilt-down');
+
+            dropBtn.onclick = () => { if (gameState === 'IDLE') triggerDrop(); };
+
+            document.getElementById('btn-add-tokens').onclick = () => {
+                tokens += 5;
+                document.getElementById('token-count').innerText = tokens;
+                playTone(600, 0.1, 'square');
+            };
+        }
+
+        function getHighestToyUnderClaw() {
+            let hit = null;
+            let highestBottom = -1;
+
+            toysData.forEach(toy => {
+                if (!toy.active) return;
+
+                const halfToySize = toy.size / 2;
+                const toyCenterX = toy.x;
+                const dist = Math.abs(craneX - toyCenterX);
+                if (dist < (halfToySize + 10)) {
+                    if (toy.bottom > highestBottom) {
+                        highestBottom = toy.bottom;
+                        hit = toy;
+                    }
+                }
+            });
+
+            return hit;
+        }
+
+        function triggerDrop() {
+            if (tokens <= 0) {
+                alert("Out of tokens! Click '+ Add' to get more.");
+                return;
+            }
+            tokens--;
+            document.getElementById('token-count').innerText = tokens;
+
+            grabbedToy = getHighestToyUnderClaw();
+            
+            if (grabbedToy) {
+                targetDropY = Math.max(20, maxCraneY - (grabbedToy.bottom + 20));
+            } else {
+                targetDropY = maxCraneY;
+            }
+
+            gameState = 'DROPPING';
+            playTone(300, 0.2, 'sawtooth');
+            document.getElementById('prize-out-display').classList.remove('dispense');
+        }
+
+        function gameLoop() {
+            const craneSys = document.getElementById('crane-system');
+            const cable = document.getElementById('crane-cable');
+            const clawHead = document.getElementById('crane-head-assembly');
+            const clawOpenImg = document.getElementById('custom-claw-open');
+            const clawClosedImg = document.getElementById('custom-claw-closed');
+
+            switch(gameState) {
+                case 'IDLE':
+                    if (keys.left) craneX = Math.max(40, craneX - CLAW_SPEED);
+                    if (keys.right) craneX = Math.min(GLASS_WIDTH - 20, craneX + CLAW_SPEED);
+                    break;
+
+                case 'DROPPING':
+                    craneY += DROP_SPEED;
+                    if (craneY >= targetDropY) {
+                        craneY = targetDropY;
+                        gameState = 'GRABBING';
+                        clawHead.classList.add('claw-closed');
+
+                        if (clawClosedImg.src) {
+                            clawOpenImg.classList.add('hidden');
+                            clawClosedImg.classList.remove('hidden');
+                        }
+
+                        setTimeout(() => {
+                            if (grabbedToy) grabbedToy.active = false;
+                            gameState = 'RETRACTING';
+                        }, 500);
+                    }
+                    break;
+
+                case 'RETRACTING':
+                    craneY -= RETRACT_SPEED;
+                    if (grabbedToy) {
+                        const halfToySize = grabbedToy.size / 2;
+                        grabbedToy.slotEl.style.bottom = 'auto';
+                        grabbedToy.slotEl.style.top = `${craneY + 40}px`;
+                        grabbedToy.slotEl.style.left = `${craneX - halfToySize}px`;
+                    }
+                    if (craneY <= 20) {
+                        craneY = 20;
+                        gameState = 'DELIVERING';
+                    }
+                    break;
+
+                case 'DELIVERING':
+                    if (craneX > CHUTE_X) craneX -= CLAW_SPEED;
+                    else {
+                        craneX = CHUTE_X;
+                        gameState = 'RELEASING';
+                        clawHead.classList.remove('claw-closed');
+
+                        if (clawOpenImg.src) {
+                            clawOpenImg.classList.remove('hidden');
+                            clawClosedImg.classList.add('hidden');
+                        }
+
+                        if (grabbedToy) {
+                            let toyY = parseInt(grabbedToy.slotEl.style.top);
+                            const dropTimer = setInterval(() => {
+                                toyY += 8;
+                                grabbedToy.slotEl.style.top = `${toyY}px`;
+                                if (toyY > 320) {
+                                    clearInterval(dropTimer);
+                                    grabbedToy.slotEl.style.display = 'none';
+                                    dispensePrize(grabbedToy);
+                                    grabbedToy = null;
+                                }
+                            }, 20);
+                        }
+                        setTimeout(() => { gameState = 'RESETTING'; }, 600);
+                    }
+                    if (grabbedToy) {
+                        const halfToySize = grabbedToy.size / 2;
+                        grabbedToy.slotEl.style.left = `${craneX - halfToySize}px`;
+                    }
+                    break;
+
+                case 'RESETTING':
+                    if (craneX < 200) craneX += CLAW_SPEED;
+                    else {
+                        craneX = 200;
+                        gameState = 'IDLE';
+                    }
+                    break;
+            }
+
+            craneSys.style.left = `${craneX}px`;
+            cable.style.height = `${craneY}px`;
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        function dispensePrize(toy) {
+            const prizeImg = document.getElementById('prize-out-display');
+            prizeImg.src = toy.src;
+            prizeImg.style.width = `${toy.size}px`;
+            prizeImg.style.height = `${toy.size}px`;
+            prizeImg.classList.add('dispense');
+
+            playTone(587.33, 0.1, 'triangle');
+            setTimeout(() => playTone(880, 0.3, 'triangle'), 100);
+
+            confetti({
+                particleCount: 50,
+                spread: 60,
+                origin: { y: 0.8 }
+            });
+        }
+
+        window.onload = () => {
+            initToys();
+            setupCustomizer();
+            setupControls();
+            requestAnimationFrame(gameLoop);
+        };
+    </script>
+</body>
+</html>
