@@ -208,7 +208,7 @@ const appData = {
         icon: "./assets/icons/video.png",
         type: "app",
         fileType: "Video",
-        size: "15.0 MB",
+        size: "59.1 MB",
         sizeBytes: 15000000,
         dateCreated: "2026-09-30"
     },
@@ -219,7 +219,7 @@ const appData = {
         icon: "./assets/icons/video.png",
         type: "app",
         fileType: "Video",
-        size: "22.5 MB",
+        size: "124 MB",
         sizeBytes: 22500000,
         dateCreated: "2026-09-30"
     },
@@ -230,7 +230,7 @@ const appData = {
         icon: "./assets/icons/video.png",
         type: "app",
         fileType: "Video",
-        size: "15.0 MB",
+        size: "358 MB",
         sizeBytes: 15000000,
         dateCreated: "2026-09-30"
     },
@@ -241,7 +241,7 @@ const appData = {
         icon: "./assets/icons/video.png",
         type: "app",
         fileType: "Video",
-        size: "15.0 MB",
+        size: "166 MB",
         sizeBytes: 15000000,
         dateCreated: "2026-09-30"
     },
@@ -252,7 +252,7 @@ const appData = {
         icon: "./assets/icons/video.png",
         type: "app",
         fileType: "Video",
-        size: "15.0 MB",
+        size: "208 MB",
         sizeBytes: 15000000,
         dateCreated: "2026-09-30"
     },
@@ -274,7 +274,7 @@ const appData = {
         icon: "./assets/icons/video.png",
         type: "app",
         fileType: "Video",
-        size: "15.0 MB",
+        size: "91 MB",
         sizeBytes: 15000000,
         dateCreated: "2026-09-30"
     },
@@ -285,7 +285,7 @@ const appData = {
         icon: "./assets/icons/3dworld.png",
         type: "desktop3d",
         fileType: "3D World",
-        size: "3.2 MB",
+        size: "153 MB",
         sizeBytes: 3200000,
         dateCreated: "2026-09-30"
     }
