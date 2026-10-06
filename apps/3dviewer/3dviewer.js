@@ -1,490 +1,147 @@
-/* =========================================================
-   CYBEROS HOLO LAB
-   3D COLLECTION SYSTEM
-
-   NO LOCAL STORAGE
-   NO PERSISTENCE
-
-   FEATURES:
-   - Category folders
-   - GLB model loading
-   - Three.js
-   - GLTFLoader
-   - OrbitControls
-   - Transparent background
-   - Pastel hologram lighting
-   - Automatic model centering
-   - Automatic model scaling
-   - Model browsing
-   - Mouse orbit
-   - Wheel zoom
-========================================================= */
-
-
-/* =========================================================
-   THREE.JS IMPORTS
-========================================================= */
-
 import * as THREE from "three";
+import { OrbitControls } from "three/addons/controls/OrbitControls.js";
+import { GLTFLoader } from "three/addons/loaders/GLTFLoader.js";
+import { DRACOLoader } from "three/addons/loaders/DRACOLoader.js";
 
 import {
-    OrbitControls
-} from "three/addons/controls/OrbitControls.js";
-
-import {
-    GLTFLoader
-} from "three/addons/loaders/GLTFLoader.js";
-
-
-/* =========================================================
-   HOLOGRAM LIBRARY
-========================================================= */
-
-const HOLO_LIBRARY = {
-
-    characters: {
-
-        id: "characters",
-
-        name: "Characters",
-
-        icon: "👾",
-
-        description:
-            "Friends, creatures and little companions.",
-
-        models: [
-
-            {
-                id: "teddy",
-
-                name: "Teddy",
-
-                file:
-                    "./models/characters/model1.glb"
-
-            },
-
-            {
-                id: "robot",
-
-                name: "Little Robot",
-
-                file:
-                    "./models/characters/robot.glb"
-
-            },
-
-            {
-                id: "cloud",
-
-                name: "Cloud Friend",
-
-                file:
-                    "./models/characters/cloud.glb"
-
-            }
-
-        ]
-
-    },
-
-
-    assets: {
-
-        id: "assets",
-
-        name: "Assets",
-
-        icon: "🧸",
-
-        description:
-            "Objects, props and tiny things.",
-
-        models: [
-
-            {
-                id: "shell",
-
-                name: "Shell",
-
-                file:
-                    "./models/assets/shell.glb"
-
-            },
-
-            {
-                id: "flower",
-
-                name: "Flower",
-
-                file:
-                    "./models/assets/flower.glb"
-
-            },
-
-            {
-                id: "house",
-
-                name: "Tiny House",
-
-                file:
-                    "./models/assets/house.glb"
-
-            }
-
-        ]
-
-    },
-
-
-    nature: {
-
-        id: "nature",
-
-        name: "Nature",
-
-        icon: "🌿",
-
-        description:
-            "Plants, rocks and things from outside.",
-
-        models: [
-
-            {
-                id: "mushroom",
-
-                name: "Mushroom",
-
-                file:
-                    "./models/nature/mushroom.glb"
-
-            },
-
-            {
-                id: "tree",
-
-                name: "Tiny Tree",
-
-                file:
-                    "./models/nature/tree.glb"
-
-            }
-
-        ]
-
-    },
-
-
-    cyber: {
-
-        id: "cyber",
-
-        name: "Cyber",
-
-        icon: "💿",
-
-        description:
-            "Digital objects from the CyberOS universe.",
-
-        models: [
-
-            {
-                id: "crystal",
-
-                name: "Cyber Crystal",
-
-                file:
-                    "./models/cyber/crystal.glb"
-
-            },
-
-            {
-                id: "core",
-
-                name: "Hologram Core",
-
-                file:
-                    "./models/cyber/core.glb"
-
-            }
-
-        ]
-
-    }
-
-};
-
-
-/* =========================================================
-   STATE
-========================================================= */
+    HOLO_LIBRARY,
+    MINI_PREVIEW_SCALE,
+    MINI_PREVIEW_Y
+} from "./holo-library.js";
 
 let currentCategory = null;
-
 let currentModelIndex = 0;
+let modelRoot = null;
 
-let currentModelObject = null;
+let scene;
+let camera;
+let renderer;
+let controls;
+let loader;
 
-let animationFrame = null;
+let modelLoadToken = 0;
 
+const modelCache = new Map();
 
-/* =========================================================
-   THREE.JS STATE
-========================================================= */
-
-let scene = null;
-
-let camera = null;
-
-let renderer = null;
-
-let controls = null;
-
-let loader = null;
-
-let modelContainer = null;
-
-
-/* =========================================================
-   DOM
-========================================================= */
+const miniRenderers = [];
+const miniScenes = [];
+const miniRoots = [];
 
 const categoryView =
-    document.getElementById(
-        "category-view"
-    );
-
+    document.getElementById("category-view");
 
 const modelView =
-    document.getElementById(
-        "model-view"
-    );
-
+    document.getElementById("model-view");
 
 const categoryGrid =
-    document.getElementById(
-        "category-grid"
-    );
+    document.getElementById("category-grid");
 
-
-const modelSelector =
-    document.getElementById(
-        "model-selector"
-    );
-
-
-const modelStage =
-    document.getElementById(
-        "model-stage"
-    );
-
-
-const currentCategoryLabel =
-    document.getElementById(
-        "current-category"
-    );
-
-
-const currentModelName =
-    document.getElementById(
-        "current-model-name"
-    );
-
-
-const currentModelStatus =
-    document.getElementById(
-        "current-model-status"
-    );
-
-
-const backButton =
-    document.getElementById(
-        "back-to-categories"
-    );
-
-
-const closeButton =
-    document.getElementById(
-        "holo-close"
-    );
+const modelContainer =
+    document.getElementById("model-container");
 
 
 /* =========================================================
-   CHECK DOM
+   OFFSIDE FONT
 ========================================================= */
 
-console.log(
-    "🔬 HOLO LAB: DOM check"
-);
+function setupOffsideFont() {
+    if (!document.getElementById("offside-font")) {
+        const fontLink =
+            document.createElement("link");
 
-console.log(
-    "categoryView:",
-    categoryView
-);
+        fontLink.id = "offside-font";
+        fontLink.rel = "stylesheet";
+        fontLink.href =
+            "https://fonts.googleapis.com/css2?family=Offside&display=swap";
 
-console.log(
-    "modelView:",
-    modelView
-);
+        document.head.appendChild(fontLink);
+    }
 
-console.log(
-    "categoryGrid:",
-    categoryGrid
-);
+    if (!document.getElementById("offside-global-style")) {
+        const fontStyle =
+            document.createElement("style");
 
-console.log(
-    "modelStage:",
-    modelStage
-);
+        fontStyle.id =
+            "offside-global-style";
+
+        fontStyle.textContent = `
+            html,
+            body,
+            button,
+            input,
+            textarea,
+            select,
+            #category-view,
+            #model-view,
+            #category-grid,
+            #model-container,
+            #model-info-wrapper {
+                font-family: "Offside", sans-serif !important;
+            }
+        `;
+
+        document.head.appendChild(fontStyle);
+    }
+}
 
 
 /* =========================================================
-   THREE.JS INITIALIZATION
+   MAIN THREE.JS SCENE
 ========================================================= */
 
-function initializeThree() {
-
-    console.log(
-        "🌎 HOLO LAB: Initializing Three.js"
-    );
-
-
-    if (!modelStage) {
-
-        console.error(
-            "❌ HOLO LAB: #model-stage not found"
-        );
-
-        return;
-
-    }
-
-
-    modelContainer =
-        document.getElementById(
-            "model-container"
-        );
-
-
-    if (!modelContainer) {
-
-        console.error(
-            "❌ HOLO LAB: #model-container not found"
-        );
-
-        return;
-
-    }
-
-
-    /* =====================================================
-       SCENE
-    ===================================================== */
-
+function initMainScene() {
     scene =
         new THREE.Scene();
 
-
-    /*
-       IMPORTANT:
-
-       No scene.background.
-
-       This keeps the 3D viewer transparent.
-    */
-
-
-    /* =====================================================
-       CAMERA
-    ===================================================== */
-
     camera =
         new THREE.PerspectiveCamera(
-            35,
-            1,
-            0.01,
-            1000
+            45,
+            window.innerWidth /
+            window.innerHeight,
+            0.001,
+            10000
         );
-
 
     camera.position.set(
         0,
-        0,
+        1,
         5
     );
 
-
-    /* =====================================================
-       RENDERER
-    ===================================================== */
-
     renderer =
         new THREE.WebGLRenderer({
-
             antialias: true,
-
-            alpha: true,
-
-            powerPreference:
-                "high-performance"
-
+            alpha: true
         });
 
+    renderer.setSize(
+        window.innerWidth,
+        window.innerHeight
+    );
 
     renderer.setPixelRatio(
         Math.min(
-            window.devicePixelRatio || 1,
+            window.devicePixelRatio,
             2
         )
     );
-
 
     renderer.setClearColor(
         0x000000,
         0
     );
 
-
     renderer.outputColorSpace =
         THREE.SRGBColorSpace;
-
-
-    renderer.toneMapping =
-        THREE.ACESFilmicToneMapping;
-
-
-    renderer.toneMappingExposure =
-        0.9;
-
-
-    renderer.shadowMap.enabled =
-        true;
-
-
-    renderer.shadowMap.type =
-        THREE.PCFSoftShadowMap;
-
 
     renderer.domElement.style.display =
         "block";
 
-
     renderer.domElement.style.width =
         "100%";
 
-
     renderer.domElement.style.height =
         "100%";
-
-
-    renderer.domElement.style.background =
-        "transparent";
-
-
-    renderer.domElement.style.backgroundColor =
-        "transparent";
-
 
     modelContainer.appendChild(
         renderer.domElement
@@ -501,38 +158,51 @@ function initializeThree() {
             renderer.domElement
         );
 
-
     controls.enableDamping =
         true;
 
-
     controls.dampingFactor =
-        0.08;
-
+        0.075;
 
     controls.enablePan =
-        false;
-
-
-    controls.enableZoom =
         true;
 
-
-    controls.zoomSpeed =
-        0.8;
-
+    controls.screenSpacePanning =
+        true;
 
     controls.rotateSpeed =
         0.8;
 
+    controls.zoomSpeed =
+        1;
+
+    controls.panSpeed =
+        0.8;
 
     controls.minDistance =
-        0.5;
-
+        0.01;
 
     controls.maxDistance =
-        20;
+        10000;
 
+    controls.mouseButtons = {
+        LEFT:
+            THREE.MOUSE.ROTATE,
+
+        MIDDLE:
+            THREE.MOUSE.DOLLY,
+
+        RIGHT:
+            THREE.MOUSE.PAN
+    };
+
+    controls.touches = {
+        ONE:
+            THREE.TOUCH.ROTATE,
+
+        TWO:
+            THREE.TOUCH.DOLLY_PAN
+    };
 
     controls.target.set(
         0,
@@ -545,847 +215,173 @@ function initializeThree() {
        LIGHTING
     ===================================================== */
 
-    createHologramLighting();
-
-
-    /* =====================================================
-       GLTF LOADER
-    ===================================================== */
-
-    loader =
-        new GLTFLoader();
-
-
-    /* =====================================================
-       RESIZE
-    ===================================================== */
-
-    window.addEventListener(
-        "resize",
-        resizeThree
-    );
-
-
-    resizeThree();
-
-
-    /* =====================================================
-       START RENDER LOOP
-    ===================================================== */
-
-    animateThree();
-
-
-    console.log(
-        "✨ HOLO LAB: Three.js ready"
-    );
-
-}
-
-
-/* =========================================================
-   HOLOGRAM LIGHTING
-========================================================= */
-
-function createHologramLighting() {
-
-    console.log(
-        "💡 HOLO LAB: Creating hologram lighting"
-    );
-
-
-    /* -----------------------------------------------------
-       SOFT PINK HEMISPHERE
-    ----------------------------------------------------- */
-
-    const hemisphere =
-        new THREE.HemisphereLight(
-            0xD39DB6,
-            0xDECABF,
-            1.8
-        );
-
-
     scene.add(
-        hemisphere
+        new THREE.HemisphereLight(
+            0xffffff,
+            0x888888,
+            2.5
+        )
     );
-
-
-    /* -----------------------------------------------------
-       PEACH KEY
-    ----------------------------------------------------- */
 
     const keyLight =
         new THREE.DirectionalLight(
-            0xF0D1A9,
-            2.0
+            0xffffff,
+            4
         );
 
-
     keyLight.position.set(
-        4,
-        6,
-        5
+        5,
+        10,
+        8
     );
-
-
-    keyLight.castShadow =
-        true;
-
-
-    keyLight.shadow.mapSize.width =
-        1024;
-
-
-    keyLight.shadow.mapSize.height =
-        1024;
-
 
     scene.add(
         keyLight
     );
 
-
-    /* -----------------------------------------------------
-       LAVENDER FILL
-    ----------------------------------------------------- */
-
     const fillLight =
         new THREE.DirectionalLight(
-            0xA18EC8,
-            0.65
+            0xffffff,
+            2
         );
-
 
     fillLight.position.set(
         -5,
-        2,
-        3
+        4,
+        -5
     );
-
 
     scene.add(
         fillLight
     );
 
-
-    /* -----------------------------------------------------
-       CORAL RIM
-    ----------------------------------------------------- */
-
     const rimLight =
         new THREE.DirectionalLight(
-            0xF88B88,
-            0.35
+            0xffffff,
+            1.5
         );
 
-
     rimLight.position.set(
-        -3,
-        4,
-        -5
+        0,
+        5,
+        -10
     );
-
 
     scene.add(
         rimLight
     );
 
 
-    /* -----------------------------------------------------
-       FRONT PALE PINK
-    ----------------------------------------------------- */
+    /* =====================================================
+       GLTF + DRACO
+    ===================================================== */
 
-    const frontLight =
-        new THREE.DirectionalLight(
-            0xF6DDE6,
-            0.45
-        );
+    loader =
+        new GLTFLoader();
 
+    const dracoLoader =
+        new DRACOLoader();
 
-    frontLight.position.set(
-        0,
-        1,
-        6
+    dracoLoader.setDecoderPath(
+        "https://www.gstatic.com/draco/versioned/decoders/1.5.6/"
+    );
+
+    loader.setDRACOLoader(
+        dracoLoader
     );
 
 
-    scene.add(
-        frontLight
+    /* =====================================================
+       EVENTS
+    ===================================================== */
+
+    window.addEventListener(
+        "resize",
+        resizeMain
     );
 
+    renderer.domElement.addEventListener(
+        "dblclick",
+        frameCurrentModel
+    );
+
+    animate();
 }
 
 
 /* =========================================================
-   RESIZE THREE.JS
+   RESIZE
 ========================================================= */
 
-function resizeThree() {
-
+function resizeMain() {
     if (
-        !renderer ||
         !camera ||
-        !modelContainer
+        !renderer
     ) {
-
         return;
-
     }
-
-
-    const width =
-        modelContainer.clientWidth;
-
-
-    const height =
-        modelContainer.clientHeight;
-
-
-    if (
-        width <= 0 ||
-        height <= 0
-    ) {
-
-        return;
-
-    }
-
 
     camera.aspect =
-        width / height;
-
+        window.innerWidth /
+        window.innerHeight;
 
     camera.updateProjectionMatrix();
 
-
     renderer.setSize(
-        width,
-        height,
-        false
+        window.innerWidth,
+        window.innerHeight
     );
-
 }
 
 
 /* =========================================================
-   THREE.JS ANIMATION LOOP
+   ANIMATION LOOP
 ========================================================= */
 
-function animateThree() {
+function animate() {
+    requestAnimationFrame(
+        animate
+    );
 
-    animationFrame =
-        requestAnimationFrame(
-            animateThree
-        );
+    miniRoots.forEach(
+        root => {
+            if (root) {
+                root.rotation.y += 0.008;
+            }
+        }
+    );
 
+    miniRenderers.forEach(
+        (
+            miniRenderer,
+            index
+        ) => {
+            if (
+                miniRenderer &&
+                miniScenes[index]
+            ) {
+                miniRenderer.render(
+                    miniScenes[index],
+                    miniRenderer.cameraRef
+                );
+            }
+        }
+    );
 
     if (controls) {
-
         controls.update();
-
     }
-
-
-    if (
-        currentModelObject &&
-        currentModelObject.userData &&
-        currentModelObject.userData.autoRotate
-    ) {
-
-        currentModelObject.rotation.y +=
-            0.003;
-
-    }
-
 
     if (
         renderer &&
         scene &&
         camera
     ) {
-
         renderer.render(
             scene,
             camera
         );
-
     }
-
-}
-
-
-/* =========================================================
-   CLEAR CURRENT MODEL
-========================================================= */
-
-function clearCurrentModel() {
-
-    if (
-        !currentModelObject ||
-        !scene
-    ) {
-
-        return;
-
-    }
-
-
-    console.log(
-        "🧹 HOLO LAB: Removing previous model"
-    );
-
-
-    scene.remove(
-        currentModelObject
-    );
-
-
-    currentModelObject.traverse(
-        object => {
-
-            if (
-                object.geometry
-            ) {
-
-                object.geometry.dispose();
-
-            }
-
-
-            if (
-                object.material
-            ) {
-
-                if (
-                    Array.isArray(
-                        object.material
-                    )
-                ) {
-
-                    object.material.forEach(
-                        material => {
-
-                            disposeMaterial(
-                                material
-                            );
-
-                        }
-                    );
-
-                } else {
-
-                    disposeMaterial(
-                        object.material
-                    );
-
-                }
-
-            }
-
-        }
-    );
-
-
-    currentModelObject =
-        null;
-
-}
-
-
-/* =========================================================
-   DISPOSE MATERIAL
-========================================================= */
-
-function disposeMaterial(
-    material
-) {
-
-    if (!material) {
-        return;
-    }
-
-
-    Object.keys(
-        material
-    ).forEach(
-        key => {
-
-            const value =
-                material[key];
-
-
-            if (
-                value &&
-                value.isTexture
-            ) {
-
-                value.dispose();
-
-            }
-
-        }
-    );
-
-
-    material.dispose();
-
-}
-
-
-/* =========================================================
-   LOAD GLB MODEL
-========================================================= */
-
-function loadModel(
-    model
-) {
-
-    if (!model) {
-
-        console.warn(
-            "⚠️ HOLO LAB: No model supplied"
-        );
-
-        return;
-
-    }
-
-
-    if (!loader) {
-
-        console.error(
-            "❌ HOLO LAB: GLTFLoader not initialized"
-        );
-
-        return;
-
-    }
-
-
-    console.log(
-        "📦 HOLO LAB: Loading model:",
-        model.name
-    );
-
-
-    console.log(
-        "📍 HOLO LAB: Model path:",
-        model.file
-    );
-
-
-    currentModelStatus.textContent =
-        "SCANNING...";
-
-
-    clearCurrentModel();
-
-
-    /*
-       Small delay makes the
-       scanning state visible.
-    */
-
-    setTimeout(
-        () => {
-
-            loader.load(
-
-                model.file,
-
-
-                /* =========================================
-                   SUCCESS
-                ========================================== */
-
-                gltf => {
-
-                    console.log(
-                        "✅ HOLO LAB: GLB loaded:",
-                        model.name
-                    );
-
-
-                    const object =
-                        gltf.scene;
-
-
-                    currentModelObject =
-                        object;
-
-
-                    prepareModel(
-                        object
-                    );
-
-
-                    scene.add(
-                        object
-                    );
-
-
-                    currentModelStatus.textContent =
-                        "HOLOGRAM READY";
-
-
-                    console.log(
-                        "✨ HOLO LAB: Model displayed:",
-                        model.name
-                    );
-
-                },
-
-
-                /* =========================================
-                   PROGRESS
-                ========================================== */
-
-                xhr => {
-
-                    if (
-                        xhr.total
-                    ) {
-
-                        const percent =
-                            (
-                                xhr.loaded /
-                                xhr.total
-                            ) * 100;
-
-
-                        currentModelStatus.textContent =
-                            `SCANNING ${Math.round(percent)}%`;
-
-
-                        console.log(
-                            `🔬 HOLO LAB: ${model.name} ${Math.round(percent)}%`
-                        );
-
-                    } else {
-
-                        currentModelStatus.textContent =
-                            "SCANNING...";
-
-                    }
-
-                },
-
-
-                /* =========================================
-                   ERROR
-                ========================================== */
-
-                error => {
-
-                    console.error(
-                        "❌ HOLO LAB: Failed to load GLB:",
-                        model.file
-                    );
-
-
-                    console.error(
-                        error
-                    );
-
-
-                    currentModelStatus.textContent =
-                        "MODEL NOT FOUND";
-
-                }
-
-            );
-
-        },
-
-        250
-    );
-
-}
-
-
-/* =========================================================
-   PREPARE MODEL
-========================================================= */
-
-function prepareModel(
-    object
-) {
-
-    console.log(
-        "🧊 HOLO LAB: Preparing model"
-    );
-
-
-    /* -----------------------------------------------------
-       ENABLE SHADOWS
-    ----------------------------------------------------- */
-
-    object.traverse(
-        child => {
-
-            if (
-                child.isMesh
-            ) {
-
-                child.castShadow =
-                    true;
-
-
-                child.receiveShadow =
-                    true;
-
-
-                /*
-                   Make sure textures display
-                   correctly with modern Three.js.
-                */
-
-                if (
-                    child.material
-                ) {
-
-                    if (
-                        Array.isArray(
-                            child.material
-                        )
-                    ) {
-
-                        child.material.forEach(
-                            material => {
-
-                                if (
-                                    material.map
-                                ) {
-
-                                    material.map.colorSpace =
-                                        THREE.SRGBColorSpace;
-
-                                }
-
-                            }
-                        );
-
-                    } else {
-
-                        if (
-                            child.material.map
-                        ) {
-
-                            child.material.map.colorSpace =
-                                THREE.SRGBColorSpace;
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-    );
-
-
-    /* -----------------------------------------------------
-       FIND BOUNDING BOX
-    ----------------------------------------------------- */
-
-    const box =
-        new THREE.Box3().setFromObject(
-            object
-        );
-
-
-    const size =
-        box.getSize(
-            new THREE.Vector3()
-        );
-
-
-    const center =
-        box.getCenter(
-            new THREE.Vector3()
-        );
-
-
-    console.log(
-        "📐 HOLO LAB: Model size:",
-        size
-    );
-
-
-    console.log(
-        "📍 HOLO LAB: Model center:",
-        center
-    );
-
-
-    /* -----------------------------------------------------
-       CENTER MODEL
-    ----------------------------------------------------- */
-
-    object.position.x -=
-        center.x;
-
-
-    object.position.y -=
-        center.y;
-
-
-    object.position.z -=
-        center.z;
-
-
-    /* -----------------------------------------------------
-       SCALE MODEL
-    ----------------------------------------------------- */
-
-    const maxDimension =
-        Math.max(
-            size.x,
-            size.y,
-            size.z
-        );
-
-
-    if (
-        maxDimension > 0
-    ) {
-
-        const targetSize =
-            3;
-
-
-        const scale =
-            targetSize /
-            maxDimension;
-
-
-        object.scale.setScalar(
-            scale
-        );
-
-
-        console.log(
-            "📏 HOLO LAB: Model scale:",
-            scale
-        );
-
-    }
-
-
-    /* -----------------------------------------------------
-       RESET ROTATION
-    ----------------------------------------------------- */
-
-    object.rotation.set(
-        0,
-        0,
-        0
-    );
-
-
-    /*
-       Enable the tiny automatic rotation.
-
-       This can be disabled later if
-       you want completely manual OrbitControls.
-    */
-
-    object.userData.autoRotate =
-        false;
-
-
-    /* -----------------------------------------------------
-       RESET CAMERA
-    ----------------------------------------------------- */
-
-    camera.position.set(
-        0,
-        0,
-        5
-    );
-
-
-    controls.target.set(
-        0,
-        0,
-        0
-    );
-
-
-    controls.update();
-
-
-    resizeThree();
-
-}
-
-
-/* =========================================================
-   VIEW SWITCHING
-========================================================= */
-
-function showCategoryView() {
-
-    console.log(
-        "🗂️ HOLO LAB: Showing category view"
-    );
-
-
-    categoryView.classList.add(
-        "active"
-    );
-
-
-    modelView.classList.remove(
-        "active"
-    );
-
-
-    if (currentModelStatus) {
-
-        currentModelStatus.textContent =
-            "READY";
-
-    }
-
-}
-
-
-function showModelView() {
-
-    console.log(
-        "🧊 HOLO LAB: Showing model view"
-    );
-
-
-    categoryView.classList.remove(
-        "active"
-    );
-
-
-    modelView.classList.add(
-        "active"
-    );
-
-
-    /*
-       The model container can have
-       zero dimensions while hidden.
-
-       Resize after displaying it.
-    */
-
-    requestAnimationFrame(
-        () => {
-
-            resizeThree();
-
-        }
-    );
-
 }
 
 
@@ -1393,77 +389,643 @@ function showModelView() {
    BUILD CATEGORY CARDS
 ========================================================= */
 
-function buildCategoryCards() {
-
-    console.log(
-        "📁 HOLO LAB: Building category folders"
-    );
-
-
+function buildCategories() {
     categoryGrid.innerHTML = "";
 
+    miniRenderers.length = 0;
+    miniScenes.length = 0;
+    miniRoots.length = 0;
 
     Object.values(
         HOLO_LIBRARY
     ).forEach(
-        category => {
+        (
+            category,
+            index
+        ) => {
 
-            const card =
+            const column =
                 document.createElement(
-                    "article"
+                    "div"
                 );
 
+            column.className =
+                `category-column card-${category.id}-col`;
 
-            card.className =
-                "category-card";
-
-
-            card.innerHTML = `
-
-                <div class="category-icon">
-                    ${category.icon}
+            column.innerHTML = `
+                <div
+                    class="category-card"
+                    id="card-${index}"
+                >
+                    <div
+                        class="card-canvas-container"
+                        id="mini-container-${index}"
+                    ></div>
                 </div>
 
-                <div class="category-name">
-                    ${category.name}
-                </div>
-
-                <div class="category-description">
-                    ${category.description}
-                </div>
-
-                <div class="category-count">
-                    ${category.models.length} HOLOGRAMS
-                </div>
-
+                <button
+                    class="category-btn-pill"
+                    id="pill-${index}"
+                    type="button"
+                >
+                    ${category.name.toUpperCase()}
+                </button>
             `;
 
-
-            card.addEventListener(
+            column.addEventListener(
                 "click",
                 () => {
-
-                    console.log(
-                        "📁 HOLO LAB: Category selected:",
-                        category.name
-                    );
-
-
                     openCategory(
                         category.id
+                    );
+                }
+            );
+
+            categoryGrid.appendChild(
+                column
+            );
+
+            initMiniPreview(
+                index,
+                category.models[0]
+            );
+        }
+    );
+}
+
+
+/* =========================================================
+   MINI PREVIEW
+========================================================= */
+
+function initMiniPreview(
+    index,
+    modelInfo
+) {
+    const container =
+        document.getElementById(
+            `mini-container-${index}`
+        );
+
+    if (!container) {
+        return;
+    }
+
+    const width =
+        container.clientWidth ||
+        window.innerWidth / 3;
+
+    const height =
+        container.clientHeight ||
+        window.innerHeight;
+
+    const miniScene =
+        new THREE.Scene();
+
+    const miniCamera =
+        new THREE.PerspectiveCamera(
+            35,
+            width / height,
+            0.01,
+            5000
+        );
+
+    miniCamera.position.set(
+        0,
+        0,
+        7
+    );
+
+    miniCamera.lookAt(
+        0,
+        0,
+        0
+    );
+
+    const miniRenderer =
+        new THREE.WebGLRenderer({
+            antialias: true,
+            alpha: true
+        });
+
+    miniRenderer.setSize(
+        width,
+        height
+    );
+
+    miniRenderer.setPixelRatio(
+        Math.min(
+            window.devicePixelRatio,
+            2
+        )
+    );
+
+    miniRenderer.outputColorSpace =
+        THREE.SRGBColorSpace;
+
+    container.appendChild(
+        miniRenderer.domElement
+    );
+
+    miniRenderer.cameraRef =
+        miniCamera;
+
+
+    /* =====================================================
+       MINI LIGHTING
+    ===================================================== */
+
+    miniScene.add(
+        new THREE.HemisphereLight(
+            0xffffff,
+            0x888888,
+            2.5
+        )
+    );
+
+    const light =
+        new THREE.DirectionalLight(
+            0xffffff,
+            3
+        );
+
+    light.position.set(
+        5,
+        10,
+        8
+    );
+
+    miniScene.add(
+        light
+    );
+
+    miniRenderers.push(
+        miniRenderer
+    );
+
+    miniScenes.push(
+        miniScene
+    );
+
+    miniRoots.push(
+        null
+    );
+
+
+    /* =====================================================
+       LOAD PREVIEW MODEL
+    ===================================================== */
+
+    loader.load(
+        modelInfo.file,
+
+        gltf => {
+
+            const root =
+                gltf.scene;
+
+            const box =
+                new THREE.Box3()
+                    .setFromObject(
+                        root
+                    );
+
+            const center =
+                box.getCenter(
+                    new THREE.Vector3()
+                );
+
+            root.position.sub(
+                center
+            );
+
+            const scale =
+                MINI_PREVIEW_SCALE[index] ??
+                1;
+
+            const y =
+                MINI_PREVIEW_Y[index] ??
+                0;
+
+            root.scale.setScalar(
+                scale
+            );
+
+            root.position.y +=
+                y;
+
+            miniScene.add(
+                root
+            );
+
+            miniRoots[index] =
+                root;
+        },
+
+        undefined,
+
+        error => {
+
+            console.error(
+                "[3D VIEWER] Preview failed:",
+                modelInfo.file,
+                error
+            );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   CATEGORY VIEW
+========================================================= */
+
+function showCategoryView() {
+    categoryView.classList.add(
+        "active"
+    );
+
+    modelView.classList.remove(
+        "active"
+    );
+
+    if (modelRoot) {
+        scene.remove(
+            modelRoot
+        );
+    }
+
+    modelRoot = null;
+
+    if (controls) {
+
+        controls.target.set(
+            0,
+            0,
+            0
+        );
+
+        controls.update();
+
+    }
+}
+
+
+/* =========================================================
+   MODEL VIEW
+========================================================= */
+
+function showModelView() {
+    categoryView.classList.remove(
+        "active"
+    );
+
+    modelView.classList.add(
+        "active"
+    );
+
+    resizeMain();
+}
+
+
+/* =========================================================
+   MODEL UI CONTROLS
+========================================================= */
+
+function buildUIControls() {
+
+    let infoWrapper =
+        document.getElementById(
+            "model-info-wrapper"
+        );
+
+    if (!infoWrapper) {
+
+        infoWrapper =
+            document.createElement(
+                "div"
+            );
+
+        infoWrapper.id =
+            "model-info-wrapper";
+
+        infoWrapper.className =
+            "model-info-wrapper";
+
+        modelView.appendChild(
+            infoWrapper
+        );
+    }
+
+    const currentModel =
+        currentCategory.models[
+            currentModelIndex
+        ];
+
+    infoWrapper.innerHTML = `
+        <button
+            class="model-nav-btn"
+            id="prev-model-btn"
+            type="button"
+            aria-label="Previous model"
+        >
+            &lt;
+        </button>
+
+        <div class="model-info-card">
+            <div
+                class="model-name-pill"
+                id="current-model-name"
+            >
+                ${currentModel.name.toUpperCase()}
+            </div>
+
+            <div
+                class="model-status"
+                id="current-model-status"
+            >
+                LOADING...
+            </div>
+        </div>
+
+        <button
+            class="model-nav-btn"
+            id="next-model-btn"
+            type="button"
+            aria-label="Next model"
+        >
+            &gt;
+        </button>
+    `;
+
+
+    /* =====================================================
+       PREVIOUS
+    ===================================================== */
+
+    const previousButton =
+        document.getElementById(
+            "prev-model-btn"
+        );
+
+    if (previousButton) {
+
+        previousButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                currentModelIndex =
+                    (
+                        currentModelIndex -
+                        1 +
+                        currentCategory.models.length
+                    ) %
+                    currentCategory.models.length;
+
+                buildUIControls();
+
+                loadModel();
+
+            }
+        );
+    }
+
+
+    /* =====================================================
+       NEXT
+    ===================================================== */
+
+    const nextButton =
+        document.getElementById(
+            "next-model-btn"
+        );
+
+    if (nextButton) {
+
+        nextButton.addEventListener(
+            "click",
+            event => {
+
+                event.stopPropagation();
+
+                currentModelIndex =
+                    (
+                        currentModelIndex +
+                        1
+                    ) %
+                    currentCategory.models.length;
+
+                buildUIControls();
+
+                loadModel();
+
+            }
+        );
+    }
+}
+
+
+/* =========================================================
+   STATUS UPDATE — FORCE ALL STATUS ELEMENTS
+========================================================= */
+
+function setModelStatus(
+    text,
+    token
+) {
+    if (
+        token !== undefined &&
+        token !== modelLoadToken
+    ) {
+        console.warn(
+            "[3D VIEWER STATUS] Ignored stale status:",
+            text
+        );
+
+        return;
+    }
+
+    const statuses =
+        document.querySelectorAll(
+            ".model-status"
+        );
+
+    console.log(
+        "[3D VIEWER STATUS] Updating elements:",
+        statuses.length,
+        "->",
+        text
+    );
+
+    if (!statuses.length) {
+
+        console.warn(
+            "[3D VIEWER STATUS] ❌ No .model-status elements found"
+        );
+
+        return;
+    }
+
+    statuses.forEach(
+        (status, index) => {
+
+            status.textContent =
+                text;
+
+            status.innerText =
+                text;
+
+            status.innerHTML =
+                text;
+
+            status.setAttribute(
+                "data-status",
+                text
+            );
+
+            status.style.setProperty(
+                "display",
+                "block",
+                "important"
+            );
+
+            status.style.setProperty(
+                "visibility",
+                "visible",
+                "important"
+            );
+
+            status.style.setProperty(
+                "opacity",
+                "1",
+                "important"
+            );
+
+            console.log(
+                `[3D VIEWER STATUS] Element ${index}:`,
+                {
+                    textContent:
+                        status.textContent,
+
+                    innerText:
+                        status.innerText,
+
+                    html:
+                        status.innerHTML,
+
+                    dataStatus:
+                        status.dataset.status,
+
+                    element:
+                        status
+                }
+            );
+        }
+    );
+
+    /* =====================================================
+       EXTRA CHECK
+       Verify what the browser sees after the DOM update.
+    ===================================================== */
+
+    requestAnimationFrame(
+        () => {
+
+            document
+                .querySelectorAll(
+                    ".model-status"
+                )
+                .forEach(
+                    (
+                        status,
+                        index
+                    ) => {
+
+                        console.log(
+                            `[3D VIEWER STATUS] DOM CHECK ${index}:`,
+                            status.textContent
+                        );
+
+                    }
+                );
+
+        }
+    );
+}
+
+
+/* =========================================================
+   FORCE FINAL LOADED STATE
+========================================================= */
+
+function forceLoadedStatus(token) {
+
+    if (
+        token !== modelLoadToken
+    ) {
+        return;
+    }
+
+    console.log(
+        "[3D VIEWER] 🔐 FORCE FINAL STATUS -> LOADED"
+    );
+
+    setModelStatus(
+        "LOADED",
+        token
+    );
+
+    /*
+     * One more pass on the next frame.
+     * This catches any UI refresh that may have
+     * recreated/replaced the status element.
+     */
+    requestAnimationFrame(
+        () => {
+
+            if (
+                token !== modelLoadToken
+            ) {
+                return;
+            }
+
+            const statuses =
+                document.querySelectorAll(
+                    ".model-status"
+                );
+
+            statuses.forEach(
+                status => {
+
+                    status.textContent =
+                        "LOADED";
+
+                    status.innerText =
+                        "LOADED";
+
+                    status.setAttribute(
+                        "data-status",
+                        "LOADED"
                     );
 
                 }
             );
 
-
-            categoryGrid.appendChild(
-                card
+            console.log(
+                "[3D VIEWER] ✅ FINAL DOM STATUS:",
+                Array.from(
+                    statuses
+                ).map(
+                    status =>
+                        status.textContent
+                )
             );
 
         }
     );
-
 }
 
 
@@ -1474,581 +1036,679 @@ function buildCategoryCards() {
 function openCategory(
     categoryId
 ) {
-
-    const category =
+    currentCategory =
         HOLO_LIBRARY[
             categoryId
         ];
 
-
-    if (!category) {
-
-        console.warn(
-            "⚠️ HOLO LAB: Category not found:",
-            categoryId
-        );
-
-        return;
-
-    }
-
-
-    currentCategory =
-        category;
-
-
     currentModelIndex =
         0;
 
-
-    console.log(
-        "📂 HOLO LAB: Opened category:",
-        category.name
-    );
-
-
-    buildModelSelector();
-
+    buildUIControls();
 
     showModelView();
 
-
-    updateModelInfo();
-
-
-    /*
-       IMPORTANT:
-
-       Actually load the selected
-       GLB model.
-    */
-
-    loadSelectedModel();
-
+    loadModel();
 }
 
 
 /* =========================================================
-   BUILD MODEL SELECTOR
+   MODEL ALIGNMENT
 ========================================================= */
 
-function buildModelSelector() {
+function applyModelAlignment(
+    root,
+    model
+) {
+    const a =
+        model.alignment || {};
 
-    modelSelector.innerHTML = "";
+    const modelGroup =
+        new THREE.Group();
 
+    const pivotX =
+        a.pivotX ?? 0;
 
-    if (!currentCategory) {
+    const pivotY =
+        a.pivotY ?? 0;
 
-        return;
+    const pivotZ =
+        a.pivotZ ?? 0;
 
-    }
-
-
-    currentCategory.models.forEach(
-        (model, index) => {
-
-            const dot =
-                document.createElement(
-                    "button"
-                );
-
-
-            dot.type =
-                "button";
-
-
-            dot.className =
-                "model-dot";
-
-
-            if (
-                index ===
-                currentModelIndex
-            ) {
-
-                dot.classList.add(
-                    "active"
-                );
-
-            }
-
-
-            dot.title =
-                model.name;
-
-
-            dot.addEventListener(
-                "click",
-                event => {
-
-                    event.stopPropagation();
-
-
-                    currentModelIndex =
-                        index;
-
-
-                    updateModelInfo();
-
-
-                    loadSelectedModel();
-
-                }
-            );
-
-
-            modelSelector.appendChild(
-                dot
-            );
-
-        }
+    modelGroup.position.set(
+        a.x ?? 0,
+        a.y ?? 0,
+        a.z ?? 0
     );
 
-}
-
-
-/* =========================================================
-   LOAD SELECTED MODEL
-========================================================= */
-
-function loadSelectedModel() {
-
-    if (!currentCategory) {
-
-        return;
-
-    }
-
-
-    const model =
-        currentCategory.models[
-            currentModelIndex
-        ];
-
-
-    if (!model) {
-
-        return;
-
-    }
-
-
-    loadModel(
-        model
+    root.position.set(
+        -pivotX,
+        -pivotY,
+        -pivotZ
     );
 
-}
+    root.rotation.set(
+        THREE.MathUtils.degToRad(
+            a.rotationX ?? 0
+        ),
 
+        THREE.MathUtils.degToRad(
+            a.rotationY ?? 0
+        ),
 
-/* =========================================================
-   UPDATE MODEL INFORMATION
-========================================================= */
-
-function updateModelInfo() {
-
-    if (!currentCategory) {
-
-        return;
-
-    }
-
-
-    const model =
-        currentCategory.models[
-            currentModelIndex
-        ];
-
-
-    if (!model) {
-
-        return;
-
-    }
-
-
-    currentCategoryLabel.textContent =
-        currentCategory.name.toUpperCase();
-
-
-    currentModelName.textContent =
-        model.name.toUpperCase();
-
-
-    currentModelStatus.textContent =
-        "SCANNING...";
-
-
-    document
-        .querySelectorAll(
-            ".model-dot"
+        THREE.MathUtils.degToRad(
+            a.rotationZ ?? 0
         )
-        .forEach(
-            (dot, index) => {
+    );
 
-                dot.classList.toggle(
-                    "active",
-                    index ===
-                    currentModelIndex
-                );
+    root.scale.setScalar(
+        a.scale ?? 1
+    );
 
-            }
+    modelGroup.add(
+        root
+    );
+
+    return modelGroup;
+}
+
+
+/* =========================================================
+   FRAME CURRENT MODEL
+========================================================= */
+
+function frameCurrentModel() {
+
+    if (!modelRoot) {
+        return;
+    }
+
+    frameModel(
+        modelRoot,
+        1.25
+    );
+}
+
+
+/* =========================================================
+   FRAME MODEL
+========================================================= */
+
+function frameModel(
+    object,
+    padding = 1.25
+) {
+    const box =
+        new THREE.Box3()
+            .setFromObject(
+                object
+            );
+
+    if (box.isEmpty()) {
+
+        console.warn(
+            "Cannot frame empty model"
         );
 
+        return;
+    }
 
-    console.log(
-        "🔬 HOLO LAB: Selected model:",
-        model.name
+    const sphere =
+        box.getBoundingSphere(
+            new THREE.Sphere()
+        );
+
+    const center =
+        sphere.center;
+
+    const radius =
+        Math.max(
+            sphere.radius,
+            0.01
+        );
+
+    const fov =
+        THREE.MathUtils.degToRad(
+            camera.fov
+        );
+
+    const distance =
+        (
+            radius *
+            padding
+        ) /
+        Math.sin(
+            fov / 2
+        );
+
+    const direction =
+        new THREE.Vector3(
+            0,
+            0.35,
+            1
+        ).normalize();
+
+    const newPosition =
+        center.clone().add(
+            direction.multiplyScalar(
+                distance
+            )
+        );
+
+    camera.position.copy(
+        newPosition
     );
 
+    controls.target.copy(
+        center
+    );
+
+    camera.near =
+        Math.max(
+            radius / 1000,
+            0.001
+        );
+
+    camera.far =
+        Math.max(
+            radius * 100,
+            1000
+        );
+
+    camera.updateProjectionMatrix();
+
+    controls.minDistance =
+        Math.max(
+            radius * 0.05,
+            0.001
+        );
+
+    controls.maxDistance =
+        Math.max(
+            radius * 100,
+            1000
+        );
+
+    controls.update();
+}
+
+
+/* =========================================================
+   LOAD MODEL
+========================================================= */
+
+async function loadModel() {
+
+    if (!currentCategory) {
+        return;
+    }
+
+    const model =
+        currentCategory.models[
+            currentModelIndex
+        ];
+
+    const token =
+        ++modelLoadToken;
 
     console.log(
-        "📦 HOLO LAB: File:",
+        "=============================================="
+    );
+
+    console.log(
+        "[3D VIEWER] START LOAD:",
         model.file
     );
 
-}
+    console.log(
+        "[3D VIEWER] TOKEN:",
+        token
+    );
+
+    console.log(
+        "=============================================="
+    );
 
 
-/* =========================================================
-   MODEL BROWSING
-========================================================= */
+    /* =====================================================
+       REMOVE PREVIOUS MODEL
+    ===================================================== */
 
-function nextModel() {
+    if (modelRoot) {
 
-    if (!currentCategory) {
+        scene.remove(
+            modelRoot
+        );
 
-        return;
-
-    }
-
-
-    const count =
-        currentCategory.models.length;
-
-
-    if (!count) {
-
-        return;
+        modelRoot = null;
 
     }
 
 
-    currentModelIndex =
-        (
-            currentModelIndex + 1
-        ) % count;
+    /* =====================================================
+       INITIAL STATUS
+    ===================================================== */
+
+    setModelStatus(
+        "LOADING...",
+        token
+    );
 
 
-    updateModelInfo();
+    /* =====================================================
+       MODEL SETUP
+    ===================================================== */
+
+    const setupModel =
+        root => {
+
+            if (
+                token !== modelLoadToken
+            ) {
+
+                console.log(
+                    "[3D VIEWER] Ignoring old model:",
+                    model.file
+                );
+
+                return false;
+            }
+
+            modelRoot =
+                applyModelAlignment(
+                    root,
+                    model
+                );
+
+            scene.add(
+                modelRoot
+            );
+
+            return true;
+        };
 
 
-    loadSelectedModel();
+    /* =====================================================
+       CACHE
+    ===================================================== */
 
-}
+    if (
+        modelCache.has(
+            model.file
+        )
+    ) {
 
+        console.log(
+            "[3D VIEWER] Using cached model:",
+            model.file
+        );
 
-function previousModel() {
-
-    if (!currentCategory) {
-
-        return;
-
-    }
-
-
-    const count =
-        currentCategory.models.length;
-
-
-    if (!count) {
-
-        return;
-
-    }
-
-
-    currentModelIndex =
-        (
-            currentModelIndex - 1 + count
-        ) % count;
-
-
-    updateModelInfo();
-
-
-    loadSelectedModel();
-
-}
-
-
-/* =========================================================
-   MOUSE WHEEL MODEL BROWSING
-========================================================= */
-
-modelView.addEventListener(
-    "wheel",
-    event => {
-
-        if (
-            !modelView.classList.contains(
-                "active"
-            )
-        ) {
-
-            return;
-
-        }
-
+        const cached =
+            modelCache.get(
+                model.file
+            );
 
         /*
-           IMPORTANT:
-
-           If the pointer is directly over
-           the Three.js canvas, let OrbitControls
-           handle the wheel for ZOOM.
-
-           Only use wheel browsing outside
-           the model container.
-        */
-
-        if (
-            modelContainer &&
-            modelContainer.contains(
-                event.target
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            Math.abs(
-                event.deltaY
-            ) < 8
-        ) {
-
-            return;
-
-        }
-
-
-        event.preventDefault();
-
-
-        if (
-            event.deltaY > 0
-        ) {
-
-            nextModel();
-
-        } else {
-
-            previousModel();
-
-        }
-
-    },
-    {
-        passive: false
-    }
-);
-
-
-/* =========================================================
-   KEYBOARD MODEL BROWSING
-========================================================= */
-
-document.addEventListener(
-    "keydown",
-    event => {
-
-        if (
-            !modelView.classList.contains(
-                "active"
-            )
-        ) {
-
-            return;
-
-        }
-
-
-        if (
-            event.key === "ArrowRight"
-        ) {
-
-            nextModel();
-
-        }
-
-
-        if (
-            event.key === "ArrowLeft"
-        ) {
-
-            previousModel();
-
-        }
-
-    }
-);
-
-
-/* =========================================================
-   BACK TO HOLO LAB
-========================================================= */
-
-backButton.addEventListener(
-    "click",
-    () => {
-
-        console.log(
-            "↩️ HOLO LAB: Returning to categories"
+         * Cached means already loaded.
+         */
+        forceLoadedStatus(
+            token
         );
 
+        const success =
+            setupModel(
+                cached.clone(true)
+            );
 
-        clearCurrentModel();
-
-
-        currentCategory =
-            null;
-
-
-        showCategoryView();
-
-    }
-);
-
-
-/* =========================================================
-   CLOSE HOLO LAB
-========================================================= */
-
-closeButton.addEventListener(
-    "click",
-    () => {
-
-        console.log(
-            "✕ HOLO LAB: Close requested"
-        );
-
+        if (!success) {
+            return;
+        }
 
         try {
 
-            if (
-                window.parent &&
-                window.parent !== window &&
-                typeof
-                window.parent.close3DWorld ===
-                "function"
-            ) {
+            frameModel(
+                modelRoot,
+                1.3
+            );
 
-                window.parent.close3DWorld();
+        } catch (error) {
 
-            }
-
-        } catch (
-            error
-        ) {
-
-            console.warn(
-                "⚠️ HOLO LAB: Could not close through CyberOS:",
+            console.error(
+                "[3D VIEWER] Frame error:",
                 error
             );
 
         }
 
+        return;
     }
-);
 
 
-/* =========================================================
-   ESCAPE
-========================================================= */
+    /* =====================================================
+       REAL MODEL LOAD
+    ===================================================== */
 
-document.addEventListener(
-    "keydown",
-    event => {
+    try {
 
-        if (
-            event.key !== "Escape" &&
-            event.code !== "Escape"
-        ) {
+        const gltf =
+            await loader.loadAsync(
+                model.file,
 
-            return;
+                xhr => {
 
-        }
+                    if (
+                        token !== modelLoadToken
+                    ) {
+                        return;
+                    }
 
+                    if (
+                        xhr &&
+                        xhr.lengthComputable &&
+                        xhr.total > 0
+                    ) {
 
-        /*
-           If viewing a model:
+                        const percent =
+                            Math.round(
+                                (
+                                    xhr.loaded /
+                                    xhr.total
+                                ) *
+                                100
+                            );
 
-           ESC → categories
-        */
+                        if (
+                            percent < 100
+                        ) {
 
-        if (
-            modelView.classList.contains(
-                "active"
-            )
-        ) {
+                            setModelStatus(
+                                `LOADING ${percent}%`,
+                                token
+                            );
 
-            event.preventDefault();
+                        }
 
+                    }
 
-            event.stopPropagation();
-
-
-            console.log(
-                "↩️ HOLO LAB: ESC → categories"
+                }
             );
 
 
-            clearCurrentModel();
+        /* =================================================
+           MODEL LOAD COMPLETED
+        ================================================= */
 
+        if (
+            token !== modelLoadToken
+        ) {
 
-            currentCategory =
-                null;
-
-
-            showCategoryView();
-
+            console.log(
+                "[3D VIEWER] Loaded old model ignored:",
+                model.file
+            );
 
             return;
+        }
+
+        console.log(
+            "=============================================="
+        );
+
+        console.log(
+            "[3D VIEWER] GLTF LOAD COMPLETE:",
+            model.file
+        );
+
+        console.log(
+            "[3D VIEWER] LOAD TOKEN:",
+            token
+        );
+
+        console.log(
+            "[3D VIEWER] SCENE:",
+            gltf.scene
+        );
+
+        console.log(
+            "=============================================="
+        );
+
+
+        /* =================================================
+           *** FINAL STATUS ***
+        ================================================= */
+
+        forceLoadedStatus(
+            token
+        );
+
+
+        /* =================================================
+           CACHE
+        ================================================= */
+
+        try {
+
+            modelCache.set(
+                model.file,
+                gltf.scene.clone(true)
+            );
+
+            console.log(
+                "[3D VIEWER] Model cached successfully"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[3D VIEWER] Cache error:",
+                error
+            );
 
         }
 
-    },
-    true
-);
+
+        /* =================================================
+           ADD MODEL
+        ================================================= */
+
+        try {
+
+            const success =
+                setupModel(
+                    gltf.scene.clone(true)
+                );
+
+            if (!success) {
+                return;
+            }
+
+            console.log(
+                "[3D VIEWER] Model added to scene"
+            );
+
+        } catch (error) {
+
+            console.error(
+                "[3D VIEWER] Model setup error:",
+                error
+            );
+
+        }
 
 
-/* =========================================================
-   INITIALIZE
-========================================================= */
+        /* =================================================
+           FRAME MODEL
+        ================================================= */
 
-function initializeHoloLab() {
+        try {
 
-    console.log(
-        "✨ CYBEROS HOLO LAB INITIALIZING"
-    );
+            if (modelRoot) {
 
+                frameModel(
+                    modelRoot,
+                    1.3
+                );
 
-    initializeThree();
+                console.log(
+                    "[3D VIEWER] Model framed"
+                );
 
+            }
 
-    buildCategoryCards();
+        } catch (error) {
 
+            console.error(
+                "[3D VIEWER] Frame error:",
+                error
+            );
 
-    showCategoryView();
+        }
 
+        /*
+         * Absolute final safety pass.
+         */
+        forceLoadedStatus(
+            token
+        );
 
-    console.log(
-        "✨ CYBEROS HOLO LAB READY"
-    );
+    } catch (error) {
 
+        if (
+            token !== modelLoadToken
+        ) {
+            return;
+        }
+
+        console.error(
+            "=============================================="
+        );
+
+        console.error(
+            "[3D VIEWER] MODEL LOAD ERROR:",
+            model.file,
+            error
+        );
+
+        console.error(
+            "=============================================="
+        );
+
+        setModelStatus(
+            "ERROR",
+            token
+        );
+
+    }
 }
 
 
-initializeHoloLab();
+/* =========================================================
+   MODEL BACK BUTTON
+========================================================= */
+
+const backToCategories =
+    document.getElementById(
+        "back-to-categories"
+    );
+
+if (backToCategories) {
+
+    backToCategories.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            showCategoryView();
+
+        }
+    );
+}
+
+
+/* =========================================================
+   HOME BACK BUTTON
+========================================================= */
+
+const backToCyber =
+    document.getElementById(
+        "back-to-cyber"
+    );
+
+if (backToCyber) {
+
+    backToCyber.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            window.location.href =
+                "./index.html";
+
+        }
+    );
+}
+
+
+/* =========================================================
+   CLOSE BUTTON
+========================================================= */
+
+const closeButton =
+    document.getElementById(
+        "holo-close"
+    );
+
+if (closeButton) {
+
+    closeButton.addEventListener(
+        "click",
+        event => {
+
+            event.stopPropagation();
+
+            try {
+
+                if (
+                    window.parent &&
+                    window.parent !== window &&
+                    typeof window.parent
+                        .close3DWorld ===
+                        "function"
+                ) {
+
+                    window.parent.close3DWorld();
+
+                    return;
+                }
+
+            } catch (error) {
+
+                console.warn(
+                    "Could not close parent viewer:",
+                    error
+                );
+
+            }
+
+            window.location.href =
+                "./index.html";
+
+        }
+    );
+}
+
+
+/* =========================================================
+   INIT
+========================================================= */
+
+setupOffsideFont();
+
+initMainScene();
+
+buildCategories();
+
+showCategoryView();

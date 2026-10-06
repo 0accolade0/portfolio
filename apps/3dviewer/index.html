@@ -1,294 +1,94 @@
 <!DOCTYPE html>
+
 <html lang="en">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
-    <title>CyberOS Holo Lab</title>
-
-    <link
-        rel="stylesheet"
-        href="./3dviewer.css"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./3dviewer.css">
 </head>
-
-
 <body>
 
-    <!-- =====================================================
-         CYBEROS HOLO LAB
-    ====================================================== -->
+<main id="holo-lab">
 
-    <main id="holo-lab">
+    <header id="holo-header">
+        <button id="holo-close" type="button">×</button>
+    </header>
 
-        <!-- =================================================
-             HEADER
-        ================================================== -->
+    <section id="category-view" class="view active">
 
-        <header id="holo-header">
+        <div class="section-heading">
+            <h1>My 3D Models</h1>
+            <p>Select a category to view models.</p>
+        </div>
 
-            <div class="holo-title">
+        <div id="category-grid" class="category-grid"></div>
 
-                <div class="holo-title-symbol">
-                    ✦
-                </div>
+    </section>
 
-                <div>
+    <section id="model-view" class="view">
 
-                    <div class="holo-title-main">
-                        CYBEROS HOLO LAB
-                    </div>
-
-                    <div class="holo-title-sub">
-                        3D COLLECTION
-                    </div>
-
-                </div>
-
-            </div>
-
-
-            <button
-                id="holo-close"
-                type="button"
-                aria-label="Close Holo Lab"
-            >
-                ×
-            </button>
-
-        </header>
-
-
-        <!-- =================================================
-             CATEGORY VIEW
-        ================================================== -->
-
-        <section
-            id="category-view"
-            class="view active"
+        <button
+            id="back-to-categories"
+            class="holo-back"
+            type="button"
         >
+            ←
+        </button>
 
-            <div class="section-heading">
+        <div class="model-view-content">
 
-                <div class="section-kicker">
-                    HOLOGRAPHIC ARCHIVE
-                </div>
-
-                <h1>
-                    Choose a collection
-                </h1>
-
-                <p>
-                    Select a hologram folder to begin scanning.
-                </p>
-
+            <div id="model-stage" class="model-stage">
+                <div
+                    id="model-container"
+                    class="model-container"
+                ></div>
             </div>
 
+            <div id="model-info" class="model-info">
+                <div
+                    id="current-category"
+                    class="model-category"
+                >
+                    CATEGORY
+                </div>
+
+                <div
+                    id="current-model-name"
+                    class="model-name"
+                >
+                    MODEL
+                </div>
+
+                <div
+                    id="current-model-status"
+                    class="model-status"
+                >
+                    READY
+                </div>
+            </div>
 
             <div
-                id="category-grid"
-                class="category-grid"
+                id="model-selector"
+                class="model-selector"
             ></div>
-
-        </section>
-
-
-        <!-- =================================================
-             MODEL VIEW
-        ================================================== -->
-
-        <section
-            id="model-view"
-            class="view"
-        >
-
-            <button
-                id="back-to-categories"
-                class="holo-back"
-                type="button"
-            >
-
-                <span>
-                    ↩
-                </span>
-
-                HOLO LAB
-
-            </button>
-
-
-            <div class="model-view-content">
-
-                <!-- =========================================
-                     HOLOGRAPHIC MODEL DISPLAY
-                ========================================== -->
-
-                <div
-                    id="model-stage"
-                    class="model-stage"
-                >
-
-                    <!-- =====================================
-                         HOLOGRAPHIC CHARACTER BACKDROP
-                    ====================================== -->
-
-                    <div
-                        class="holo-character-backdrop"
-                        aria-hidden="true"
-                    >
-
-                        <img
-                            src="./assets/holo-character.png"
-                            alt=""
-                        >
-
-                    </div>
-
-
-                    <!-- =====================================
-                         HOLOGRAM SCAN RINGS
-                    ====================================== -->
-
-                    <div
-                        class="scan-ring ring-one"
-                    ></div>
-
-                    <div
-                        class="scan-ring ring-two"
-                    ></div>
-
-                    <div
-                        class="scan-ring ring-three"
-                    ></div>
-
-
-                    <!-- =====================================
-                         THREE.JS MODEL CONTAINER
-                    ====================================== -->
-
-                    <div
-                        id="model-container"
-                        class="model-container"
-                    ></div>
-
-                </div>
-
-
-                <!-- =========================================
-                     MODEL INFORMATION
-                ========================================== -->
-
-                <div
-                    id="model-info"
-                    class="model-info"
-                >
-
-                    <div
-                        id="current-category"
-                        class="model-category"
-                    >
-                        CATEGORY
-                    </div>
-
-
-                    <div
-                        id="current-model-name"
-                        class="model-name"
-                    >
-                        MODEL
-                    </div>
-
-
-                    <div
-                        id="current-model-status"
-                        class="model-status"
-                    >
-                        READY
-                    </div>
-
-                </div>
-
-
-                <!-- =========================================
-                     MODEL SELECTOR
-                ========================================== -->
-
-                <div
-                    id="model-selector"
-                    class="model-selector"
-                ></div>
-
-            </div>
-
-        </section>
-
-
-        <!-- =================================================
-             HOLOGRAM DECORATION
-        ================================================== -->
-
-        <div
-            class="ambient-glow glow-one"
-        ></div>
-
-
-        <div
-            class="ambient-glow glow-two"
-        ></div>
-
-
-        <div
-            class="holo-particles"
-            aria-hidden="true"
-        >
-
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
-            <span></span>
 
         </div>
 
-    </main>
+    </section>
 
+</main>
 
-    <!-- =====================================================
-         THREE.JS
-    ====================================================== -->
-
-    <script type="importmap">
-
-    {
-        "imports": {
-            "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
-            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
-        }
+<script type="importmap">
+{
+    "imports": {
+        "three": "https://cdn.jsdelivr.net/npm/three@0.180.0/build/three.module.js",
+        "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.180.0/examples/jsm/"
     }
+}
+</script>
 
-    </script>
-
-
-    <!-- =====================================================
-         HOLO LAB JAVASCRIPT
-    ====================================================== -->
-
-    <script
-        type="module"
-        src="./3dviewer.js"
-    ></script>
+<script type="module" src="./3dviewer.js"></script>
 
 
 </body>
-
 </html>
