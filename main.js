@@ -202,6 +202,17 @@ const appData = {
         dateCreated: "2026-10-05"
     },
 
+    NightKiosk: {
+        name: "NightKiosk",
+        url: "./apps/Games/NightKiosk/NightKiosk.html",
+        icon: "./apps/Games/NightKiosk/logo.png",
+        type: "app",
+        fileType: "Application",
+        size: "80 MB",
+        sizeBytes: 5200000,
+        dateCreated: "2026-10-06"
+    },
+
     video1: {
         name: "Fruit Loops and Milk",
         url: "./assets/videos/GirlySeries/video1.mp4",
@@ -353,6 +364,15 @@ const CYBEROS_DESKTOP_CONFIG = {
                 "video5",
                 "video6",
                 "video7"
+            ]
+        },
+
+        Games: {
+            name: "3D Games",
+            icon: "./assets/icons/folder.png",
+            apps: [
+                "NightKiosk",
+        
             ]
         }
 
